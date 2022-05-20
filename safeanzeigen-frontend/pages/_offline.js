@@ -6,3 +6,5 @@ const _offline = () => {
     </div>
   );
 };
+
+export default _offline;
