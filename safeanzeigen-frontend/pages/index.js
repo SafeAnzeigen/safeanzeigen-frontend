@@ -12,7 +12,7 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>
+        <h1 className="text-3xl font-bold underline text-red-500">
           Welcome to <a href="https://nextjs.org">Safeanzeigen</a>
         </h1>
       </main>
