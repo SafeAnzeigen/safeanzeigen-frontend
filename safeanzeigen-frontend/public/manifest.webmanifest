@@ -1,0 +1,38 @@
+{
+  "theme_color": "#2f70e9",
+  "background_color": "#e97c2f",
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/",
+  "name": "Safeanzeigen",
+  "short_name": "Safeanzeigen",
+  "description": "Wir bringen deine Kleinanzeigen mit Sicherheit gro\u00df raus",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-256x256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "/maskable_icon.png",
+      "sizes": "390x390",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
