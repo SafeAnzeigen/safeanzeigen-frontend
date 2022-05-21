@@ -1,16 +1,30 @@
-import "../styles/globals.css";
 import * as React from "react";
 import { useRouter } from "next/router";
+
+import {
+  ClerkProvider,
+  SignedIn,
+  SignedOut,
+  RedirectToSignIn,
+} from "@clerk/nextjs";
 import NProgress from "nprogress";
-import { ClerkProvider } from "@clerk/nextjs";
+
+import "../styles/globals.css";
 
 {
   /* <html class="h-full bg-gray-50">
       <body class="h-full"> */
 }
 
+const publicPages = [
+  "/",
+]; /* TODO: ADD MORE PAGES WITHOUT AUTHENTICATION AND DEFINE WHERE AUTH IS NEEDED TO CONTINUE */
+
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
+  const { pathname } = useRouter(); /* TODO: REFACTOR router.pathname? */
+  const isPublicPage = publicPages.includes(pathname);
+
   React.useEffect(() => {
     const handleRouteStart = () => NProgress.start();
     const handleRouteDone = () => NProgress.done();
@@ -28,7 +42,18 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <ClerkProvider {...pageProps}>
-      <Component {...pageProps} />
+      {isPublicPage ? (
+        <Component {...pageProps} />
+      ) : (
+        <>
+          <SignedIn>
+            <Component {...pageProps} />
+          </SignedIn>
+          <SignedOut>
+            <RedirectToSignIn />
+          </SignedOut>
+        </>
+      )}
     </ClerkProvider>
   );
 }
