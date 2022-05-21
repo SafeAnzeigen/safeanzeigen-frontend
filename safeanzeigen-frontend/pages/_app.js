@@ -2,6 +2,7 @@ import "../styles/globals.css";
 import * as React from "react";
 import { useRouter } from "next/router";
 import NProgress from "nprogress";
+import { ClerkProvider } from "@clerk/nextjs";
 
 {
   /* <html class="h-full bg-gray-50">
@@ -25,7 +26,11 @@ function MyApp({ Component, pageProps }) {
     };
   }, [router]);
 
-  return <Component {...pageProps} />;
+  return (
+    <ClerkProvider {...pageProps}>
+      <Component {...pageProps} />
+    </ClerkProvider>
+  );
 }
 
 export default MyApp;
