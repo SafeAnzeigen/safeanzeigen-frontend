@@ -34,7 +34,7 @@ function Navigation() {
   return (
     <header className="sticky top-0 z-20 grid grid-cols-3 p-6 bg-white shadow-sm md:px-10 md:py-8 lg:pl-20">
       {/* Left Navbar */}
-      <div className="relative flex items-center h-12 my-auto">
+      <div className="relative flex items-center h-12 my-auto select-none">
         <Link href="/">
           <a>
             <Image
@@ -49,7 +49,7 @@ function Navigation() {
         </Link>
       </div>
       {/* Middle Navbar */}
-      <div className="flex items-center border-2 rounded-lg md:shadow-sm xs:ml-2">
+      <div className="flex items-center border-2 rounded-lg select-none md:shadow-sm xs:ml-2">
         <input
           className="flex-grow pl-6 text-sm text-gray-700 placeholder-gray-400 bg-transparent border-transparent outline-none xs:pl-4 focus:outline-none focus:border-transparent focus:ring-0"
           type="text"
@@ -108,7 +108,10 @@ function Navigation() {
                     </a>
 
                     {/* USER DROPDOWN */}
-                    <Menu as="div" className="relative flex-shrink-0 ml-5">
+                    <Menu
+                      as="div"
+                      className="relative flex-shrink-0 ml-5 select-none"
+                    >
                       <div>
                         <Menu.Button className="flex bg-white rounded-full focus:outline-none hover:ring-2 hover:ring-offset-0 hover:ring-gray-400">
                           <span className="sr-only">Nutzermenü öffnen</span>
@@ -170,7 +173,7 @@ function Navigation() {
                     </Menu>
 
                     {/* Inserieren Button */}
-                    <div className="hidden lg:flex lg:items-center lg:justify-end xl:col-span-12">
+                    <div className="hidden select-none lg:flex lg:items-center lg:justify-end xl:col-span-12">
                       <Link href="/inserieren">
                         <button className="inline-flex items-center px-4 py-2 ml-6 text-sm font-medium text-white bg-[#2f70e9] border border-transparent rounded-md shadow-sm hover:bg-[#2962cd] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent">
                           <svg
