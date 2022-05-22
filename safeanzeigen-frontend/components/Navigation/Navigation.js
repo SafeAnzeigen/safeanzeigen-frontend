@@ -255,6 +255,9 @@ function Navigation() {
                     <div className="text-sm font-medium text-gray-500">
                       {user?.primaryPhoneNumber?.phoneNumber}
                     </div>
+                    <div className="text-sm font-medium text-gray-500">
+                      {user?.emailAddresses[0]?.emailAddress}
+                    </div>
                   </div>
                   <button
                     type="button"

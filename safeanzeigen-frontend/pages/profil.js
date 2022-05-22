@@ -1,4 +1,6 @@
 import Head from "next/head";
+import { UserProfile } from "@clerk/clerk-react";
+
 import Navigation from "../components/Navigation/Navigation";
 
 export default function Profil() {
@@ -17,7 +19,7 @@ export default function Profil() {
       </Head>
       {/* Navigation */}
       <Navigation />
-      PROFIL
+      <UserProfile />
     </div>
   );
 }

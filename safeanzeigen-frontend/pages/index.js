@@ -12,90 +12,100 @@ export default function Home() {
         "https://images.unsplash.com/photo-1653164673020-bae8b512f2d8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364",
     },
     {
-      title: "Test2",
+      title: "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm",
       price: 300,
       priceType: "Fix",
       imageUrl:
         "https://images.unsplash.com/photo-1604579278540-db35e2fa658a?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2308",
     },
     {
-      title: "Test2",
+      title: "Test3",
       price: 300,
       priceType: "Fix",
       imageUrl:
         "https://images.unsplash.com/photo-1604579278540-db35e2fa658a?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2308",
     },
     {
-      title: "Test2",
+      title: "Test4",
       price: 300,
       priceType: "Fix",
       imageUrl:
         "https://images.unsplash.com/photo-1604579278540-db35e2fa658a?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2308",
     },
     {
-      title: "Test2",
+      title: "Test5",
       price: 300,
       priceType: "Fix",
       imageUrl:
         "https://images.unsplash.com/photo-1604579278540-db35e2fa658a?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2308",
     },
     {
-      title: "Test2",
+      title: "Test6",
       price: 300,
       priceType: "Fix",
       imageUrl:
         "https://images.unsplash.com/photo-1604579278540-db35e2fa658a?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2308",
     },
     {
-      title: "Test2",
+      title: "Test7",
       price: 300,
       priceType: "Fix",
       imageUrl:
         "https://images.unsplash.com/photo-1604579278540-db35e2fa658a?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2308",
     },
     {
-      title: "Test2",
+      title: "Test8",
       price: 300,
       priceType: "Fix",
       imageUrl:
         "https://images.unsplash.com/photo-1604579278540-db35e2fa658a?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2308",
     },
     {
-      title: "Test2",
+      title: "Test9",
       price: 300,
       priceType: "Fix",
       imageUrl:
         "https://images.unsplash.com/photo-1604579278540-db35e2fa658a?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2308",
     },
     {
-      title: "Test2",
+      title: "Test10",
       price: 300,
       priceType: "Fix",
       imageUrl:
         "https://images.unsplash.com/photo-1604579278540-db35e2fa658a?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2308",
     },
     {
-      title: "Test2",
+      title: "Test11",
       price: 300,
       priceType: "Fix",
       imageUrl:
         "https://images.unsplash.com/photo-1604579278540-db35e2fa658a?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2308",
     },
     {
-      title: "Test2",
+      title: "Test12",
       price: 300,
       priceType: "Fix",
       imageUrl:
         "https://images.unsplash.com/photo-1604579278540-db35e2fa658a?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2308",
     },
     {
-      title: "Test1",
+      title: "Test13",
       price: 200,
       priceType: "VB",
       imageUrl:
         "https://images.unsplash.com/photo-1653164673020-bae8b512f2d8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364",
     },
   ];
+
+  function transformScroll(event) {
+    console.log("TRIGGERED");
+    if (!event.deltaY) {
+      return;
+    }
+
+    event.currentTarget.scrollLeft += event.deltaY + event.deltaX;
+    event.preventDefault();
+  }
 
   return (
     <div className="">
@@ -121,8 +131,10 @@ export default function Home() {
           <h2 className="py-8 text-4xl font-semibold">
             Angebote in deiner Nähe
           </h2>
-          <div className="flex p-4 -mt-2 -ml-4 space-x-5 overflow-scroll scrollbar-hide">
-            {" "}
+          <div
+            className="flex p-4 -mt-2 -ml-4 space-x-5 overflow-scroll scrollbar-hide"
+            onWheel={(event) => transformScroll(event)}
+          >
             {/* w-3/6 */}
             {newestAds?.map(({ title, price, priceType, imageUrl }, index) => (
               <RegularAdCard
@@ -137,7 +149,10 @@ export default function Home() {
         </div>
         <div>
           <h2 className="py-8 text-4xl font-semibold">Neueste Angebote</h2>
-          <div className="flex p-4 -mt-2 -ml-4 space-x-5 overflow-scroll scrollbar-hide">
+          <div
+            className="flex p-4 -mt-2 -ml-4 space-x-5 overflow-scroll scrollbar-hide"
+            onWheel={(event) => transformScroll(event)}
+          >
             {" "}
             {/* w-3/6 */}
             {newestAds?.map(({ title, price, priceType, imageUrl }, index) => (
