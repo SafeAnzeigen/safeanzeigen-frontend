@@ -7,6 +7,8 @@ import {
   SignedIn,
   SignedOut,
   RedirectToSignIn,
+  useAuth,
+  useUser,
 } from "@clerk/clerk-react";
 import { SearchIcon } from "@heroicons/react/solid";
 import { Menu, Popover, Transition } from "@headlessui/react";
@@ -22,6 +24,12 @@ function Navigation() {
     isUserRedirectToSignInActive,
     setIsUserRedirectToSignInActivePayNowSelected,
   ] = useState(false);
+  const { isLoaded, userId, sessionId, getToken } = useAuth();
+  const { isSignedIn, user } = useUser();
+
+  if (!isLoaded || !userId || !isSignedIn) {
+    return null;
+  }
 
   return (
     <header className="sticky top-0 z-20 grid grid-cols-3 p-6 bg-white shadow-sm md:px-10 md:py-8 lg:pl-20">
@@ -47,7 +55,7 @@ function Navigation() {
           type="text"
           placeholder="Was suchen Sie?"
         />
-        <SearchIcon className="hidden h-8 p-2 text-white bg-orange-400 rounded-full cursor-pointer md:inline-flex md:mx-3" />
+        <SearchIcon className="hidden h-8 p-2 text-white bg-orange-400 rounded-full cursor-pointer hover:bg-orange-500 md:inline-flex md:mx-3" />
       </div>
       {/* Right Navbar */}
       <Popover
@@ -106,7 +114,7 @@ function Navigation() {
                           <span className="sr-only">Nutzermenü öffnen</span>
                           <img
                             className="w-10 h-10 rounded-full"
-                            src="https://source.boringavatars.com/beam/300/Sascha%20USERID2?colors=2f70e9,e76f51,ffc638,f4a261,e97c2f"
+                            src={`https://source.boringavatars.com/beam/300/${userId}${userId}${userId}?colors=2f70e9,e76f51,ffc638,f4a261,e97c2f`}
                             alt="Benutzeridentifizierender Avatar"
                           />
                         </Menu.Button>
@@ -121,6 +129,11 @@ function Navigation() {
                         leaveTo="transform opacity-0 scale-95"
                       >
                         <Menu.Items className="absolute right-0 z-10 w-48 py-1 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                          <Menu.Item>
+                            <p className="block px-4 py-2 text-sm font-bold text-gray-700 select-none">
+                              Hallo, {user?.firstName}
+                            </p>
+                          </Menu.Item>
                           <Menu.Item>
                             <Link href="/favoriten">
                               <p className="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100">
@@ -196,6 +209,7 @@ function Navigation() {
                 </SignedOut>
               </div>
             </div>
+            {console.log("USER", user)}
 
             {/* Mobile View */}
             <Popover.Panel as="nav" className="lg:hidden" aria-label="Global">
@@ -229,17 +243,17 @@ function Navigation() {
                   <div className="flex-shrink-0">
                     <img
                       className="w-10 h-10 rounded-full"
-                      src="https://source.boringavatars.com/beam/300/Sascha%20USERID2?colors=2f70e9,e76f51,ffc638,f4a261,e97c2f"
+                      src={`https://source.boringavatars.com/beam/300/${userId}${userId}${userId}?colors=2f70e9,e76f51,ffc638,f4a261,e97c2f`}
                       alt="Nutzeridentifizierender Avatar"
                     />
                   </div>
                   <div className="ml-3">
                     {/* TODO: GRAB DATA FROM USER TO DISPLAY INFO */}
                     <div className="text-base font-medium text-gray-800">
-                      Hallo, FIRSTNAME LASTNAME
+                      Hallo, {user?.firstName} {user?.lastName}
                     </div>
                     <div className="text-sm font-medium text-gray-500">
-                      EMAIL-ADRESSE
+                      {user?.primaryPhoneNumber?.phoneNumber}
                     </div>
                   </div>
                   <button

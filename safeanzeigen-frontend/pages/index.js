@@ -1,7 +1,102 @@
 import Head from "next/head";
 import Navigation from "../components/Navigation/Navigation";
+import RegularAdCard from "../components/Startpage/RegularAdCard";
 
 export default function Home() {
+  const newestAds = [
+    {
+      title: "Test1",
+      price: 200,
+      priceType: "VB",
+      imageUrl:
+        "https://images.unsplash.com/photo-1653164673020-bae8b512f2d8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364",
+    },
+    {
+      title: "Test2",
+      price: 300,
+      priceType: "Fix",
+      imageUrl:
+        "https://images.unsplash.com/photo-1604579278540-db35e2fa658a?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2308",
+    },
+    {
+      title: "Test2",
+      price: 300,
+      priceType: "Fix",
+      imageUrl:
+        "https://images.unsplash.com/photo-1604579278540-db35e2fa658a?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2308",
+    },
+    {
+      title: "Test2",
+      price: 300,
+      priceType: "Fix",
+      imageUrl:
+        "https://images.unsplash.com/photo-1604579278540-db35e2fa658a?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2308",
+    },
+    {
+      title: "Test2",
+      price: 300,
+      priceType: "Fix",
+      imageUrl:
+        "https://images.unsplash.com/photo-1604579278540-db35e2fa658a?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2308",
+    },
+    {
+      title: "Test2",
+      price: 300,
+      priceType: "Fix",
+      imageUrl:
+        "https://images.unsplash.com/photo-1604579278540-db35e2fa658a?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2308",
+    },
+    {
+      title: "Test2",
+      price: 300,
+      priceType: "Fix",
+      imageUrl:
+        "https://images.unsplash.com/photo-1604579278540-db35e2fa658a?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2308",
+    },
+    {
+      title: "Test2",
+      price: 300,
+      priceType: "Fix",
+      imageUrl:
+        "https://images.unsplash.com/photo-1604579278540-db35e2fa658a?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2308",
+    },
+    {
+      title: "Test2",
+      price: 300,
+      priceType: "Fix",
+      imageUrl:
+        "https://images.unsplash.com/photo-1604579278540-db35e2fa658a?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2308",
+    },
+    {
+      title: "Test2",
+      price: 300,
+      priceType: "Fix",
+      imageUrl:
+        "https://images.unsplash.com/photo-1604579278540-db35e2fa658a?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2308",
+    },
+    {
+      title: "Test2",
+      price: 300,
+      priceType: "Fix",
+      imageUrl:
+        "https://images.unsplash.com/photo-1604579278540-db35e2fa658a?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2308",
+    },
+    {
+      title: "Test2",
+      price: 300,
+      priceType: "Fix",
+      imageUrl:
+        "https://images.unsplash.com/photo-1604579278540-db35e2fa658a?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2308",
+    },
+    {
+      title: "Test1",
+      price: 200,
+      priceType: "VB",
+      imageUrl:
+        "https://images.unsplash.com/photo-1653164673020-bae8b512f2d8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364",
+    },
+  ];
+
   return (
     <div className="">
       <Head>
@@ -20,6 +115,77 @@ export default function Home() {
       <Navigation />
       {/* Main Page */}
       {/* Section 1 */}
+      {/* TODO: CHECK IF VERTICAL SCROLL SHOULD BE TRANSFORMED TO HORIZONTAL SCROLL https://stackoverflow.com/questions/24639103/changing-vertical-scroll-to-horizontal*/}
+      <section className="ml-20">
+        <div>
+          <h2 className="py-8 text-4xl font-semibold">
+            Angebote in deiner Nähe
+          </h2>
+          <div className="flex p-4 -mt-2 -ml-4 space-x-5 overflow-scroll scrollbar-hide">
+            {" "}
+            {/* w-3/6 */}
+            {newestAds?.map(({ title, price, priceType, imageUrl }, index) => (
+              <RegularAdCard
+                key={index}
+                title={title}
+                price={price}
+                priceType={priceType}
+                imageUrl={imageUrl}
+              />
+            ))}
+          </div>
+        </div>
+        <div>
+          <h2 className="py-8 text-4xl font-semibold">Neueste Angebote</h2>
+          <div className="flex p-4 -mt-2 -ml-4 space-x-5 overflow-scroll scrollbar-hide">
+            {" "}
+            {/* w-3/6 */}
+            {newestAds?.map(({ title, price, priceType, imageUrl }, index) => (
+              <RegularAdCard
+                key={index}
+                title={title}
+                price={price}
+                priceType={priceType}
+                imageUrl={imageUrl}
+              />
+            ))}
+          </div>
+        </div>
+        {/* <div className="flex max-w-full">
+        <div>
+            <h2 className="py-8 text-4xl font-semibold">Neueste Angebote</h2>
+            <div className="flex w-3/6 p-4 -mt-2 -ml-4 space-x-5 overflow-scroll scrollbar-hide">
+              {newestAds?.map(
+                ({ title, price, priceType, imageUrl }, index) => (
+                  <RegularAdCard
+                    key={index}
+                    title={title}
+                    price={price}
+                    priceType={priceType}
+                    imageUrl={imageUrl}
+                  />
+                )
+              )}
+            </div>
+          </div>
+          <div>
+            <h2 className="py-8 text-4xl font-semibold">Neueste Angebote</h2>
+            <div className="flex w-3/6 p-4 -mt-2 -ml-4 space-x-5 overflow-scroll scrollbar-hide">
+              {newestAds?.map(
+                ({ title, price, priceType, imageUrl }, index) => (
+                  <RegularAdCard
+                    key={index}
+                    title={title}
+                    price={price}
+                    priceType={priceType}
+                    imageUrl={imageUrl}
+                  />
+                )
+              )}
+            </div>
+          </div>
+        </div> */}
+      </section>
       {/* Section 2 */}
       {/* Footer */}
     </div>
