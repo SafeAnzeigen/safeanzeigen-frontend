@@ -148,6 +148,8 @@ export default function Home() {
     }
   }
 
+  /* TODO: Detect if user scrolled to horizontal end then enable vertical scroll again*/
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Head>
@@ -292,7 +294,7 @@ export default function Home() {
         />
       </section>
       {/* Footer */}
-      {/* <Footer /> */}
+      <Footer />
     </div>
   );
 }
