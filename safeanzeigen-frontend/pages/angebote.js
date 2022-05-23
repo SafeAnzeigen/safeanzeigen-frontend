@@ -1,9 +1,10 @@
 import Head from "next/head";
+import Footer from "../components/Footer/Footer";
 import Navigation from "../components/Navigation/Navigation";
 
 export default function Angebote() {
   return (
-    <div className="">
+    <div className="h-full bg-gray-50">
       <Head>
         <title>
           Safeanzeigen - Wir bringen Ihre Kleinanzeigen mit Sicherheit groß
@@ -17,7 +18,9 @@ export default function Angebote() {
       </Head>
       {/* Navigation */}
       <Navigation />
-      ANGEBOTE
+      <div className="min-h-screen">ANGEBOTE</div>
+
+      <Footer />
     </div>
   );
 }
