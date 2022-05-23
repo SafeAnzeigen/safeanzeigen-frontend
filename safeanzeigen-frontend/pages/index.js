@@ -171,7 +171,7 @@ export default function Home() {
       {/* TODO: CHECK IF VERTICAL SCROLL SHOULD BE TRANSFORMED TO HORIZONTAL SCROLL https://stackoverflow.com/questions/24639103/changing-vertical-scroll-to-horizontal*/}
       <section className="mx-20">
         <div>
-          <h2 className="py-8 text-3xl font-semibold select-none">
+          <h2 className="pt-8 pb-4 text-3xl font-semibold text-gray-600 select-none">
             Angebote in deiner Nähe
           </h2>
           <div
@@ -207,7 +207,7 @@ export default function Home() {
           </div>
         </div>
         <div>
-          <h2 className="py-8 text-3xl font-semibold select-none">
+          <h2 className="pt-8 pb-4 text-3xl font-semibold text-gray-600 select-none">
             Neueste Angebote
           </h2>
           <div

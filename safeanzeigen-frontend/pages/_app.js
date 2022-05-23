@@ -10,6 +10,7 @@ import {
 import ProgressBar from "@badrap/bar-of-progress";
 
 import "../styles/globals.css";
+import "react-input-range/lib/css/index.css";
 
 const progress = new ProgressBar({
   size: 4,
