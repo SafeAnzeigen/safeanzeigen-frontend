@@ -26,7 +26,7 @@ export default function Impressum() {
           <p>
             Mit der folgenden Datenschutzerklärung möchten wir Sie darüber
             aufklären, welche Arten Ihrer personenbezogenen Daten (nachfolgend
-            auch kurz als "Daten“ bezeichnet) wir zu welchen Zwecken und in
+            auch kurz als Daten bezeichnet) wir zu welchen Zwecken und in
             welchem Umfang im Rahmen der Bereitstellung unserer Applikation
             verarbeiten.
           </p>
@@ -130,7 +130,11 @@ export default function Impressum() {
           </p>
           Impressum:{" "}
           <p>
-            <a href="https://safeanzeigen.de/impressum" target="_blank">
+            <a
+              href="https://safeanzeigen.de/impressum"
+              target="_blank"
+              rel="noreferrer"
+            >
               https://safeanzeigen.de/impressum
             </a>
           </p>
@@ -281,6 +285,7 @@ export default function Impressum() {
             <a
               href="https://ec.europa.eu/info/law/law-topic/data-protection/international-dimension-data-protection_de"
               target="_blank"
+              rel="noreferrer"
             >
               https://ec.europa.eu/info/law/law-topic/data-protection/international-dimension-data-protection_de
             </a>
@@ -432,7 +437,7 @@ export default function Impressum() {
             Interessen bieten wir den betroffenen Personen effiziente und
             sichere Zahlungsmöglichkeiten an und setzen hierzu neben Banken und
             Kreditinstituten weitere Dienstleister ein (zusammenfassend
-            "Zahlungsdienstleister").
+            Zahlungsdienstleister).
           </p>
           <p>
             Zu den durch die Zahlungsdienstleister verarbeiteten Daten gehören
@@ -494,13 +499,18 @@ export default function Impressum() {
               Braintree); <strong>Dienstanbieter:</strong> PayPal (Europe) S.à
               r.l. et Cie, S.C.A., 22-24 Boulevard Royal, L-2449 Luxembourg;{" "}
               <strong>Website:</strong>{" "}
-              <a href="https://www.paypal.com/de" target="_blank">
+              <a
+                href="https://www.paypal.com/de"
+                target="_blank"
+                rel="noreferrer"
+              >
                 https://www.paypal.com/de
               </a>
               ; <strong>Datenschutzerklärung:</strong>{" "}
               <a
                 href="https://www.paypal.com/de/webapps/mpp/ua/privacy-full"
                 target="_blank"
+                rel="noreferrer"
               >
                 https://www.paypal.com/de/webapps/mpp/ua/privacy-full
               </a>
@@ -511,11 +521,15 @@ export default function Impressum() {
               Anbindung von Online-Bezahlmethoden);{" "}
               <strong>Dienstanbieter:</strong> Stripe, Inc., 510 Townsend
               Street, San Francisco, CA 94103, USA; <strong>Website:</strong>{" "}
-              <a href="https://stripe.com" target="_blank">
+              <a href="https://stripe.com" target="_blank" rel="noreferrer">
                 https://stripe.com
               </a>
               ; <strong>Datenschutzerklärung:</strong>{" "}
-              <a href="https://stripe.com/de/privacy" target="_blank">
+              <a
+                href="https://stripe.com/de/privacy"
+                target="_blank"
+                rel="noreferrer"
+              >
                 https://stripe.com/de/privacy
               </a>
               .
@@ -593,7 +607,7 @@ export default function Impressum() {
             </li>
             <li>
               <strong>Content-Delivery-Network: </strong>Wir setzen ein
-              "Content-Delivery-Network" (CDN) ein. Ein CDN ist ein Dienst, mit
+              Content-Delivery-Network (CDN) ein. Ein CDN ist ein Dienst, mit
               dessen Hilfe Inhalte eines Onlineangebotes, insbesondere große
               Mediendateien, wie Grafiken oder Programm-Skripte, mit Hilfe
               regional verteilter und über das Internet verbundener Server
@@ -688,9 +702,9 @@ export default function Impressum() {
           <p>
             Wir binden in unser Onlineangebot Funktions- und Inhaltselemente
             ein, die von den Servern ihrer jeweiligen Anbieter (nachfolgend
-            bezeichnet als "Drittanbieter”) bezogen werden. Dabei kann es sich
-            zum Beispiel um Grafiken, Videos oder Stadtpläne handeln
-            (nachfolgend einheitlich bezeichnet als "Inhalte”).
+            bezeichnet als Drittanbieter) bezogen werden. Dabei kann es sich zum
+            Beispiel um Grafiken, Videos oder Stadtpläne handeln (nachfolgend
+            einheitlich bezeichnet als Inhalte).
           </p>
           <p>
             Die Einbindung setzt immer voraus, dass die Drittanbieter dieser
@@ -700,10 +714,10 @@ export default function Impressum() {
             Funktionen erforderlich. Wir bemühen uns, nur solche Inhalte zu
             verwenden, deren jeweilige Anbieter die IP-Adresse lediglich zur
             Auslieferung der Inhalte verwenden. Drittanbieter können ferner
-            sogenannte Pixel-Tags (unsichtbare Grafiken, auch als "Web Beacons"
+            sogenannte Pixel-Tags (unsichtbare Grafiken, auch als Web Beacons
             bezeichnet) für statistische oder Marketingzwecke verwenden. Durch
-            die "Pixel-Tags" können Informationen, wie der Besucherverkehr auf
-            den Seiten dieser Webseite, ausgewertet werden. Die pseudonymen
+            die Pixel-Tags können Informationen, wie der Besucherverkehr auf den
+            Seiten dieser Webseite, ausgewertet werden. Die pseudonymen
             Informationen können ferner in Cookies auf dem Gerät der Nutzer
             gespeichert werden und unter anderem technische Informationen zum
             Browser und zum Betriebssystem, zu verweisenden Webseiten, zur
@@ -787,11 +801,19 @@ export default function Impressum() {
               House, Barrow Street, Dublin 4, Irland, Mutterunternehmen: Google
               LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA;{" "}
               <strong>Website:</strong>{" "}
-              <a href="https://fonts.google.com/" target="_blank">
+              <a
+                href="https://fonts.google.com/"
+                target="_blank"
+                rel="noreferrer"
+              >
                 https://fonts.google.com/
               </a>
               ; <strong>Datenschutzerklärung:</strong>{" "}
-              <a href="https://policies.google.com/privacy" target="_blank">
+              <a
+                href="https://policies.google.com/privacy"
+                target="_blank"
+                rel="noreferrer"
+              >
                 https://policies.google.com/privacy
               </a>
               .
@@ -807,11 +829,19 @@ export default function Impressum() {
               House, Barrow Street, Dublin 4, Irland, Mutterunternehmen: Google
               LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA;{" "}
               <strong>Website:</strong>{" "}
-              <a href="https://cloud.google.com/maps-platform" target="_blank">
+              <a
+                href="https://cloud.google.com/maps-platform"
+                target="_blank"
+                rel="noreferrer"
+              >
                 https://cloud.google.com/maps-platform
               </a>
               ; <strong>Datenschutzerklärung:</strong>{" "}
-              <a href="https://policies.google.com/privacy" target="_blank">
+              <a
+                href="https://policies.google.com/privacy"
+                target="_blank"
+                rel="noreferrer"
+              >
                 https://policies.google.com/privacy
               </a>
               ; <strong>Widerspruchsmöglichkeit (Opt-Out):</strong>{" "}
@@ -819,6 +849,7 @@ export default function Impressum() {
               <a
                 href="https://tools.google.com/dlpage/gaoptout?hl=de"
                 target="_blank"
+                rel="noreferrer"
               >
                 https://tools.google.com/dlpage/gaoptout?hl=de
               </a>
@@ -826,6 +857,7 @@ export default function Impressum() {
               <a
                 href="https://adssettings.google.com/authenticated"
                 target="_blank"
+                rel="noreferrer"
               >
                 https://adssettings.google.com/authenticated
               </a>
@@ -833,7 +865,7 @@ export default function Impressum() {
             </li>
             <li>
               <strong>OpenStreetMap: </strong>Wir binden die Landkarten des
-              Dienstes "OpenStreetMap" ein, die auf Grundlage der Open Data
+              Dienstes OpenStreetMap ein, die auf Grundlage der Open Data
               Commons Open Database Lizenz (ODbL) durch die OpenStreetMap
               Foundation (OSMF) angeboten werden. Die Daten der Nutzer werden
               durch OpenStreetMap ausschließlich zu Zwecken der Darstellung der
@@ -844,13 +876,18 @@ export default function Impressum() {
               ihrer Mobilgeräte vollzogen) erhoben werden;{" "}
               <strong>Dienstanbieter:</strong> OpenStreetMap Foundation (OSMF);{" "}
               <strong>Website:</strong>{" "}
-              <a href="https://www.openstreetmap.de" target="_blank">
+              <a
+                href="https://www.openstreetmap.de"
+                target="_blank"
+                rel="noreferrer"
+              >
                 https://www.openstreetmap.de
               </a>
               ; <strong>Datenschutzerklärung:</strong>{" "}
               <a
                 href="https://wiki.osmfoundation.org/wiki/Privacy_Policy"
                 target="_blank"
+                rel="noreferrer"
               >
                 https://wiki.osmfoundation.org/wiki/Privacy_Policy
               </a>
@@ -950,10 +987,10 @@ export default function Impressum() {
           </p>
           <ul className="glossary">
             <li>
-              <strong>Personenbezogene Daten:</strong> "Personenbezogene Daten“
+              <strong>Personenbezogene Daten:</strong> Personenbezogene Daten
               sind alle Informationen, die sich auf eine identifizierte oder
-              identifizierbare natürliche Person (im Folgenden "betroffene
-              Person“) beziehen; als identifizierbar wird eine natürliche Person
+              identifizierbare natürliche Person (im Folgenden betroffene
+              Person) beziehen; als identifizierbar wird eine natürliche Person
               angesehen, die direkt oder indirekt, insbesondere mittels
               Zuordnung zu einer Kennung wie einem Namen, zu einer Kennnummer,
               zu Standortdaten, zu einer Online-Kennung (z.B. Cookie) oder zu
@@ -963,14 +1000,14 @@ export default function Impressum() {
               dieser natürlichen Person sind.{" "}
             </li>
             <li>
-              <strong>Verantwortlicher:</strong> Als "Verantwortlicher“ wird die
+              <strong>Verantwortlicher:</strong> Als Verantwortlicher wird die
               natürliche oder juristische Person, Behörde, Einrichtung oder
               andere Stelle, die allein oder gemeinsam mit anderen über die
               Zwecke und Mittel der Verarbeitung von personenbezogenen Daten
               entscheidet, bezeichnet.{" "}
             </li>
             <li>
-              <strong>Verarbeitung:</strong> "Verarbeitung" ist jeder mit oder
+              <strong>Verarbeitung:</strong> Verarbeitung ist jeder mit oder
               ohne Hilfe automatisierter Verfahren ausgeführte Vorgang oder jede
               solche Vorgangsreihe im Zusammenhang mit personenbezogenen Daten.
               Der Begriff reicht weit und umfasst praktisch jeden Umgang mit
@@ -985,12 +1022,8 @@ export default function Impressum() {
               target="_blank"
               rel="noopener noreferrer nofollow"
             >
-              <img
-                src="https://datenschutz-generator.de/wp-content/plugins/ts-dsg/images/dsg-seal/dsg-seal-pp-de.png"
-                alt="Rechtstext von Dr. Schwenke - für weitere Informationen bitte anklicken."
-                width={250}
-                height={250}
-              />
+              Rechtstext von Dr. Schwenke - für weitere Informationen bitte
+              anklicken.
             </a>
           </p>
         </div>

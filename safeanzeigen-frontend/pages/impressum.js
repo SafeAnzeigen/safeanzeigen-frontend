@@ -44,12 +44,13 @@ export default function Impressum() {
             className="text-2xl text-gray-400"
             href="https://safeanzeigen.de/kontakt"
             target="_blank"
+            rel="noreferrer"
           >
             https://safeanzeigen.de/kontakt
           </a>
         </p>
         <br />
-        <p class="seal">
+        <p className="seal">
           <a
             className="text-2xl"
             href="https://datenschutz-generator.de/"

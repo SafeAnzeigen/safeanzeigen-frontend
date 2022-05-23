@@ -322,8 +322,8 @@ function Navigation() {
       <div className="flex items-center"></div>
       {searchInput && (
         <div className="grid grid-cols-2 bg-gray-200 rounded-bl-lg rounded-br-lg select-none md:shadow-sm xs:ml-2">
-          <div class="grid grid-rows-3 grid-flow-col gap-4 items-center justify-center mt-4">
-            <div class="row-span-1 col-span-3 ...">
+          <div className="grid items-center justify-center grid-flow-col grid-rows-3 gap-4 mt-4">
+            <div className="row-span-1 col-span-3 ...">
               <div>
                 <button
                   type="button"
@@ -401,7 +401,7 @@ function Navigation() {
                 </Combobox>
               </div>
             </div>
-            <div class="row-span-1 col-span-3 ...">
+            <div className="row-span-1 col-span-3 ...">
               Unterkategorie auswählen
             </div>
           </div>
