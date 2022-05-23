@@ -20,12 +20,17 @@ function classNames(...classes) {
 
 function Navigation() {
   const { signOut } = useClerk();
+  const { isLoaded, userId, sessionId, getToken } = useAuth();
+  const { isSignedIn, user } = useUser();
   const [
     isUserRedirectToSignInActive,
     setIsUserRedirectToSignInActivePayNowSelected,
   ] = useState(false);
-  const { isLoaded, userId, sessionId, getToken } = useAuth();
-  const { isSignedIn, user } = useUser();
+  const [searchInput, setSearchInput] = useState("");
+  const [locationOrZipInput, setLocationOrZipInput] = useState("");
+  const [locationRadiusInput, setLocationRadiusInput] = useState(0);
+  const [categoryInput, setCategoryInput] = useState("");
+  const [subcategoryInput, setSubcategoryInput] = useState("");
 
   if (!isLoaded || !userId || !isSignedIn) {
     return null;
@@ -49,10 +54,16 @@ function Navigation() {
         </Link>
       </div>
       {/* Middle Navbar */}
-      <div className="flex items-center border-2 rounded-lg select-none md:shadow-sm xs:ml-2">
+      <div
+        className={`flex items-center border-2 select-none md:shadow-sm xs:ml-2 ${
+          searchInput ? "rounded-tl-lg rounded-tr-lg" : "rounded-lg"
+        }`}
+      >
         <input
           className="flex-grow pl-6 text-sm text-gray-700 placeholder-gray-400 bg-transparent border-transparent outline-none xs:pl-4 focus:outline-none focus:border-transparent focus:ring-0"
           type="text"
+          value={searchInput}
+          onChange={(event) => setSearchInput(event.target.value)}
           placeholder="Was suchen Sie?"
         />
         <SearchIcon className="hidden h-8 p-2 text-white bg-orange-400 rounded-full cursor-pointer hover:bg-orange-500 md:inline-flex md:mx-3" />
@@ -290,6 +301,33 @@ function Navigation() {
           </>
         )}
       </Popover>
+      {/* <div className="flex flex-col col-span-3 mx-auto">
+          <div className="h-10 w-96 bg-gray-50">Test</div>
+        </div> */}
+      {/* Searchbox Detail Component */}
+      {/* <div className="sticky top-0 z-20 grid grid-cols-1 p-6 bg-white shadow-sm md:px-10 md:py-8 lg:pl-20">
+         
+        </div> */}
+      <div className="flex items-center"></div>
+      {searchInput && (
+        <div className="flex items-center justify-center h-full bg-gray-200 rounded-bl-lg rounded-br-lg select-none md:shadow-sm xs:ml-2">
+          <div className="flex-col my-4">
+            <div className="flex">
+              <input
+                className="flex-grow pl-6 text-sm text-gray-700 placeholder-gray-400 bg-transparent bg-gray-100 border-transparent rounded-full outline-none xs:pl-4 focus:outline-none focus:border-transparent focus:ring-0"
+                type="text"
+                value={locationOrZipInput}
+                onChange={(event) => setLocationOrZipInput(event.target.value)}
+                placeholder="Ort oder PLZ"
+              />
+              <div>GEOLOCATION ICON</div>
+            </div>
+
+            <div>Test</div>
+            <div>Test</div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
