@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 
 import Head from "next/head";
-import Footer from "../components/Footer/Footer";
-import Navigation from "../components/Navigation/Navigation";
+import Footer from "../../components/Footer/Footer";
+import Navigation from "../../components/Navigation/Navigation";
 
 export default function Anzeige() {
   return (
