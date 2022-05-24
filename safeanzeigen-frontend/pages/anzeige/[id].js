@@ -1,8 +1,11 @@
-import Head from "next/head";
-import Footer from "../components/Footer/Footer";
-import Navigation from "../components/Navigation/Navigation";
+import { useState } from "react";
+import { useRouter } from "next/router";
 
-export default function Angebote() {
+import Head from "next/head";
+import Footer from "../../components/Footer/Footer";
+import Navigation from "../../components/Navigation/Navigation";
+
+export default function Anzeige() {
   return (
     <div className="h-full bg-gray-50">
       <Head>

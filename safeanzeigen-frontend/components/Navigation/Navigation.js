@@ -32,15 +32,39 @@ function Navigation() {
   const [subcategoryInput, setSubcategoryInput] = useState("");
 
   const [query, setQuery] = useState("");
-  const [selectedPerson, setSelectedPerson] = useState();
+  const [selectedCategory, setSelectedCategory] = useState();
+  const [selectedSubcategory, setSelectedSubcategory] = useState();
 
-  const people = [{ id: 1, fullName: "Leslie Alexander" }];
+  const categories = [
+    { id: 1, categoryName: "Elektronik" },
+    { id: 2, categoryName: "Schmuck" },
+    { id: 3, categoryName: "Garten" },
+    { id: 4, categoryName: "Haushalt" },
+  ];
 
-  const filteredPeople =
+  const subcategories = [
+    { id: 1, subcategoryName: "Apple" },
+    { id: 2, subcategoryName: "Samsung" },
+    { id: 3, subcategoryName: "HTC" },
+    { id: 4, subcategoryName: "Sony" },
+  ];
+
+  const filteredCategories =
     query === ""
-      ? people
-      : people.filter((person) => {
-          return person.fullName.toLowerCase().includes(query.toLowerCase());
+      ? categories
+      : categories.filter((category) => {
+          return category.categoryName
+            .toLowerCase()
+            .includes(query.toLowerCase());
+        });
+
+  const filteredSubcategories =
+    query === ""
+      ? subcategories
+      : subcategories.filter((subcategory) => {
+          return subcategory.subcategoryName
+            .toLowerCase()
+            .includes(query.toLowerCase());
         });
 
   if (!isLoaded || !userId || !isSignedIn) {
@@ -109,25 +133,27 @@ function Navigation() {
                 <SignedIn>
                   <div className="hidden lg:flex lg:items-center lg:justify-end xl:col-span-12">
                     {/* CHAT ICON */}
-                    <a
-                      href="#"
-                      className="flex-shrink-0 p-1 ml-5 rounded-full hover:text-gray-500 focus:outline-none focus:ring-transparent text-[#9ca3af]"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="cursor-pointer w-9 h-9"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
+                    <Link href="/chat">
+                      <div
+                        href="#"
+                        className="flex-shrink-0 p-1 ml-5 rounded-full hover:text-gray-500 focus:outline-none focus:ring-transparent text-[#9ca3af]"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                        />
-                      </svg>
-                    </a>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="cursor-pointer w-9 h-9"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                          />
+                        </svg>
+                      </div>
+                    </Link>
 
                     {/* USER DROPDOWN */}
                     <Menu
@@ -321,188 +347,269 @@ function Navigation() {
         </div> */}
       <div className="flex items-center"></div>
       {searchInput && (
-        <div className="grid grid-cols-2 bg-gray-200 rounded-bl-lg rounded-br-lg select-none md:shadow-sm xs:ml-2">
-          <div className="grid items-center justify-center grid-flow-col grid-rows-3 gap-4 mt-4">
-            <div className="row-span-1 col-span-3 ...">
-              <div>
-                <button
+        <div className="bg-gray-200 rounded-bl-lg rounded-br-lg select-none md:shadow-sm xs:ml-2">
+          <div className="grid grid-cols-2 ">
+            <div className="grid items-center justify-center grid-flow-col grid-rows-3 gap-4 mt-3">
+              <div className="col-span-3 row-span-3 mb-4">
+                <div>
+                  {/* <button
                   type="button"
                   className="inline-flex items-center px-6 py-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-0 focus:ring-transparent"
                 >
                   Kategorie auswählen
-                </button>
-                <Combobox
-                  as="div"
-                  value={selectedPerson}
-                  onChange={setSelectedPerson}
-                >
-                  <Combobox.Label className="block text-sm font-medium text-gray-700">
-                    Kategorie auswählen
-                  </Combobox.Label>
-                  <div className="relative mt-1">
-                    <Combobox.Input
-                      className="w-full py-2 pl-3 pr-10 bg-white border border-white rounded-md shadow-sm focus:outline-none focus:ring-transparent sm:text-sm"
-                      onChange={(event) => setQuery(event.target.value)}
-                      displayValue={(person) => person?.fullName}
-                    />
-                    <Combobox.Button className="absolute inset-y-0 right-0 flex items-center px-2 rounded-r-md focus:outline-none">
-                      <SelectorIcon
-                        className="w-5 h-5 text-gray-400"
-                        aria-hidden="true"
+                </button> */}
+                  <Combobox
+                    as="div"
+                    value={selectedCategory}
+                    onChange={setSelectedCategory}
+                  >
+                    <Combobox.Label className="block text-sm font-medium text-gray-700">
+                      Kategorie auswählen
+                    </Combobox.Label>
+                    <div className="relative mt-1">
+                      <Combobox.Input
+                        className="w-full py-2 pl-3 pr-10 text-gray-600 bg-white border border-white rounded-md shadow-sm focus:outline-none focus:ring-transparent sm:text-sm"
+                        onChange={(event) => setQuery(event.target.value)}
+                        displayValue={(category) => category?.categoryName}
                       />
-                    </Combobox.Button>
+                      <Combobox.Button className="absolute inset-y-0 right-0 flex items-center px-2 rounded-r-md focus:outline-none">
+                        <SelectorIcon
+                          className="w-5 h-5 text-gray-400"
+                          aria-hidden="true"
+                        />
+                      </Combobox.Button>
 
-                    {filteredPeople.length > 0 && (
-                      <Combobox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                        {filteredPeople.map((person) => (
-                          <Combobox.Option
-                            key={person.id}
-                            value={person}
-                            className={({ active }) =>
-                              classNames(
-                                "relative cursor-default select-none py-2 pl-8 pr-4",
-                                active
-                                  ? "bg-indigo-600 text-white"
-                                  : "text-gray-900"
-                              )
-                            }
-                          >
-                            {({ active, selected }) => (
-                              <>
-                                <span
-                                  className={classNames(
-                                    "block truncate",
-                                    selected && "font-semibold"
-                                  )}
-                                >
-                                  {person.fullName}
-                                </span>
-
-                                {selected && (
+                      {filteredCategories.length > 0 && (
+                        <Combobox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                          {filteredCategories.map((category) => (
+                            <Combobox.Option
+                              key={category.id}
+                              value={category}
+                              className={({ active }) =>
+                                classNames(
+                                  "relative cursor-pointer select-none py-2 pl-8 pr-4",
+                                  active
+                                    ? "bg-indigo-600 text-white"
+                                    : "text-gray-900"
+                                )
+                              }
+                            >
+                              {({ active, selected }) => (
+                                <>
                                   <span
                                     className={classNames(
-                                      "absolute inset-y-0 left-0 flex items-center pl-1.5",
-                                      active ? "text-white" : "text-indigo-600"
+                                      "block truncate",
+                                      selected && "font-semibold"
                                     )}
                                   >
-                                    <CheckIcon
-                                      className="w-5 h-5"
-                                      aria-hidden="true"
-                                    />
+                                    {category.categoryName}
                                   </span>
-                                )}
-                              </>
-                            )}
-                          </Combobox.Option>
-                        ))}
-                      </Combobox.Options>
-                    )}
-                  </div>
-                </Combobox>
+
+                                  {selected && (
+                                    <span
+                                      className={classNames(
+                                        "absolute inset-y-0 left-0 flex items-center pl-1.5",
+                                        active
+                                          ? "text-white"
+                                          : "text-indigo-600"
+                                      )}
+                                    >
+                                      <CheckIcon
+                                        className="w-5 h-5"
+                                        aria-hidden="true"
+                                      />
+                                    </span>
+                                  )}
+                                </>
+                              )}
+                            </Combobox.Option>
+                          ))}
+                        </Combobox.Options>
+                      )}
+                    </div>
+                  </Combobox>
+                  <Combobox
+                    as="div"
+                    value={selectedSubcategory}
+                    onChange={setSelectedSubcategory}
+                    className={`mt-4  ${!selectedCategory ? "invisible" : ""}`}
+                  >
+                    <Combobox.Label className="block text-sm font-medium text-gray-700">
+                      Subkategorie auswählen
+                    </Combobox.Label>
+                    <div className="relative mt-1">
+                      <Combobox.Input
+                        className="w-full py-2 pl-3 pr-10 text-gray-600 bg-white border border-white rounded-md shadow-sm focus:outline-none focus:ring-transparent sm:text-sm"
+                        onChange={(event) => setQuery(event.target.value)}
+                        displayValue={(subcategory) =>
+                          subcategory?.subcategoryName
+                        }
+                      />
+                      <Combobox.Button className="absolute inset-y-0 right-0 flex items-center px-2 rounded-r-md focus:outline-none">
+                        <SelectorIcon
+                          className="w-5 h-5 text-gray-400"
+                          aria-hidden="true"
+                        />
+                      </Combobox.Button>
+
+                      {filteredSubcategories.length > 0 && (
+                        <Combobox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                          {filteredSubcategories.map((subcategory) => (
+                            <Combobox.Option
+                              key={subcategory.id}
+                              value={subcategory}
+                              className={({ active }) =>
+                                classNames(
+                                  "relative select-none py-2 pl-8 pr-4 cursor-pointer",
+                                  active
+                                    ? "bg-indigo-600 text-white"
+                                    : "text-gray-900"
+                                )
+                              }
+                            >
+                              {({ active, selected }) => (
+                                <>
+                                  <span
+                                    className={classNames(
+                                      "block truncate",
+                                      selected && "font-semibold"
+                                    )}
+                                  >
+                                    {subcategory.subcategoryName}
+                                  </span>
+
+                                  {selected && (
+                                    <span
+                                      className={classNames(
+                                        "absolute inset-y-0 left-0 flex items-center pl-1.5",
+                                        active
+                                          ? "text-white"
+                                          : "text-indigo-600"
+                                      )}
+                                    >
+                                      <CheckIcon
+                                        className="w-5 h-5"
+                                        aria-hidden="true"
+                                      />
+                                    </span>
+                                  )}
+                                </>
+                              )}
+                            </Combobox.Option>
+                          ))}
+                        </Combobox.Options>
+                      )}
+                    </div>
+                  </Combobox>
+                </div>
               </div>
             </div>
-            <div className="row-span-1 col-span-3 ...">
-              Unterkategorie auswählen
+            <div className="flex-col pt-2 mt-8 mb-4">
+              <div className="flex">
+                <input
+                  className="flex-grow pl-6 text-sm text-gray-700 placeholder-gray-400 bg-transparent !bg-white border-transparent rounded-md outline-none xs:pl-4 focus:outline-none focus:border-transparent focus:ring-0"
+                  type="text"
+                  value={locationOrZipInput}
+                  onChange={(event) =>
+                    setLocationOrZipInput(event.target.value)
+                  }
+                  placeholder="Ort oder PLZ"
+                />
+                <div
+                  className="mr-2 text-gray-500 cursor-pointer hover:text-orange-500"
+                  title="Meinen Standort nutzen"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-8 h-8 my-1 ml-2"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+                <div
+                  className="mt-1 mr-4 cursor-pointer hover:text-orange-500"
+                  title="Ort auf der Karte markieren"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-8 h-8"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <div className="grid items-center grid-cols-2">
+                <div className="mt-6">
+                  <input
+                    type="range"
+                    min="0"
+                    max="200"
+                    value={locationRadiusInput}
+                    onChange={(event) =>
+                      setLocationRadiusInput(event.target.value)
+                    }
+                    className="bg-orange-400 range"
+                  />
+                  <div className="flex justify-between w-full px-2 text-xs">
+                    <div className="flex flex-col">
+                      <span>|</span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span>|</span>
+                    </div>{" "}
+                    <div className="flex flex-col items-center">
+                      <span>|</span>
+                    </div>{" "}
+                    <div className="flex flex-col items-end">
+                      <span>|</span>
+                    </div>{" "}
+                    <div className="flex flex-col items-end">
+                      <span>|</span>
+                    </div>
+                  </div>
+                  <div className="flex justify-between w-full px-2 text-xs">
+                    <div className="flex flex-col">
+                      <span className="text-orange-600">0km</span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-orange-600">50km</span>
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <span className="text-orange-600">100km</span>
+                    </div>
+                    <div className="flex flex-col items-end">
+                      <span className="text-orange-600">150km</span>
+                    </div>
+                    <div className="flex flex-col items-end">
+                      <span className="text-orange-600">200km</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mb-3 ml-2 text-sm font-bold text-orange-600">
+                  +{locationRadiusInput} km Radius
+                </div>
+              </div>
             </div>
           </div>
-          <div className="flex-col my-4">
-            <div className="flex">
-              <input
-                className="flex-grow pl-6 text-sm text-gray-700 placeholder-gray-400 bg-transparent bg-gray-100 border-transparent rounded-md outline-none xs:pl-4 focus:outline-none focus:border-transparent focus:ring-0"
-                type="text"
-                value={locationOrZipInput}
-                onChange={(event) => setLocationOrZipInput(event.target.value)}
-                placeholder="Ort oder PLZ"
-              />
-              <div
-                className="mr-2 text-gray-500 cursor-pointer hover:text-orange-500"
-                title="Meinen Standort nutzen"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-8 h-8 my-1 ml-2"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-              <div
-                className="mt-1 mr-4 cursor-pointer hover:text-orange-500"
-                title="Ort auf der Karte markieren"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-8 h-8"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
-                  />
-                </svg>
-              </div>
-            </div>
-            <div className="grid items-center grid-cols-2">
-              <div className="mt-6">
-                <input
-                  type="range"
-                  min="0"
-                  max="200"
-                  value={locationRadiusInput}
-                  onChange={(event) =>
-                    setLocationRadiusInput(event.target.value)
-                  }
-                  className="bg-[#da5f12ac] range"
-                />
-                <div className="flex justify-between w-full px-2 text-xs">
-                  <div className="flex flex-col">
-                    <span>|</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span>|</span>
-                  </div>{" "}
-                  <div className="flex flex-col items-center">
-                    <span>|</span>
-                  </div>{" "}
-                  <div className="flex flex-col items-end">
-                    <span>|</span>
-                  </div>{" "}
-                  <div className="flex flex-col items-end">
-                    <span>|</span>
-                  </div>
-                </div>
-                <div className="flex justify-between w-full px-2 text-xs">
-                  <div className="flex flex-col">
-                    <span className="text-orange-600">0km</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-orange-600">50km</span>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <span className="text-orange-600">100km</span>
-                  </div>
-                  <div className="flex flex-col items-end">
-                    <span className="text-orange-600">150km</span>
-                  </div>
-                  <div className="flex flex-col items-end">
-                    <span className="text-orange-600">200km</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mb-3 ml-4 text-lg font-bold text-orange-600">
-                +{locationRadiusInput} km Umkreis
-              </div>
-            </div>
+          <div className="flex justify-center pl-1">
+            <button className="w-full h-8 mx-20 mb-4 mr-24 font-semibold text-white bg-orange-400 rounded-md">
+              Jetzt Entdecken
+            </button>
           </div>
         </div>
       )}

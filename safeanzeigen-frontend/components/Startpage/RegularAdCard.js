@@ -105,7 +105,7 @@ function RegularAdCard({
             className="w-7 h-7 hover:text-red-500"
             fill="currentColor"
             viewBox="0 0 24 24"
-            stroke="currentColor"
+            stroke="#9f9e9e71"
             strokeWidth={2}
           >
             <path
