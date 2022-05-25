@@ -60,6 +60,30 @@ export default function Chat() {
                         publishedNameOfAd="Max Mustermann"
                         unreadMessage={true}
                       />
+                      <ConversationCard
+                        conversationName="Kamera in gutem Zustand"
+                        conversationLastDate="25. Mai"
+                        publishedNameOfAd="Max Mustermann"
+                        unreadMessage={true}
+                      />
+                      <ConversationCard
+                        conversationName="Kamera in gutem Zustand"
+                        conversationLastDate="25. Mai"
+                        publishedNameOfAd="Max Mustermann"
+                        unreadMessage={true}
+                      />
+                      <ConversationCard
+                        conversationName="Kamera in gutem Zustand"
+                        conversationLastDate="25. Mai"
+                        publishedNameOfAd="Max Mustermann"
+                        unreadMessage={true}
+                      />
+                      <ConversationCard
+                        conversationName="Kamera in gutem Zustand"
+                        conversationLastDate="25. Mai"
+                        publishedNameOfAd="Max Mustermann"
+                        unreadMessage={true}
+                      />
                     </div>
                   </div>
                   <MessagingComponent

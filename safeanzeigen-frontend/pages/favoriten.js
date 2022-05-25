@@ -1,9 +1,41 @@
+import { useState } from "react";
 import Head from "next/head";
+import { useAuth, useUser } from "@clerk/clerk-react";
+
+import Footer from "../components/Footer/Footer";
 import Navigation from "../components/Navigation/Navigation";
+import RegularAdCard from "../components/Startpage/RegularAdCard";
+import AlertConfirmationModal from "../components/GeneralComponents/Modals/AlertConfirmationModal";
 
 export default function Favoriten() {
+  const [showDislikeConfirmationModal, setShowDislikeConfirmationModal] =
+    useState(false);
+  const [selectedAdId, setSelectedAdId] = useState(null);
+  const { userId, getToken } = useAuth();
+  const { user } = useUser();
+
+  const removeLikeOfAdForUser = () => {
+    /*  console.log("REMOVE TRIGGER", selectedAdId);
+    console.log("REMOVE TRIGGER2", userId);
+    console.log("REMOVE TRIGGER3", getToken);
+    console.log("user!", user); */
+    handleCloseModal();
+  };
+
+  const handleChangeOfLikeStatus = (adId, currentLikeStatus) => {
+    if (currentLikeStatus) {
+      setSelectedAdId(adId);
+      setShowDislikeConfirmationModal(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setSelectedAdId(null);
+    setShowDislikeConfirmationModal(false);
+  };
+
   return (
-    <div className="">
+    <div className="min-h-screen bg-gray-50">
       <Head>
         <title>
           Safeanzeigen - Wir bringen Ihre Kleinanzeigen mit Sicherheit groß
@@ -15,9 +47,180 @@ export default function Favoriten() {
         <link rel="manifest" href="/manifest.webmanifest" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png"></link>
       </Head>
-      {/* Navigation */}
+
       <Navigation />
-      FAVORITEN
+      <div className="min-h-screen bg-gray-50">
+        {showDislikeConfirmationModal && (
+          <AlertConfirmationModal
+            title="Möchten Sie die Anzeige aus Ihren Favoriten wirklich entfernen?"
+            subtitle="Die Anzeige wird nicht mehr unter den Favoriten für Sie aufgelistet sein."
+            alertButtonConfirmationText="Entfernen"
+            showDislikeConfirmationModal={showDislikeConfirmationModal}
+            callbackCloseModal={handleCloseModal}
+            callbackConfirmAction={removeLikeOfAdForUser}
+          />
+        )}
+        <div className="px-4 py-12 mx-auto max-w-7xl sm:py-16 sm:px-6 lg:px-8">
+          <div className="max-w-3xl mx-auto divide-y-2 divide-gray-200">
+            <h2 className="mb-8 text-3xl font-extrabold text-center text-gray-900 sm:text-4xl">
+              Deine Favoriten
+            </h2>
+          </div>
+          <div className="grid grid-flow-col grid-rows-4 gap-6">
+            <RegularAdCard
+              adId="1234"
+              title="Test"
+              price={22.99}
+              priceType="VB"
+              imageUrl="https://images.unsplash.com/photo-1653164673020-bae8b512f2d8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364"
+              articleIsVerified={true}
+              sellerHasManySales={false}
+              isLiked={true}
+              callbackSetLikeStatus={handleChangeOfLikeStatus}
+            />
+            <RegularAdCard
+              adId="3333"
+              title="Test"
+              price={21.99}
+              priceType="VB"
+              imageUrl="https://images.unsplash.com/photo-1653164673020-bae8b512f2d8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364"
+              articleIsVerified={true}
+              sellerHasManySales={false}
+              isLiked={true}
+              callbackSetLikeStatus={handleChangeOfLikeStatus}
+            />
+            <RegularAdCard
+              title="Test"
+              price={22.99}
+              priceType="VB"
+              imageUrl="https://images.unsplash.com/photo-1653164673020-bae8b512f2d8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364"
+              articleIsVerified={true}
+              sellerHasManySales={false}
+            />
+            <RegularAdCard
+              title="Test"
+              price={22.99}
+              priceType="VB"
+              imageUrl="https://images.unsplash.com/photo-1653164673020-bae8b512f2d8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364"
+              articleIsVerified={true}
+              sellerHasManySales={false}
+            />
+            <RegularAdCard
+              title="Test"
+              price={22.99}
+              priceType="VB"
+              imageUrl="https://images.unsplash.com/photo-1653164673020-bae8b512f2d8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364"
+              articleIsVerified={true}
+              sellerHasManySales={false}
+            />
+            <RegularAdCard
+              title="Test"
+              price={22.99}
+              priceType="VB"
+              imageUrl="https://images.unsplash.com/photo-1653164673020-bae8b512f2d8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364"
+              articleIsVerified={true}
+              sellerHasManySales={false}
+            />
+            <RegularAdCard
+              title="Test"
+              price={22.99}
+              priceType="VB"
+              imageUrl="https://images.unsplash.com/photo-1653164673020-bae8b512f2d8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364"
+              articleIsVerified={true}
+              sellerHasManySales={false}
+            />
+            <RegularAdCard
+              title="Test"
+              price={22.99}
+              priceType="VB"
+              imageUrl="https://images.unsplash.com/photo-1653164673020-bae8b512f2d8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364"
+              articleIsVerified={true}
+              sellerHasManySales={false}
+            />
+            <RegularAdCard
+              title="Test"
+              price={22.99}
+              priceType="VB"
+              imageUrl="https://images.unsplash.com/photo-1653164673020-bae8b512f2d8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364"
+              articleIsVerified={true}
+              sellerHasManySales={false}
+            />
+            <RegularAdCard
+              title="Test"
+              price={22.99}
+              priceType="VB"
+              imageUrl="https://images.unsplash.com/photo-1653164673020-bae8b512f2d8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364"
+              articleIsVerified={true}
+              sellerHasManySales={false}
+            />
+            <RegularAdCard
+              title="Test"
+              price={22.99}
+              priceType="VB"
+              imageUrl="https://images.unsplash.com/photo-1653164673020-bae8b512f2d8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364"
+              articleIsVerified={true}
+              sellerHasManySales={false}
+            />
+            <RegularAdCard
+              title="Test"
+              price={22.99}
+              priceType="VB"
+              imageUrl="https://images.unsplash.com/photo-1653164673020-bae8b512f2d8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364"
+              articleIsVerified={true}
+              sellerHasManySales={false}
+            />
+            <RegularAdCard
+              title="Test"
+              price={22.99}
+              priceType="VB"
+              imageUrl="https://images.unsplash.com/photo-1653164673020-bae8b512f2d8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364"
+              articleIsVerified={true}
+              sellerHasManySales={false}
+            />
+            <RegularAdCard
+              title="Test"
+              price={22.99}
+              priceType="VB"
+              imageUrl="https://images.unsplash.com/photo-1653164673020-bae8b512f2d8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364"
+              articleIsVerified={true}
+              sellerHasManySales={false}
+            />
+            <RegularAdCard
+              title="Test"
+              price={22.99}
+              priceType="VB"
+              imageUrl="https://images.unsplash.com/photo-1653164673020-bae8b512f2d8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364"
+              articleIsVerified={true}
+              sellerHasManySales={false}
+            />
+            <RegularAdCard
+              title="Test"
+              price={22.99}
+              priceType="VB"
+              imageUrl="https://images.unsplash.com/photo-1653164673020-bae8b512f2d8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364"
+              articleIsVerified={true}
+              sellerHasManySales={false}
+            />
+            <RegularAdCard
+              title="Test"
+              price={22.99}
+              priceType="VB"
+              imageUrl="https://images.unsplash.com/photo-1653164673020-bae8b512f2d8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364"
+              articleIsVerified={true}
+              sellerHasManySales={false}
+            />
+            <RegularAdCard
+              title="Test"
+              price={22.99}
+              priceType="VB"
+              imageUrl="https://images.unsplash.com/photo-1653164673020-bae8b512f2d8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364"
+              articleIsVerified={true}
+              sellerHasManySales={false}
+            />
+          </div>
+        </div>
+      </div>
+      <Footer />
     </div>
   );
 }
