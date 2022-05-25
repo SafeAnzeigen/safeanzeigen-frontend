@@ -260,7 +260,6 @@ function Navigation() {
                 </SignedOut>
               </div>
             </div>
-            {console.log("USER", user)}
 
             {/* Mobile View */}
             <Popover.Panel as="nav" className="lg:hidden" aria-label="Global">
@@ -607,7 +606,7 @@ function Navigation() {
             </div>
           </div>
           <div className="flex justify-center pl-1">
-            <button className="w-full h-8 mx-20 mb-4 mr-24 font-semibold text-white bg-orange-400 rounded-md">
+            <button className="w-full h-10 mx-20 mb-4 mr-24 font-semibold text-white bg-orange-400 rounded-md">
               Jetzt Entdecken
             </button>
           </div>

@@ -45,7 +45,7 @@ export default function FAQ() {
       </Head>
       <Navigation />
 
-      <div className="h-full min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50">
         <div className="px-4 py-12 mx-auto max-w-7xl sm:py-16 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto divide-y-2 divide-gray-200">
             <h2 className="text-3xl font-extrabold text-center text-gray-900 sm:text-4xl">
