@@ -117,7 +117,7 @@ const MessagingComponent = ({ nameOfAd, adURL }) => {
               className="block w-full px-4 py-4 bg-transparent border-0 outline-none resize-none focus:outline-none focus:ring-0 focus:ring-offset-0 focus:ring-transparent"
               rows={1}
               placeholder="Schreibe eine Nachricht"
-              autofocus=""
+              autoFocus=""
               defaultValue={""}
             />
           </div>
