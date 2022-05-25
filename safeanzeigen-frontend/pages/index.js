@@ -164,7 +164,6 @@ export default function Home() {
         <link rel="apple-touch-icon" href="/apple-touch-icon.png"></link>
       </Head>
 
-      {/* Navigation */}
       <Navigation />
       {/* Main Page */}
       {/* Section 1 */}

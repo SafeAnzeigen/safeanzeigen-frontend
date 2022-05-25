@@ -2,10 +2,11 @@ import Head from "next/head";
 import Navigation from "../components/Navigation/Navigation";
 import ConversationCard from "../components/Chat/ConversationCard";
 import MessagingComponent from "../components/Chat/MessagingComponent";
+import Footer from "../components/Footer/Footer";
 
 export default function Chat() {
   return (
-    <div className="h-screen overflow-y-hidden">
+    <div className="min-h-screen overflow-y-hidden">
       <Head>
         <title>
           Safeanzeigen - Wir bringen Ihre Kleinanzeigen mit Sicherheit groß
@@ -71,6 +72,7 @@ export default function Chat() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

@@ -19,9 +19,11 @@ export default function Impressum() {
       {/* Navigation */}
       <Navigation />
 
-      <div className="min-h-screen font-semibold text-justify select-none py-8text-lg bg-gray-50">
-        <div className="mx-20">
-          <h1 className="text-3xl text-center">Datenschutzerklärung</h1>
+      <div className="flex justify-center min-h-screen font-semibold text-justify select-none py-8text-lg bg-gray-50">
+        <div className="w-2/5 mx-20 text-left">
+          <h1 className="pt-10 mb-4 text-4xl text-center text-orange-400">
+            Datenschutzerklärung
+          </h1>
           <h2 id="m1870">Einleitung</h2>
           <p>
             Mit der folgenden Datenschutzerklärung möchten wir Sie darüber
@@ -1015,7 +1017,7 @@ export default function Impressum() {
               Übermitteln oder das Löschen.{" "}
             </li>
           </ul>
-          <p className="seal">
+          <p className="mb-8 seal">
             <a
               href="https://datenschutz-generator.de/"
               title="Rechtstext von Dr. Schwenke - für weitere Informationen bitte anklicken."

@@ -20,28 +20,33 @@ export default function Impressum() {
       <Navigation />
 
       <div className="min-h-screen py-8 text-3xl font-semibold text-center select-none bg-gray-50">
-        <h1 className="mt-10">Impressum</h1>
+        <h1 className="mt-10 text-4xl text-orange-400">Impressum</h1>
         <br />
-        <h2 id="m46">Diensteanbieter</h2>
-        <p className="text-2xl text-gray-400">Sascha Majewsky</p>
-        <p className="text-2xl text-gray-400">Böcklerstr. 4</p>
-        <p className="text-2xl text-gray-400">22119 Hamburg</p>
-        <p className="text-2xl text-gray-400">Deutschland</p>
+        <h2 id="m46" className="text-2xl text-[#2f70e9]">
+          Diensteanbieter
+        </h2>
+        <p className="text-xl text-gray-400">Sascha Majewsky</p>
+        <p className="text-xl text-gray-400">Böcklerstr. 4</p>
+        <p className="text-xl text-gray-400">22119 Hamburg</p>
+        <p className="text-xl text-gray-400">Deutschland</p>
         <br />
-        <h2 id="m56">Kontaktmöglichkeiten</h2>E-Mail-Adresse:{" "}
+        <h2 id="m56" className="text-2xl text-[#2f70e9] mb-2">
+          Kontaktmöglichkeiten
+        </h2>
+        <div className="text-2xl text-[#2f70e9]">E-Mail-Adresse: </div>
         <p>
           <a
             href="mailto:hallo@safeanzeigen.de"
-            className="text-2xl text-gray-400"
+            className="text-xl text-gray-400"
           >
             hallo@safeanzeigen.de
           </a>
         </p>
         <br />
-        Kontaktformular:{" "}
+        <div className="text-2xl text-[#2f70e9]">Kontaktformular: </div>
         <p>
           <a
-            className="text-2xl text-gray-400"
+            className="text-xl text-gray-400"
             href="https://safeanzeigen.de/kontakt"
             target="_blank"
             rel="noreferrer"
@@ -52,7 +57,7 @@ export default function Impressum() {
         <br />
         <p className="seal">
           <a
-            className="text-2xl"
+            className="text-xl text-gray-400"
             href="https://datenschutz-generator.de/"
             title="Rechtstext von Dr. Schwenke - für weitere Informationen bitte anklicken."
             target="_blank"
