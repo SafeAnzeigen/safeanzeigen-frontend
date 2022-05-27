@@ -18,3 +18,16 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.carousel-flash-animation img {
+  animation: flashAnimation 0.5s ease-out;
+}
+
+@keyframes flashAnimation {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
