@@ -396,9 +396,9 @@ export default function Anzeige({
                       </h3>
                       <div className="grow-wrap">
                         <textarea
-                          readonly
+                          readOnly
                           autoResizeEnabled={true}
-                          spellcheck="false"
+                          spellCheck="false"
                           rows={testText.split("\n").length}
                           name="comment"
                           id="comment"
