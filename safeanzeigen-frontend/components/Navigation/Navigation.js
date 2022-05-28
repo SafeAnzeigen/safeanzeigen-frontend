@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -71,6 +71,21 @@ function Navigation() {
     return null;
   }
 
+  /*   if (isSignedIn && user) {
+    console.log("CHECKING FOR MINIMUM PROFILE DATA", user);
+  } */
+
+  /*   const checkUserIsKnownToCustomBackend = () => {};
+
+  const checkUserHasProvidedMinimumProfileData = (clerkUserObject) => {}; */
+  /*  checkUserIsKnownToCustomBackend();
+      checkUserHasProvidedMinimumProfileData(user); */
+  /*  useEffect(() => {
+    if (isSignedIn && user) {
+      console.log("CHECKING FOR MINIMUM PROFILE DATA", user);
+    }
+  }, []); */
+
   return (
     <header className="sticky top-0 z-20 grid grid-cols-3 p-6 bg-white shadow-sm md:px-10 md:py-8 lg:pl-20">
       {/* Left Navbar */}
@@ -128,7 +143,7 @@ function Navigation() {
                     )}
                   </Popover.Button>
                 </div>
-                {console.log("USER OBJECT", user)}
+                {/*  {console.log("USER OBJECT", user)} */}
                 {/* Desktop View */}
                 <SignedIn>
                   <div className="hidden lg:flex lg:items-center lg:justify-end xl:col-span-12">
@@ -557,6 +572,7 @@ function Navigation() {
                     type="range"
                     min="0"
                     max="200"
+                    step="10"
                     value={locationRadiusInput}
                     onChange={(event) =>
                       setLocationRadiusInput(event.target.value)

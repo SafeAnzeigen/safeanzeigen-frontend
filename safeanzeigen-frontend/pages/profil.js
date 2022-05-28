@@ -1,9 +1,15 @@
 import Head from "next/head";
 import { UserProfile } from "@clerk/clerk-react";
+import { XCircleIcon, CheckCircleIcon } from "@heroicons/react/solid";
+import { useUser } from "@clerk/clerk-react";
 
 import Navigation from "../components/Navigation/Navigation";
+import Footer from "../components/Footer/Footer";
+import Link from "next/link";
 
 export default function Profil() {
+  const { user } = useUser();
+
   return (
     <div className="">
       <Head>
@@ -19,7 +25,91 @@ export default function Profil() {
       </Head>
       {/* Navigation */}
       <Navigation />
+
+      {user &&
+      (!user?.firstName ||
+        !user?.lastName ||
+        !user?.emailAddresses[0]?.emailAddress ||
+        !user?.emailAddresses[0]?.verification?.status === "verified") ? (
+        <div className="bg-white">
+          <div className="pt-4">
+            <div className="w-1/3 p-4 pt-2 mx-auto rounded-md bg-red-50">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <XCircleIcon
+                    className="w-5 h-5 text-red-400"
+                    aria-hidden="true"
+                  />
+                </div>
+
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-red-800">
+                    Damit du auf Safeanzeigen zugreifen kannst, fehlen folgende
+                    Dinge:
+                  </h3>
+                  <div className="mt-2 text-sm text-red-700">
+                    <ul role="list" className="pl-5 space-y-1 list-disc">
+                      {(!user?.emailAddresses[0]?.emailAddress ||
+                        !user?.emailAddresses[0]?.verification?.status ===
+                          "verified") && (
+                        <li>
+                          Du hast eine E-Mail-Adresse hinterlegt und per Code
+                          verifiziert
+                        </li>
+                      )}
+                      {!user?.firstName && (
+                        <li>Du hast einen Vornamen angegeben</li>
+                      )}
+                      {!user?.lastName && (
+                        <li>Du hast einen Nachnamen angegeben</li>
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="bg-white">
+          <div className="pt-4">
+            <div className="w-1/3 p-4 mx-auto rounded-md bg-green-50">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <CheckCircleIcon
+                    className="w-5 h-5 text-green-400"
+                    aria-hidden="true"
+                  />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-green-800">
+                    Du hast alle notwendigen Daten angegeben!
+                  </h3>
+                  <div className="mt-2 text-sm text-green-700">
+                    <p>Viel Spaß auf Safeanzeigen!</p>
+                  </div>
+                  <div className="mt-4">
+                    <div className="-mx-2 -my-1.5 flex">
+                      <Link href="/">
+                        <button
+                          type="button"
+                          className="bg-[#2f70e9] px-2 py-1.5 rounded-md text-sm font-medium text-white hover:bg-[#2962cd] focus:outline-none focus:ring-0 focus:ring-offset-0 focus:ring-offset-green-0 focus:ring-transparent"
+                        >
+                          Jetzt Loslegen
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <UserProfile />
+      <div className="pt-8 bg-white">
+        <Footer />
+      </div>
     </div>
   );
 }

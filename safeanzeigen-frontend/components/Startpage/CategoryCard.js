@@ -3,7 +3,7 @@ import Image from "next/image";
 function CategoryCard({ category, imageURL, subText, ctaText }) {
   return (
     <div className="relative cursor-pointer py-14">
-      <div className="relative h-80 min-w-[300px] ">
+      <div className="relative h-80 min-w-[300px]">
         <Image
           src={imageURL}
           alt={`Kategorie ${category}`}
