@@ -128,7 +128,7 @@ function Navigation() {
                     )}
                   </Popover.Button>
                 </div>
-
+                {console.log("USER OBJECT", user)}
                 {/* Desktop View */}
                 <SignedIn>
                   <div className="hidden lg:flex lg:items-center lg:justify-end xl:col-span-12">
