@@ -7,7 +7,7 @@ import Navigation from "../components/Navigation/Navigation";
 import RegularAdCard from "../components/Startpage/RegularAdCard";
 import AlertConfirmationModal from "../components/GeneralComponents/Modals/AlertConfirmationModal";
 
-export default function Favoriten() {
+export default function Angebote() {
   const [showDislikeConfirmationModal, setShowDislikeConfirmationModal] =
     useState(false);
   const [selectedAdId, setSelectedAdId] = useState(null);
