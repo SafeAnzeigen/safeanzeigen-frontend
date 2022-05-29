@@ -12,10 +12,77 @@ export default function Profil() {
   const { user } = useUser();
   const clerkAuth = useAuth();
 
-  const checkIfUserExistInCustomBackend = async (userData) => {
-    /* console.log("clerkUser", clerkUser);
-    console.log("clerkAuth", clerkAuth);
-    console.log("clerk TOKEN", await clerkAuth.getToken()); */
+  const checkUserHasProvidedMinimumProfileData = (userData) =>
+    userData?.firstName &&
+    userData?.lastName &&
+    userData?.phoneNumbers[0]?.phoneNumber &&
+    userData?.phoneNumbers[0]?.verification?.status === "verified" &&
+    userData?.emailAddresses[0]?.emailAddress &&
+    userData?.emailAddresses[0]?.verification?.status === "verified";
+
+  const checkUserHasUpdatedProfileData = (backendUserData, clerkUserData) =>
+    backendUserData?.user?.email !==
+      clerkUserData?.emailAddresses[0]?.emailAddress ||
+    backendUserData?.user?.firstname !== clerkUserData?.firstName ||
+    backendUserData?.user?.lastname !== clerkUserData?.lastName ||
+    backendUserData?.user?.phone_number !==
+      clerkUserData?.phoneNumbers[0]?.phoneNumber;
+
+  const addClerkUserToCustomBackend = async (userData) => {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/users/`, {
+      method: "post",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `${await clerkAuth.getToken()}`,
+      },
+      body: JSON.stringify({
+        clerk_user_id: userData.id,
+        firstname: userData.firstName,
+        lastname: userData.lastName,
+        phone_number: userData.phoneNumbers[0].phoneNumber,
+        phone_verified: userData.phoneNumbers[0].verification.expireAt,
+        email: userData.emailAddresses[0].emailAddress,
+        email_verified: userData.emailAddresses[0].verification.expireAt,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATA SIGNUP", data);
+      })
+      .catch((error) => {
+        console.log("ERROR USER SIGNUP", error);
+      });
+  };
+
+  const updateClerkUserInCustomBackend = async (userData) => {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/users/`, {
+      method: "put",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `${await clerkAuth.getToken()}`,
+      },
+      body: JSON.stringify({
+        clerk_user_id: userData.id,
+        firstname: userData.firstName,
+        lastname: userData.lastName,
+        phone_number: userData.phoneNumbers[0].phoneNumber,
+        phone_verified: userData.phoneNumbers[0].verification.expireAt,
+        email: userData.emailAddresses[0].emailAddress,
+        email_verified: userData.emailAddresses[0].verification.expireAt,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATA USER UPDATE", data);
+      })
+      .catch((error) => {
+        console.log("ERROR USER UPDATE", error);
+      });
+  };
+
+  const checkForUserInfoHasChanged = async (userData) => {
     fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
         `/users/clerkid/${userData.id}/`,
@@ -23,41 +90,61 @@ export default function Profil() {
         method: "get",
         headers: {
           Accept: "application/json",
-          "Content-Type": "application/json" /* Clerk.session.getToken() */,
+          "Content-Type": "application/json",
           Authorization: `${await clerkAuth.getToken()}`,
         },
-        /*  body: JSON.stringify({
-          arrivalDate: startDate.format("DD.MM.YYYY"),
-          departureDate: endDate.format("DD.MM.YYYY"),
-        }), */
       }
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log("DATE HERE", data);
-        /*  if (data.travelAvailabilityResponse) {
-          setIsTravelDurationClosed("available");
-        } else {
-          setIsTravelDurationClosed("unavailable");
-        } */
+        console.log("DATA CHECK USER EXISTENCE FOR CHANGE", data);
+        if (data?.user?.user_id) {
+          if (
+            checkUserHasProvidedMinimumProfileData(userData) &&
+            checkUserHasUpdatedProfileData(data, userData)
+          ) {
+            updateClerkUserInCustomBackend(userData);
+          }
+        }
       })
       .catch((error) => {
-        /* setIsTravelDurationClosed("unavailable"); */
-        console.log("ERROR TRAVEL STATUS", error);
+        console.log("ERROR CHECK USER EXISTANCE", error);
       });
   };
 
-  console.log("user!!!", user);
+  const checkIfClerkUserExistsInCustomBackend = async (userData) => {
+    fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+        `/users/clerkid/${userData.id}/`,
+      {
+        method: "get",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `${await clerkAuth.getToken()}`,
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATA CHECK USER EXISTENCE", data);
+        if (
+          data.message === "Dieser Nutzer wurde nicht gefunden." &&
+          checkUserHasProvidedMinimumProfileData(userData)
+        ) {
+          addClerkUserToCustomBackend(userData);
+        } else if (data?.user?.user_id) {
+          checkForUserInfoHasChanged(userData);
+        }
+      })
+      .catch((error) => {
+        console.log("ERROR CHECK USER EXISTENCE", error);
+      });
+  };
+
   useEffect(() => {
-    if (
-      user &&
-      user?.firstName &&
-      user?.lastName &&
-      user?.emailAddresses[0]?.emailAddress &&
-      user?.emailAddresses[0]?.verification?.status === "verified"
-    ) {
-      checkIfUserExistInCustomBackend(user);
-      console.log("TEST TRIGGERED");
+    if (user && checkUserHasProvidedMinimumProfileData(user)) {
+      checkIfClerkUserExistsInCustomBackend(user);
     }
   }, []);
 
