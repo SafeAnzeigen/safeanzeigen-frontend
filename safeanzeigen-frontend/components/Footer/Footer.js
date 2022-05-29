@@ -1,9 +1,8 @@
-import Link from "next/link"
+import Link from "next/link";
 
 const navigation = {
   main: [
     { name: "Über Safeanzeigen", href: "/safeanzeigen" },
-    { name: "Tipps zum sicheren Umgang", href: "/sicherheit" },
     { name: "FAQ", href: "/faq" },
     { name: "Kontakt", href: "/kontakt" },
     { name: "Datenschutz", href: "/datenschutz" },
