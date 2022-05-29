@@ -282,13 +282,13 @@ export default function Home() {
         <CategoryCard
           category="Hardware"
           imageURL="https://images.unsplash.com/photo-1604754742629-3e5728249d73?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2670"
-          subText="Finden Sie die besten Angebote"
+          subText="Finde die besten Angebote"
           ctaText="Jetzt Entdecken"
         />
         <CategoryCard
           category="Schmuck"
           imageURL="https://images.unsplash.com/photo-1536502829567-baf877a670b5?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2670"
-          subText="Durchsuchen Sie versteckte Schätze"
+          subText="Durchsuche versteckte Schätze"
           ctaText="Jetzt fündig werden"
         />
       </section>

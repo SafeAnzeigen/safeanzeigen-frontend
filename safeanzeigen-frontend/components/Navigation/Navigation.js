@@ -114,7 +114,7 @@ function Navigation() {
           type="text"
           value={searchInput}
           onChange={(event) => setSearchInput(event.target.value)}
-          placeholder="Was suchen Sie?"
+          placeholder="Wonach suchst du?"
         />
         <SearchIcon className="hidden h-8 p-2 text-white bg-orange-400 rounded-full cursor-pointer hover:bg-orange-500 md:inline-flex md:mx-3" />
       </div>
