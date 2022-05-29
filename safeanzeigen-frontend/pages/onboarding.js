@@ -78,8 +78,8 @@ export default function Onboarding() {
       <div className="min-h-screen bg-gray-50">
         {showDislikeConfirmationModal && (
           <AlertConfirmationModal
-            title="Möchten Sie die Anzeige aus Ihren Favoriten wirklich entfernen?"
-            subtitle="Die Anzeige wird nicht mehr unter den Favoriten für Sie aufgelistet sein."
+            title="Möchtest du die Anzeige wirklich aus deinen Favoriten entfernen?"
+            subtitle="Die Anzeige wird nicht mehr unter den Favoriten für dich aufgelistet sein."
             alertButtonConfirmationText="Entfernen"
             showDislikeConfirmationModal={showDislikeConfirmationModal}
             callbackCloseModal={handleCloseModal}
