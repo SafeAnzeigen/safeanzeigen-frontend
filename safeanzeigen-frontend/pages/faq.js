@@ -16,8 +16,9 @@ const faqs = [
       "Mit Safeanzeigen wird versucht eine Plattform zu bieten, welche Spammer und Betrüger ausschließt. Durch die Verwendung von einem passwortlosen Login via SMS-Code werden multiple Accounts vermindert. Weiterhin werden Inserate mittels eines auf dieses Inserat zugeschnittenen QR-Codes geschützt, welcher sich auf einem Verifizierungsfoto des Inserates befinden muss und automatisch, sowie ggf. manuell durch einen Menschen verifiziert wird. Dadurch soll sichergestellt werden, dass mit realen Menschen kommuniziert wird, welche legitimes Kauf- und Verkaufinteresse besitzen, sowie Betrüger mit lediglich kopierten Produktbildern ausgeschloßen werden.",
   },
   {
-    frage: "xxxx",
-    antwort: "xxxx",
+    frage: "Was bedeutet VB und Fix bei den Preisen?",
+    antwort:
+      "VB steht für Verhandelbar und bedeutet, dass der Anbieter bereit ist einem niedrigeren Preis entgegenzukommen und Fix steht für festen Fixpreis ohne Verhandlungsspielraum.",
   },
   {
     frage: "yyyy",
