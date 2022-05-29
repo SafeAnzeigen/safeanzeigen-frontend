@@ -1,7 +1,8 @@
+import { useEffect } from "react";
 import Head from "next/head";
 import { UserProfile } from "@clerk/clerk-react";
 import { XCircleIcon, CheckCircleIcon } from "@heroicons/react/solid";
-import { useUser } from "@clerk/clerk-react";
+import { useUser, useAuth } from "@clerk/clerk-react";
 
 import Navigation from "../components/Navigation/Navigation";
 import Footer from "../components/Footer/Footer";
@@ -9,6 +10,56 @@ import Link from "next/link";
 
 export default function Profil() {
   const { user } = useUser();
+  const clerkAuth = useAuth();
+
+  const checkIfUserExistInCustomBackend = async (userData) => {
+    /* console.log("clerkUser", clerkUser);
+    console.log("clerkAuth", clerkAuth);
+    console.log("clerk TOKEN", await clerkAuth.getToken()); */
+    fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+        `/users/clerkid/${userData.id}/`,
+      {
+        method: "get",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json" /* Clerk.session.getToken() */,
+          Authorization: `${await clerkAuth.getToken()}`,
+        },
+        /*  body: JSON.stringify({
+          arrivalDate: startDate.format("DD.MM.YYYY"),
+          departureDate: endDate.format("DD.MM.YYYY"),
+        }), */
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATE HERE", data);
+        /*  if (data.travelAvailabilityResponse) {
+          setIsTravelDurationClosed("available");
+        } else {
+          setIsTravelDurationClosed("unavailable");
+        } */
+      })
+      .catch((error) => {
+        /* setIsTravelDurationClosed("unavailable"); */
+        console.log("ERROR TRAVEL STATUS", error);
+      });
+  };
+
+  console.log("user!!!", user);
+  useEffect(() => {
+    if (
+      user &&
+      user?.firstName &&
+      user?.lastName &&
+      user?.emailAddresses[0]?.emailAddress &&
+      user?.emailAddresses[0]?.verification?.status === "verified"
+    ) {
+      checkIfUserExistInCustomBackend(user);
+      console.log("TEST TRIGGERED");
+    }
+  }, []);
 
   return (
     <div className="">
@@ -33,7 +84,7 @@ export default function Profil() {
         !user?.emailAddresses[0]?.verification?.status === "verified") ? (
         <div className="bg-white">
           <div className="pt-4">
-            <div className="w-1/3 p-4 pt-2 mx-auto rounded-md bg-red-50">
+            <div className="w-1/5 p-4 pt-2 mx-auto rounded-md bg-red-50">
               <div className="flex">
                 <div className="flex-shrink-0">
                   <XCircleIcon
@@ -44,8 +95,7 @@ export default function Profil() {
 
                 <div className="ml-3">
                   <h3 className="text-sm font-medium text-red-800">
-                    Damit du auf Safeanzeigen zugreifen kannst, fehlen folgende
-                    Dinge:
+                    Damit du auf Safeanzeigen zugreifen kannst fehlt folgendes:
                   </h3>
                   <div className="mt-2 text-sm text-red-700">
                     <ul role="list" className="pl-5 space-y-1 list-disc">
@@ -73,7 +123,7 @@ export default function Profil() {
       ) : (
         <div className="bg-white">
           <div className="pt-4">
-            <div className="w-1/3 p-4 mx-auto rounded-md bg-green-50">
+            <div className="w-1/6 p-4 mx-auto rounded-md bg-green-50">
               <div className="flex">
                 <div className="flex-shrink-0">
                   <CheckCircleIcon
@@ -106,7 +156,7 @@ export default function Profil() {
           </div>
         </div>
       )}
-      <UserProfile />
+      <UserProfile only="account" />
       <div className="pt-8 bg-white">
         <Footer />
       </div>
