@@ -13,16 +13,12 @@ const faqs = [
   {
     frage: "Welche Sicherheitsfeatures bietet Safeanzeigen?",
     antwort:
-      "Mit Safeanzeigen wird versucht eine Plattform zu bieten, welche Spammer und Betrüger ausschließt. Durch die Verwendung von einem passwortlosen Login via SMS-Code werden multiple Accounts vermindert. Weiterhin werden Inserate mittels eines auf dieses Inserat zugeschnittenen QR-Codes geschützt, welcher sich auf einem Verifizierungsfoto des Inserates befinden muss und automatisch, sowie ggf. manuell durch einen Menschen verifiziert wird. Dadurch soll sichergestellt werden, dass mit realen Menschen kommuniziert wird, welche legitimes Kauf- und Verkaufinteresse besitzen, sowie Betrüger mit lediglich kopierten Produktbildern ausgeschloßen werden.",
+      "Safeanzeigen versucht eine Plattform zu bieten, welche Spammer und Betrüger ausschließt. Durch die Verwendung eines passwortlosen Logins, auch genannt One-Time-Password (OTP), via SMS-Code wird das massenhafte Erstellen von Accounts stark vermindert. Bei einem Login wird ebenfalls ein solcher OTP SMS-Code abgefragt, welches den Diebstahl von fremden Accounts unattraktiv gestaltet. Weiterhin werden Inserate mittels eines eindeutig auf dieses Inserat zugeschnittenen QR-Codes geschützt, welcher sich auf einem Verifizierungsfoto des Artikelbildes befinden muss und automatisch, sowie ggf. manuell durch einen Menschen verifiziert wird. Dadurch soll sichergestellt werden, dass mit realen Menschen kommuniziert wird, welche legitimes Kauf- und Verkaufinteresse besitzen und ihre Artikelbilder nicht lediglich aus dem Internet kopieren. Weiterhin besitzt jeder Nutzer ein eindeutiges Identicon als Profilavatar, welches schnell offenbart, wenn ein Nutzer sich als jemand anders ausgeben möchte.",
   },
   {
     frage: "Was bedeutet VB und Fix bei den Preisen?",
     antwort:
-      "VB steht für Verhandelbar und bedeutet, dass der Anbieter bereit ist einem niedrigeren Preis entgegenzukommen und Fix steht für festen Fixpreis ohne Verhandlungsspielraum.",
-  },
-  {
-    frage: "yyyy",
-    antwort: "yyyy",
+      "VB steht für verhandelbar und bedeutet, dass der Anbieter bereit ist einem niedrigeren Preis entgegenzukommen und Fix steht für festen Fixpreis ohne Verhandlungsspielraum.",
   },
 ];
 
@@ -48,7 +44,7 @@ export default function FAQ() {
 
       <div className="min-h-screen bg-gray-50">
         <div className="px-4 py-12 mx-auto max-w-7xl sm:py-16 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto divide-y-2 divide-gray-200">
+          <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl font-extrabold text-center text-gray-900 sm:text-4xl">
               Oft gestellte Fragen
             </h2>
