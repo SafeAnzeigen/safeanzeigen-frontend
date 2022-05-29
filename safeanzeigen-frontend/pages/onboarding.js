@@ -157,7 +157,7 @@ export default function Onboarding() {
                         </h3>
                         <p className="mt-2 text-sm text-center text-gray-500">
                           Wir erlauben neben physischen Artikeln auch das
-                          Angebot von digitalen Gütern wie NFT's.
+                          Angebot von digitalen Gütern wie NFT.
                         </p>
                       </div>
                     </div>
