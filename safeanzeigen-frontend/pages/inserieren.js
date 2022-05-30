@@ -38,20 +38,29 @@ export default function Inserieren({
   adID,
 }) {
   const { asPath } = useRouter();
+  const router = useRouter();
   const { user } = useUser();
   const clerkAuth = useAuth();
   const fileUpload = useRef(null);
   const componentRef = useRef();
   const canvasRef = useRef();
+  const carouselRef = useRef();
   const hiddenFileInput = useRef(null);
   const hiddenVerificationFileInput = useRef(null);
   const [priceInput, setPriceInput] = useState(0);
-  const [selectedPriceType, setSelectedPriceType] = useState("VB");
+  const [verificationImageSecureURL, setVerificationImageSecureURL] =
+    useState("");
+  const [locationInput, setLocationInput] = useState("");
+  const [selectedPriceType, setSelectedPriceType] = useState("");
+  const [descriptionInput, setDescriptionInput] = useState("");
+  const [titleInput, setTitleInput] = useState("");
   const [namePublic, setNamePublic] = useState(false);
   const [phoneNumberPublic, setPhoneNumberPublic] = useState(false);
   const [addressPublic, setAddressPublic] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState();
+  const [categories, setCategories] = useState([]);
   const [selectedSubcategory, setSelectedSubcategory] = useState();
+  const [subcategories, setSubcategories] = useState([]);
   const [query, setQuery] = useState("");
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [iscurrentlyUploading, setIscurrentlyUploading] = useState(false);
@@ -68,11 +77,136 @@ export default function Inserieren({
     /* "https://images.unsplash.com/photo-1602143407151-7111542de6e8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1287",
     "https://images.unsplash.com/photo-1491637639811-60e2756cc1c7?ixlib=rb-1.2.1&raw_url=true&q=80&fm=jpg&crop=entropy&cs=tinysrgb&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1328", */
   ]);
-  const carouselRef = useRef();
+
+  const priceTypes = [
+    { id: 1, priceTypeName: "VB" },
+    { id: 2, priceTypeName: "Fix" },
+  ];
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
   });
+
+  const addAdvertisement = async (
+    userData,
+    titleInputData,
+    adImagesArray,
+    priceInputData,
+    selectedPriceTypeData,
+    selectedCategoryData,
+    selectedSubcategoryData /* TODO: ADD SUBCATEGORY TO DB SCHEMA */,
+    locationInputData,
+    descriptionInputData,
+    validationSuccessTokenData,
+    namePublicData,
+    addressPublicData,
+    phoneNumberPublicData
+  ) => {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/advertisements/`, {
+      method: "post",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `${await clerkAuth.getToken()}`,
+      },
+      body: JSON.stringify({
+        clerk_user_id: userData?.id,
+        fk_category_id: selectedCategoryData?.category_id,
+        subcategory_id: selectedSubcategoryData?.subcategory_id,
+        type: "sell",
+        title: titleInputData,
+        price: priceInputData,
+        price_type: selectedPriceTypeData?.priceTypeName,
+        description: descriptionInputData,
+        verification_image: verificationImageSecureURL,
+        verification_qr_code: verificationQRCode,
+        validation_success_token: validationSuccessTokenData,
+        is_verified: true,
+        article_image_1: adImagesArray[0],
+        article_image_2: adImagesArray[1],
+        article_image_3: adImagesArray[2],
+        article_image_4: adImagesArray[3],
+        article_image_5: adImagesArray[4],
+        article_video: "",
+        show_name: !namePublicData,
+        show_address: !addressPublicData,
+        show_phone: !phoneNumberPublicData,
+        show_user_photo: true,
+        location_street: locationInputData,
+        location_street_number: "private",
+        location_city: "private",
+        location_zip: "private",
+        location_county: "private",
+        location_country: "private",
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATA ADD ADVERTISEMENT", data);
+        if (data?.advertisement_id) {
+          router.push(`/angebote`);
+        }
+      })
+      .catch((error) => {
+        console.log("ERROR ADD ADVERTISEMENT", error);
+      });
+  };
+
+  const retrieveSubCategoriesBelongingToCategory = async (category_name) => {
+    fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+        `/subcategories/categoryname/${category_name}`,
+      {
+        method: "get",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `${await clerkAuth.getToken()}`,
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATA GET SUBCATEGORIES", data);
+        if (data?.subcategories) {
+          setSubcategories(
+            data?.subcategories.map((element) => ({
+              subcategory_id: element.subcategory_id,
+              name: element.name,
+            }))
+          );
+        }
+      })
+      .catch((error) => {
+        console.log("ERROR GET SUBCATEGORIES", error);
+      });
+  };
+
+  const retrieveCategories = async () => {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/categories/`, {
+      method: "get",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `${await clerkAuth.getToken()}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATA GET CATEGORIES", data);
+        if (data?.categories) {
+          setCategories(
+            data?.categories.map((element) => ({
+              category_id: element.category_id,
+              name: element.name,
+            }))
+          );
+        }
+      })
+      .catch((error) => {
+        console.log("ERROR GET CATEGORIES", error);
+      });
+  };
 
   const generateVerificationQRCode = async (userData) => {
     fetch(
@@ -163,6 +297,7 @@ export default function Inserieren({
       ).then((r) => r.json());
 
       if (data?.secure_url) {
+        setVerificationImageSecureURL(data?.secure_url);
         fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
             `/advertisements/verificationimage/validate/${user.id}/`,
@@ -195,32 +330,11 @@ export default function Inserieren({
     }
   };
 
-  const priceTypes = [
-    { id: 1, priceTypeName: "VB" },
-    { id: 2, priceTypeName: "Fix" },
-  ];
-
-  const categories = [
-    { id: 1, categoryName: "Elektronik" },
-    { id: 2, categoryName: "Schmuck" },
-    { id: 3, categoryName: "Garten" },
-    { id: 4, categoryName: "Haushalt" },
-  ];
-
-  const subcategories = [
-    { id: 1, subcategoryName: "Apple" },
-    { id: 2, subcategoryName: "Samsung" },
-    { id: 3, subcategoryName: "HTC" },
-    { id: 4, subcategoryName: "Sony" },
-  ];
-
   const filteredCategories =
     query === ""
       ? categories
       : categories.filter((category) => {
-          return category.categoryName
-            .toLowerCase()
-            .includes(query.toLowerCase());
+          return category.name.toLowerCase().includes(query.toLowerCase());
         });
 
   const filteredSubcategories =
@@ -253,10 +367,16 @@ export default function Inserieren({
     window.onscroll = function () {};
     carouselRef.current.addEventListener("animationend", removeAnimation);
     generateVerificationQRCode(user);
+    retrieveCategories();
+    /* retrieveSubCategories(); */
   }, []);
 
-  categoryName = "Test";
-  subcategoryName = "Test2";
+  useEffect(() => {
+    retrieveSubCategoriesBelongingToCategory(selectedCategory?.name);
+  }, [selectedCategory]);
+
+  /*   categoryName = "Test";
+  subcategoryName = "Test2"; */
   const testText =
     "Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit deserunt qui eu. Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit deserunt qui eu. Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit deserunt qui eu. Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit deserunt qui eu. Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit deserunt qui eu. Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit deserunt qui eu. Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit deserunt qui eu.";
 
@@ -286,6 +406,7 @@ export default function Inserieren({
                     aria-hidden="true"
                   />
                 </div>
+                {console.log("selectedCategory", selectedCategory?.name)}
                 <div className="flex-1 ml-3 md:flex md:justify-between">
                   <p className="font-semibold text-blue-900 text-md">
                     Dies ist eine Vorabsicht, wie deine Anzeige anderen Nutzern
@@ -556,10 +677,10 @@ export default function Inserieren({
                       id="email"
                       className="w-full !text-3xl font-bold text-center outline-none focus:border-blue-300/50 text-orange-500 bg-white border-blue-300/50 rounded-md shadow-sm placeholder:text-orange-500 placeholder:font-bold placeholder:text-2xl focus:ring-0 select-none"
                       placeholder="Der Name deiner Kleinanzeige!"
-                      /*  value={priceInput}
+                      value={titleInput}
                       onChange={(event) => {
-                        setPriceInput(event.target.value);
-                      }} */
+                        setTitleInput(event.target.value);
+                      }}
                     />
                   </h2>
                   <div className="px-6 text-center bg-gray-50 lg:flex-shrink-0 lg:flex lg:flex-col lg:justify-center">
@@ -852,7 +973,7 @@ export default function Inserieren({
                       <dt className="text-sm font-medium text-gray-500">
                         Kategorie
                       </dt>
-                      <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                      <dd className="mt-1 text-lg font-medium text-gray-900 sm:mt-0 sm:col-span-2">
                         <Combobox
                           as="div"
                           value={selectedCategory}
@@ -863,15 +984,13 @@ export default function Inserieren({
                           </Combobox.Label>
                           <div className="relative mt-1">
                             <Combobox.Input
-                              className="w-full py-2 pl-3 pr-10 text-gray-600 bg-white border border-white rounded-md shadow-sm focus:outline-none focus:ring-transparent sm:text-sm"
+                              className="w-full py-2 pl-3 pr-10 text-gray-60 border border-white rounded-md shadow-sm focus:outline-none focus:ring-transparent sm:text-sm !text-lg font-bold text-white !bg-[#2f70e9] cursor-pointer"
                               onChange={(event) => setQuery(event.target.value)}
-                              displayValue={(category) =>
-                                category?.categoryName
-                              }
+                              displayValue={(category) => category?.name}
                             />
                             <Combobox.Button className="absolute inset-y-0 right-0 flex items-center px-2 rounded-r-md focus:outline-none">
                               <SelectorIcon
-                                className="w-5 h-5 text-gray-400"
+                                className="w-5 h-5 text-white"
                                 aria-hidden="true"
                               />
                             </Combobox.Button>
@@ -880,7 +999,7 @@ export default function Inserieren({
                               <Combobox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                 {filteredCategories.map((category) => (
                                   <Combobox.Option
-                                    key={category.id}
+                                    key={category.category_id}
                                     value={category}
                                     className={({ active }) =>
                                       classNames(
@@ -899,7 +1018,7 @@ export default function Inserieren({
                                             selected && "font-semibold"
                                           )}
                                         >
-                                          {category.categoryName}
+                                          {category.name}
                                         </span>
 
                                         {selected && (
@@ -928,7 +1047,7 @@ export default function Inserieren({
                       </dd>
                     </div>
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                      <dt className="text-sm text-gray-500 font-base">
+                      <dt className="text-sm font-medium text-gray-500">
                         Subkategorie
                       </dt>
                       <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
@@ -938,20 +1057,18 @@ export default function Inserieren({
                           onChange={setSelectedSubcategory}
                           className={`${!selectedCategory ? "invisible" : ""}`}
                         >
-                          <Combobox.Label className="block text-sm font-medium text-gray-700">
+                          <Combobox.Label className="block text-sm text-gray-700 font-base">
                             Subkategorie auswählen
                           </Combobox.Label>
                           <div className="relative mt-1">
                             <Combobox.Input
-                              className="w-full py-2 pl-3 pr-10 text-gray-600 bg-white border border-white rounded-md shadow-sm focus:outline-none focus:ring-transparent sm:text-sm"
+                              className="w-full py-2 pl-3 pr-10 text-gray-600 bg-white border border-white rounded-md shadow-sm focus:outline-none focus:ring-transparent sm:text-sm !text-lg font-bold text-white !bg-[#2f70e9] cursor-pointer"
                               onChange={(event) => setQuery(event.target.value)}
-                              displayValue={(subcategory) =>
-                                subcategory?.subcategoryName
-                              }
+                              displayValue={(subcategory) => subcategory?.name}
                             />
                             <Combobox.Button className="absolute inset-y-0 right-0 flex items-center px-2 rounded-r-md focus:outline-none">
                               <SelectorIcon
-                                className="w-5 h-5 text-gray-400"
+                                className="w-5 h-5 text-white"
                                 aria-hidden="true"
                               />
                             </Combobox.Button>
@@ -960,7 +1077,7 @@ export default function Inserieren({
                               <Combobox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                 {filteredSubcategories.map((subcategory) => (
                                   <Combobox.Option
-                                    key={subcategory.id}
+                                    key={subcategory.subcategory_id}
                                     value={subcategory}
                                     className={({ active }) =>
                                       classNames(
@@ -979,7 +1096,7 @@ export default function Inserieren({
                                             selected && "font-semibold"
                                           )}
                                         >
-                                          {subcategory.subcategoryName}
+                                          {subcategory.name}
                                         </span>
 
                                         {selected && (
@@ -1092,77 +1209,98 @@ export default function Inserieren({
                         Adresse
                       </dt>
                       <dd className="flex justify-between mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        <span
+                        <div
                           className={`${
-                            addressPublic ? "blur-sm select-none" : ""
+                            addressPublic
+                              ? "blur-sm !select-none cursor-default"
+                              : ""
                           } mr-2`}
                         >
-                          Landstraße 1, 12345 Berlin
-                        </span>
-                        <span>
-                          <Switch
-                            checked={addressPublic}
-                            onChange={setAddressPublic}
-                            className={classNames(
-                              addressPublic ? "bg-[#2f70e9]" : "bg-gray-200",
-                              "relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-0 focus:ring-offset-0 focus:ring-transparent"
-                            )}
-                          >
-                            <span className="sr-only">Use setting</span>
-                            <span
+                          <input
+                            type="text"
+                            name="locationInput"
+                            id="locationInput"
+                            disabled={addressPublic ? true : false}
+                            className={`${
+                              addressPublic ? "!select-none" : ""
+                            } block w-full border-gray-300 placeholder:text-white bg-[#2f70e9] text-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                            placeholder="Straße, Hausnummer, PLZ, Ort"
+                            value={locationInput}
+                            onChange={(event) =>
+                              setLocationInput(event.target.value)
+                            }
+                          />
+                        </div>
+                        {locationInput && (
+                          <span className="mt-2">
+                            <Switch
+                              checked={addressPublic}
+                              onChange={(event) => {
+                                if (locationInput) {
+                                  setAddressPublic(event);
+                                }
+                              }}
                               className={classNames(
-                                addressPublic
-                                  ? "translate-x-5"
-                                  : "translate-x-0",
-                                "pointer-events-none relative inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"
+                                addressPublic ? "bg-[#2f70e9]" : "bg-gray-200",
+                                "relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-0 focus:ring-offset-0 focus:ring-transparent"
                               )}
                             >
+                              <span className="sr-only">Use setting</span>
                               <span
                                 className={classNames(
                                   addressPublic
-                                    ? "opacity-0 ease-out duration-100"
-                                    : "opacity-100 ease-in duration-200",
-                                  "absolute inset-0 h-full w-full flex items-center justify-center transition-opacity"
+                                    ? "translate-x-5"
+                                    : "translate-x-0",
+                                  "pointer-events-none relative inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"
                                 )}
-                                aria-hidden="true"
                               >
-                                <svg
-                                  className="w-3 h-3 text-gray-400"
-                                  fill="none"
-                                  viewBox="0 0 12 12"
+                                <span
+                                  className={classNames(
+                                    addressPublic
+                                      ? "opacity-0 ease-out duration-100"
+                                      : "opacity-100 ease-in duration-200",
+                                    "absolute inset-0 h-full w-full flex items-center justify-center transition-opacity"
+                                  )}
+                                  aria-hidden="true"
                                 >
-                                  <path
-                                    d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2"
-                                    stroke="currentColor"
-                                    strokeWidth={2}
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                  />
-                                </svg>
-                              </span>
-                              <span
-                                className={classNames(
-                                  addressPublic
-                                    ? "opacity-100 ease-in duration-200"
-                                    : "opacity-0 ease-out duration-100",
-                                  "absolute inset-0 h-full w-full flex items-center justify-center transition-opacity"
-                                )}
-                                aria-hidden="true"
-                              >
-                                <svg
-                                  className="w-3 h-3 text-indigo-600"
-                                  fill="currentColor"
-                                  viewBox="0 0 12 12"
+                                  <svg
+                                    className="w-3 h-3 text-gray-400"
+                                    fill="none"
+                                    viewBox="0 0 12 12"
+                                  >
+                                    <path
+                                      d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2"
+                                      stroke="currentColor"
+                                      strokeWidth={2}
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    />
+                                  </svg>
+                                </span>
+                                <span
+                                  className={classNames(
+                                    addressPublic
+                                      ? "opacity-100 ease-in duration-200"
+                                      : "opacity-0 ease-out duration-100",
+                                    "absolute inset-0 h-full w-full flex items-center justify-center transition-opacity"
+                                  )}
+                                  aria-hidden="true"
                                 >
-                                  <path d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-                                </svg>
+                                  <svg
+                                    className="w-3 h-3 text-indigo-600"
+                                    fill="currentColor"
+                                    viewBox="0 0 12 12"
+                                  >
+                                    <path d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
+                                  </svg>
+                                </span>
                               </span>
+                            </Switch>
+                            <span className="ml-2 font-bold text-[#2f70e9] text-base select-none">
+                              {addressPublic ? "Privat" : "Öffentlich"}
                             </span>
-                          </Switch>
-                          <span className="ml-2 font-bold text-[#2f70e9] text-base select-none">
-                            {addressPublic ? "Privat" : "Öffentlich"}
                           </span>
-                        </span>
+                        )}
                       </dd>
                     </div>
                     <div className="h-full py-5 md:px-6">
@@ -1176,8 +1314,10 @@ export default function Inserieren({
                           name="comment"
                           id="comment"
                           className="block w-full mt-1 font-semibold text-gray-700 rounded-md cursor-default resize-none sm:text-sm focus:border-gray-700 focus:ring-0 h-96"
-                          value={
-                            "Erkläre den deinem zukünftigen Käufer genau, was deinen Artikel ausmacht."
+                          placeholder="Erkläre den deinem zukünftigen Käufer genau, was deinen Artikel ausmacht."
+                          value={descriptionInput}
+                          onChange={(event) =>
+                            setDescriptionInput(event.target.value)
                           }
                         />
                       </div>
@@ -1187,36 +1327,40 @@ export default function Inserieren({
               </div>
             </div>
             <div>
-              <div className="w-3/5 p-4 mx-auto my-8 rounded-md select-none bg-yellow-300/50">
-                <div className="flex items-start">
-                  <div className="flex-shrink-0">
-                    <ExclamationIcon
-                      className="w-6 h-6 text-yellow-400"
-                      aria-hidden="true"
-                    />
-                  </div>
-                  <div className="flex-1 ml-3 md:flex md:justify-between">
-                    <p className="font-semibold text-blue-900 text-md">
-                      <span className="font-bold text-center">
-                        ARTIKELVERIFIKATION
-                      </span>
-                      <br />
-                      Folgend möchten wir verifizieren, dass du den angebotenen
-                      Artikel wirklich besitzt. Dieser Check hilft auch dir, um
-                      authentische Angebote zu finden. Bitte drucke folgenden
-                      QR-Code aus oder legen ein Gerät auf welchem dieser
-                      angezeigt wird neben den Artikel und lade ein Bild davon
-                      hoch. Wir überprüfen die Korrektheit deines QR-Codes
-                      maschinell und ggf. manuell die Sichtbarkeit deines
-                      Artikels neben diesem. Bietest du eine Dienstleistung an,
-                      so lege QR-Code neben deine Flyer oder Werbung. Der
-                      QR-Code ist eine Stunde gültig.
-                    </p>
+              {validationSuccessToken ? (
+                ""
+              ) : (
+                <div className="w-3/5 p-4 mx-auto my-8 rounded-md select-none bg-yellow-300/50">
+                  <div className="flex items-start">
+                    <div className="flex-shrink-0">
+                      <ExclamationIcon
+                        className="w-6 h-6 text-yellow-400"
+                        aria-hidden="true"
+                      />
+                    </div>
+                    <div className="flex-1 ml-3 md:flex md:justify-between">
+                      <p className="font-semibold text-blue-900 text-md">
+                        <span className="font-bold text-center">
+                          ARTIKELVERIFIKATION
+                        </span>
+                        <br />
+                        Folgend möchten wir verifizieren, dass du den
+                        angebotenen Artikel wirklich besitzt. Dieser Check hilft
+                        auch dir, um authentische Angebote zu finden. Bitte
+                        drucke folgenden QR-Code aus oder legen ein Gerät auf
+                        welchem dieser angezeigt wird neben den Artikel und lade
+                        ein Bild davon hoch. Wir überprüfen die Korrektheit
+                        deines QR-Codes maschinell und ggf. manuell die
+                        Sichtbarkeit deines Artikels neben diesem. Bietest du
+                        eine Dienstleistung an, so lege QR-Code neben deine
+                        Flyer oder Werbung. Der QR-Code ist eine Stunde gültig.
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
               {validationSuccessToken ? (
-                <div className="mb-8 select-none">
+                <div className="my-8 select-none">
                   <div className="flex justify-center">
                     <img
                       src="/success-badge.png"
@@ -1235,7 +1379,7 @@ export default function Inserieren({
                   </div>
                 </div>
               ) : (
-                <div className="flex justify-center">
+                <div className="flex justify-center mb-4">
                   <div className="p-2 mr-4 border-2 rounded-lg border-orange-500/50">
                     {/* <div className="text-center">Verifikations-QR-Code</div> */}
                     {/* <img
@@ -1249,6 +1393,7 @@ export default function Inserieren({
                     }}
                     className={`rounded-xl`}
                   /> */}
+                    {console.log("verificationQRCode", verificationQRCode)}
                     <div ref={componentRef}>
                       <QRCodeCanvas
                         value={verificationQRCode}
@@ -1371,9 +1516,61 @@ export default function Inserieren({
               )}
             </div>
 
-            <div className="flex justify-center"></div>
-            <div className="flex justify-center">
-              <button className="w-3/5 flex flex-col items-center mx-6 text-sm font-medium bg-[#2f70e9] border border-transparent rounded-lg shadow-sm hover:bg-[#2962cd] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent mt-4 text-orange-400 hover:text-orange-500 py-4">
+            {(adImages.length < 3 ||
+              !titleInput ||
+              !priceInput ||
+              !selectedPriceType ||
+              !descriptionInput ||
+              !validationSuccessToken) && (
+              <div className="flex justify-center">
+                <ul className="w-3/5 p-4 mt-8 text-white list-disc rounded-lg bg-red-700/75">
+                  Es fehlen noch folgende Dinge, um die Anzeige zu
+                  veröffentlichen:
+                  {adImages.length < 3 && (
+                    <li className="ml-4">
+                      Mindestens 3 hochwertige Fotos deines Artikels
+                    </li>
+                  )}
+                  {!selectedCategory > 0 && (
+                    <li className="ml-4">
+                      Mindestens eine Kategorie der Anzeige ausgewählt
+                    </li>
+                  )}
+                  {!titleInput && <li className="ml-4">Name des Inserates</li>}
+                  {!priceInput && <li className="ml-4">Preis</li>}
+                  {!selectedPriceType && (
+                    <li className="ml-4">Preistyp (Fix oder VB)</li>
+                  )}
+                  {!locationInput && (
+                    <li className="ml-4">
+                      Die Angabe der Adresse für das Inserat
+                    </li>
+                  )}
+                  {!descriptionInput && (
+                    <li className="ml-4">
+                      Eine umfassende Beschreibung deines Artikels
+                    </li>
+                  )}
+                  {!validationSuccessToken && (
+                    <li className="ml-4">Eine Artikelverifikation</li>
+                  )}
+                </ul>
+              </div>
+            )}
+            <div
+              className={`flex justify-center ${
+                adImages.length < 3 ||
+                !titleInput ||
+                !priceInput ||
+                !selectedPriceType ||
+                !locationInput ||
+                !descriptionInput ||
+                !validationSuccessToken
+                  ? "blur-[2px] select-none !cursor-default"
+                  : "cursor-pointer hover:bg-[#2962cd] hover:text-orange-500"
+              }`}
+            >
+              <button className="w-3/5 flex flex-col items-center mx-6 text-sm font-medium bg-[#2f70e9] border border-transparent rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent mt-4 text-orange-400 py-4">
                 <svg
                   id="Layer_1"
                   enableBackground="new 0 0 512 512"
@@ -1389,7 +1586,38 @@ export default function Inserieren({
                     fill="currentColor"
                   />
                 </svg>
-                <div className="text-xl font-extrabold !text-white">
+
+                <div
+                  onClick={() => {
+                    if (
+                      adImages.length >= 3 &&
+                      titleInput &&
+                      priceInput &&
+                      selectedPriceType &&
+                      selectedCategory &&
+                      locationInput &&
+                      descriptionInput &&
+                      validationSuccessToken
+                    ) {
+                      addAdvertisement(
+                        user,
+                        titleInput,
+                        adImages,
+                        priceInput,
+                        selectedPriceType,
+                        selectedCategory,
+                        selectedSubcategory,
+                        locationInput,
+                        descriptionInput,
+                        validationSuccessToken,
+                        namePublic,
+                        addressPublic,
+                        phoneNumberPublic
+                      );
+                    }
+                  }}
+                  className="text-xl font-extrabold !text-white"
+                >
                   Anzeige Veröffentlichen
                 </div>
               </button>
