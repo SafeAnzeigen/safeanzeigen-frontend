@@ -27,6 +27,13 @@ Router.events.on("routeChangeError", progress.finish);
 
 const publicPages = [
   "/",
+  "/faq",
+  "/impressum",
+  "/datenschutz",
+  "/kontakt",
+  "/safeanzeigen",
+  "/suche",
+  "/anzeige/[id]",
 ]; /* TODO: ADD MORE PAGES WITHOUT AUTHENTICATION AND DEFINE WHERE AUTH IS NEEDED TO CONTINUE */
 
 function MyApp({ Component, pageProps }) {
