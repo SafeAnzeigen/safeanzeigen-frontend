@@ -6,6 +6,7 @@ import RegularAdCard from "../components/Startpage/RegularAdCard";
 import Footer from "../components/Footer/Footer";
 import CookieBanner from "../components/GeneralComponents/Cookies/CookieBanner";
 import { useAuth, useUser } from "@clerk/clerk-react";
+import AlertConfirmationModal from "../components/GeneralComponents/Modals/AlertConfirmationModal";
 
 export default function Home() {
   const [verticalScrollIsActive, setVerticalScrollIsActive] = useState(true);

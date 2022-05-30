@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
+import Link from "next/head";
 import { useAuth, useUser } from "@clerk/clerk-react";
 
 import Footer from "../components/Footer/Footer";
@@ -101,7 +102,7 @@ export default function Favoriten() {
                 Deine Favoriten
               </h2>
             </div>
-            <div class="container mx-auto select-none w-64 md:w-full lg:w-full">
+            <div className="container w-64 mx-auto select-none md:w-full lg:w-full">
               {favoriteAdvertisements && favoriteAdvertisements.length < 1 ? (
                 <div>
                   <div className="flex justify-center opacity-50">

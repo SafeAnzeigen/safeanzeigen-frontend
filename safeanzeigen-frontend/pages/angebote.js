@@ -68,7 +68,7 @@ export default function Angebote() {
                 Deine Angebote
               </h2>
             </div>
-            <div class="container mx-auto select-none w-64 md:w-full lg:w-full">
+            <div className="container w-64 mx-auto select-none md:w-full lg:w-full">
               {offeredAdvertisements && offeredAdvertisements.length < 1 ? (
                 <div>
                   <div className="flex justify-center opacity-50">

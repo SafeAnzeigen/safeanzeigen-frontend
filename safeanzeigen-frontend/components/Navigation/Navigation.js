@@ -263,8 +263,8 @@ function Navigation() {
                 <SignedOut>
                   {isUserRedirectToSignInActive ? <RedirectToSignIn /> : ""}
                   <div className="relative hidden lg:flex lg:items-center lg:justify-end xl:col-span-12 ">
-                    <span class="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-orange-500 opacity-75 -top-0.5 -right-0.5"></span>
-                    <span class="absolute inline-flex rounded-full h-3 w-3 -top-0.5 -right-0.5 bg-orange-500"></span>
+                    <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-orange-500 opacity-75 -top-0.5 -right-0.5"></span>
+                    <span className="absolute inline-flex rounded-full h-3 w-3 -top-0.5 -right-0.5 bg-orange-500"></span>
                     <button
                       onClick={() =>
                         setIsUserRedirectToSignInActivePayNowSelected(true)
