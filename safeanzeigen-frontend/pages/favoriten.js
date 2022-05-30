@@ -50,6 +50,7 @@ export default function Favoriten() {
     console.log("REMOVE TRIGGER2", userId);
     console.log("REMOVE TRIGGER3", getToken);
     console.log("user!", user); */
+    /* test */
     handleCloseModal();
   };
 
