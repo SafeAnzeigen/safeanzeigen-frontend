@@ -4,6 +4,7 @@ import Navigation from "../components/Navigation/Navigation";
 import CategoryCard from "../components/Startpage/CategoryCard";
 import RegularAdCard from "../components/Startpage/RegularAdCard";
 import Footer from "../components/Footer/Footer";
+import CookieBanner from "../components/GeneralComponents/Cookies/CookieBanner";
 
 export default function Home() {
   const [verticalScrollIsActive, setVerticalScrollIsActive] = useState(true);
@@ -127,7 +128,7 @@ export default function Home() {
     event.currentTarget.scrollLeft += event.deltaY + event.deltaX;
     /* window.scrollTo(0, 0);
     document.body.style.overflow = "hidden"; */
-    event.preventDefault();
+    /* event.preventDefault(); */
   }
 
   function preventVerticalScroll() {
@@ -168,6 +169,8 @@ export default function Home() {
       {/* Main Page */}
       {/* Section 1 */}
       {/* TODO: CHECK IF VERTICAL SCROLL SHOULD BE TRANSFORMED TO HORIZONTAL SCROLL https://stackoverflow.com/questions/24639103/changing-vertical-scroll-to-horizontal*/}
+      <CookieBanner />
+
       <section className="mx-20">
         <div>
           <h2 className="pt-8 pb-4 text-3xl font-semibold text-gray-600 select-none">

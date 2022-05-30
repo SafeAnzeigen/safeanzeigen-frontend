@@ -7,11 +7,6 @@ import Head from "next/head";
 import Footer from "../../components/Footer/Footer";
 import Navigation from "../../components/Navigation/Navigation";
 
-const pages = [
-  { name: "Projects", href: "#", current: false },
-  { name: "Project Nero", href: "#", current: true },
-];
-
 let sliderCounter = 0;
 
 export default function Anzeige({
