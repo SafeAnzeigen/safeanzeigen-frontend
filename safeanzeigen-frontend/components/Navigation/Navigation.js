@@ -296,14 +296,14 @@ function Navigation() {
                     Dein Profil
                   </p>
                 </Link>
-                <Link href="/">
-                  <p
-                    onClick={() => signOut()}
-                    className="block px-3 py-2 text-base font-medium text-gray-900 rounded-md cursor-pointer hover:bg-gray-100 bg-gray-50"
-                  >
-                    Ausloggen
-                  </p>
-                </Link>
+                <p
+                  onClick={() =>
+                    setIsUserRedirectToSignInActivePayNowSelected(true)
+                  }
+                  className="block px-3 py-2 text-base font-medium text-gray-900 rounded-md cursor-pointer hover:bg-gray-100 bg-gray-50"
+                >
+                  Registieren
+                </p>
               </div>
               <div className="pt-4 pb-3 border-t border-gray-200">
                 <div className="flex items-center max-w-3xl px-4 mx-auto sm:px-6">

@@ -35,9 +35,9 @@ export default function Favoriten() {
       .then((data) => {
         setIsfetchingData(false);
         console.log("DATA GET FAVORITES", data);
-        /* if (data?.advertisements) {
-          setOfferedAdvertisements([...data?.advertisements]);
-        } */
+        if (data?.favorites) {
+          setFavoriteAdvertisements(data?.favorites);
+        }
       })
       .catch((error) => {
         setIsfetchingData(false);
