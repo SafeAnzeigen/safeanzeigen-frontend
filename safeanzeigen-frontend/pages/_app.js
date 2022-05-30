@@ -27,11 +27,20 @@ Router.events.on("routeChangeError", progress.finish);
 
 const publicPages = [
   "/",
+  "/faq",
+  "/impressum",
+  "/datenschutz",
+  "/kontakt",
+  "/safeanzeigen",
+  "/suche",
+  "/anzeige/[aid]",
 ]; /* TODO: ADD MORE PAGES WITHOUT AUTHENTICATION AND DEFINE WHERE AUTH IS NEEDED TO CONTINUE */
 
 function MyApp({ Component, pageProps }) {
   const { pathname } = useRouter(); /* TODO: REFACTOR router.pathname? */
   const isPublicPage = publicPages.includes(pathname);
+  console.log("THIS IS MY PATHNAME", pathname);
+  console.log("THIS IS MY isPublicPage", isPublicPage);
 
   return (
     <ClerkProvider {...pageProps}>

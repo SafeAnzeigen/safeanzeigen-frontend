@@ -138,6 +138,7 @@ export default function Inserieren({
         location_zip: "private",
         location_county: "private",
         location_country: "private",
+        view_count: 0,
       }),
     })
       .then((response) => response.json())
@@ -239,6 +240,7 @@ export default function Inserieren({
     componentRef?.current?.childNodes[0].toBlob(function (blob) {
       const item = new ClipboardItem({ "image/png": blob });
       navigator.clipboard.write([item]);
+      alert("Das Bild des QR-Codes wurde zum Versenden für dich kopiert.");
     });
   };
 
@@ -979,7 +981,7 @@ export default function Inserieren({
                           value={selectedCategory}
                           onChange={setSelectedCategory}
                         >
-                          <Combobox.Label className="block text-sm text-gray-700 font-base">
+                          <Combobox.Label className="block text-sm font-normal text-gray-700">
                             Kategorie auswählen
                           </Combobox.Label>
                           <div className="relative mt-1">
@@ -1062,7 +1064,7 @@ export default function Inserieren({
                           </Combobox.Label>
                           <div className="relative mt-1">
                             <Combobox.Input
-                              className="w-full py-2 pl-3 pr-10 text-gray-600 bg-white border border-white rounded-md shadow-sm focus:outline-none focus:ring-transparent sm:text-sm !text-lg font-bold text-white !bg-[#2f70e9] cursor-pointer"
+                              className="w-full py-2 pl-3 pr-10 border border-white rounded-md shadow-sm focus:outline-none focus:ring-transparent sm:text-sm !text-lg font-bold text-white !bg-[#2f70e9] cursor-pointer"
                               onChange={(event) => setQuery(event.target.value)}
                               displayValue={(subcategory) => subcategory?.name}
                             />

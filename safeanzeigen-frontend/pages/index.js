@@ -1,13 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Head from "next/head";
 import Navigation from "../components/Navigation/Navigation";
 import CategoryCard from "../components/Startpage/CategoryCard";
 import RegularAdCard from "../components/Startpage/RegularAdCard";
 import Footer from "../components/Footer/Footer";
 import CookieBanner from "../components/GeneralComponents/Cookies/CookieBanner";
+import { useAuth, useUser } from "@clerk/clerk-react";
+import AlertConfirmationModal from "../components/GeneralComponents/Modals/AlertConfirmationModal";
 
 export default function Home() {
   const [verticalScrollIsActive, setVerticalScrollIsActive] = useState(true);
+  const [offeredAdvertisements, setOfferedAdvertisements] = useState([]);
+  const [showDislikeConfirmationModal, setShowDislikeConfirmationModal] =
+    useState(false);
+  const [isfetchingData, setIsfetchingData] = useState(false);
+  const clerkAuth = useAuth();
+  const { user } = useUser();
 
   const newestAds = [
     {
@@ -149,6 +157,63 @@ export default function Home() {
     }
   }
 
+  const retrieveUserOffers = async (user) => {
+    console.log("retrieveUserOffers TRIGGERED", user);
+    setIsfetchingData(true);
+    fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+        `/advertisements/clerkuserid/${user?.id}`,
+      {
+        method: "get",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `${await clerkAuth.getToken()}`,
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        setIsfetchingData(false);
+        console.log("DATA GET OFFERS", data);
+        if (data?.advertisements) {
+          setOfferedAdvertisements([...data?.advertisements]);
+        }
+      })
+      .catch((error) => {
+        setIsfetchingData(false);
+        console.log("ERROR DATA GET OFFERS", error);
+      });
+  };
+
+  useEffect(() => {}, []);
+
+  const handleChangeOfLikeStatus = (adId, currentLikeStatus) => {
+    if (currentLikeStatus) {
+      setSelectedAdId(adId);
+      setShowDislikeConfirmationModal(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setSelectedAdId(null);
+    setShowDislikeConfirmationModal(false);
+  };
+
+  const removeLikeOfAdForUser = () => {
+    /*  console.log("REMOVE TRIGGER", selectedAdId);
+    console.log("REMOVE TRIGGER2", userId);
+    console.log("REMOVE TRIGGER3", getToken);
+    console.log("user!", user); */
+    handleCloseModal();
+  };
+
+  useEffect(() => {
+    if (user) {
+      retrieveUserOffers(user);
+    }
+  }, [user]);
+
   /* TODO: Detect if user scrolled to horizontal end then enable vertical scroll again*/
 
   return (
@@ -164,7 +229,6 @@ export default function Home() {
         <link rel="manifest" href="/manifest.webmanifest" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png"></link>
       </Head>
-
       <Navigation />
       {/* Main Page */}
       {/* Section 1 */}
@@ -172,6 +236,45 @@ export default function Home() {
       <CookieBanner />
 
       <section className="mx-20">
+        {showDislikeConfirmationModal && (
+          <AlertConfirmationModal
+            title="Möchtest du die Anzeige wirklich aus deinen Favoriten entfernen?"
+            subtitle="Die Anzeige wird nicht mehr unter den Favoriten für dich aufgelistet sein."
+            alertButtonConfirmationText="Entfernen"
+            showDislikeConfirmationModal={showDislikeConfirmationModal}
+            callbackCloseModal={handleCloseModal}
+            callbackConfirmAction={removeLikeOfAdForUser}
+          />
+        )}
+        <div>
+          <h2 className="pt-8 pb-4 text-3xl font-semibold text-gray-600 select-none">
+            Angebote aus DB
+          </h2>
+          <div
+            className="flex p-4 -mt-2 -ml-4 space-x-5 overflow-scroll scrollbar-hide"
+            onWheel={(event) => transformScroll(event, "sideScroll")}
+            onMouseOver={() => preventVerticalScroll()}
+            onMouseLeave={() => enableVerticalScroll()}
+          >
+            {offeredAdvertisements?.map((element, index) => (
+              <RegularAdCard
+                key={index}
+                adId={element.advertisement_id}
+                title={element.title}
+                price={element.price}
+                priceType={element.price_type}
+                articleIsVerified={element.is_verified}
+                sellerHasManySales={false}
+                imageUrl={element.article_image_1}
+                callbackCloseModal={handleCloseModal}
+                callbackConfirmAction={removeLikeOfAdForUser}
+                alertButtonConfirmationText="Entfernen"
+                showDislikeConfirmationModal={showDislikeConfirmationModal}
+                callbackSetLikeStatus={handleChangeOfLikeStatus}
+              />
+            ))}
+          </div>
+        </div>
         <div>
           <h2 className="pt-8 pb-4 text-3xl font-semibold text-gray-600 select-none">
             Angebote in deiner Nähe

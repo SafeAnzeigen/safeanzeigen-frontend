@@ -67,9 +67,9 @@ function Navigation() {
             .includes(query.toLowerCase());
         });
 
-  if (!isLoaded || !userId || !isSignedIn) {
+  /* if (!isLoaded || !userId || !isSignedIn) {
     return null;
-  }
+  } */
 
   /*   if (isSignedIn && user) {
     console.log("CHECKING FOR MINIMUM PROFILE DATA", user);
@@ -262,12 +262,14 @@ function Navigation() {
 
                 <SignedOut>
                   {isUserRedirectToSignInActive ? <RedirectToSignIn /> : ""}
-                  <div className="hidden lg:flex lg:items-center lg:justify-end xl:col-span-12">
+                  <div className="relative hidden lg:flex lg:items-center lg:justify-end xl:col-span-12 ">
+                    <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-orange-500 opacity-75 -top-0.5 -right-0.5"></span>
+                    <span className="absolute inline-flex rounded-full h-3 w-3 -top-0.5 -right-0.5 bg-orange-500"></span>
                     <button
                       onClick={() =>
                         setIsUserRedirectToSignInActivePayNowSelected(true)
                       }
-                      className="inline-flex items-center px-4 py-2 ml-6 text-sm font-medium text-white bg-[#2f70e9] border border-transparent rounded-md shadow-sm hover:bg-[#2962cd] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent"
+                      className="inline-flex items-center px-4 py-2 ml-6 text-medium font-medium text-white bg-[#2f70e9] border border-transparent rounded-md shadow-sm hover:bg-[#2962cd] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent"
                     >
                       Jetzt Loslegen!
                     </button>
