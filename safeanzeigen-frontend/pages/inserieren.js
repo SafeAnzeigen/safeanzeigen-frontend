@@ -600,7 +600,7 @@ export default function Inserieren({
                                   id="Line"
                                   className="w-6 h-6"
                                   fill="currentColor"
-                                  enable-background="new 0 0 32 32"
+                                  enableBackground="new 0 0 32 32"
                                   height="512"
                                   viewBox="0 0 32 32"
                                   width="512"
