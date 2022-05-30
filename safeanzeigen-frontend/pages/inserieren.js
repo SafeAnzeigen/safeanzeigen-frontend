@@ -138,6 +138,7 @@ export default function Inserieren({
         location_zip: "private",
         location_county: "private",
         location_country: "private",
+        view_count: 0,
       }),
     })
       .then((response) => response.json())
@@ -239,6 +240,7 @@ export default function Inserieren({
     componentRef?.current?.childNodes[0].toBlob(function (blob) {
       const item = new ClipboardItem({ "image/png": blob });
       navigator.clipboard.write([item]);
+      alert("Das Bild des QR-Codes wurde zum Versenden für dich kopiert.");
     });
   };
 

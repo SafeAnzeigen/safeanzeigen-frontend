@@ -80,8 +80,9 @@ export default function Angebote() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-                  {offeredAdvertisements.map((advertisement) => (
+                  {offeredAdvertisements.map((advertisement, index) => (
                     <div
+                      key={index}
                       className="flex flex-col justify-center p-4 text-6xl rounded-xl"
                       style={{ maxWidth: "16rem !important" }}
                     >

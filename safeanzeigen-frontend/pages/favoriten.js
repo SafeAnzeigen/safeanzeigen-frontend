@@ -20,7 +20,7 @@ export default function Favoriten() {
     setIsfetchingData(true);
     fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
-        `/advertisements/clerkuserid/${user?.id}`,
+        `/favorites/clerkuserid/${user?.id}`,
       {
         method: "get",
         headers: {
@@ -33,14 +33,14 @@ export default function Favoriten() {
       .then((response) => response.json())
       .then((data) => {
         setIsfetchingData(false);
-        console.log("DATA GET OFFERS", data);
-        if (data?.advertisements) {
+        console.log("DATA GET FAVORITES", data);
+        /* if (data?.advertisements) {
           setOfferedAdvertisements([...data?.advertisements]);
-        }
+        } */
       })
       .catch((error) => {
         setIsfetchingData(false);
-        console.log("ERROR DATA GET OFFERS", error);
+        console.log("ERROR DATA GET FAVORITES", error);
       });
   };
 
@@ -113,8 +113,9 @@ export default function Favoriten() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-                  {favoriteAdvertisements.map((advertisement) => (
+                  {favoriteAdvertisements.map((advertisement, index) => (
                     <div
+                      key={index}
                       className="flex flex-col justify-center p-4 text-6xl rounded-xl"
                       style={{ maxWidth: "16rem !important" }}
                     >
