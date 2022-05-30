@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-
+import { useAuth, useUser } from "@clerk/clerk-react";
 import { HomeIcon } from "@heroicons/react/solid";
+
 import Head from "next/head";
 import Footer from "../../components/Footer/Footer";
 import Navigation from "../../components/Navigation/Navigation";
@@ -24,6 +25,9 @@ export default function Anzeige({
   adID,
 }) {
   const { asPath } = useRouter();
+  const { user } = useUser();
+  const router = useRouter();
+  const { aid } = router.query;
   const [carouselIndex, setCarouselIndex] = useState(0);
   const carouselRef = useRef();
   const adImages = [
@@ -31,6 +35,35 @@ export default function Anzeige({
     "https://images.unsplash.com/photo-1602143407151-7111542de6e8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1287",
     "https://images.unsplash.com/photo-1491637639811-60e2756cc1c7?ixlib=rb-1.2.1&raw_url=true&q=80&fm=jpg&crop=entropy&cs=tinysrgb&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1328",
   ];
+
+  const retrieveSpecificAdvertisement = async (user, adid) => {
+    setIsfetchingData(true);
+    console.log("id xxxx", adid);
+    /* fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+        `/advertisements/clerkuserid/${user?.id}`,
+      {
+        method: "get",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `${await clerkAuth.getToken()}`,
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        setIsfetchingData(false);
+        console.log("DATA GET OFFERS", data);
+        if (data?.advertisements) {
+          setOfferedAdvertisements([...data?.advertisements]);
+        }
+      })
+      .catch((error) => {
+        setIsfetchingData(false);
+        console.log("ERROR DATA GET OFFERS", error);
+      }); */
+  };
 
   const handleOnPreviousImageClick = () => {
     sliderCounter = (sliderCounter + 1) % adImages.length;
@@ -52,6 +85,7 @@ export default function Anzeige({
   useEffect(() => {
     window.onscroll = function () {};
     carouselRef.current.addEventListener("animationend", removeAnimation);
+    retrieveSpecificAdvertisement(user, aid);
   }, []);
 
   const copyToClipboard = async (textToCopy) => {

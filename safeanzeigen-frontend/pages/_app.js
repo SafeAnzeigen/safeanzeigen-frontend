@@ -39,6 +39,8 @@ const publicPages = [
 function MyApp({ Component, pageProps }) {
   const { pathname } = useRouter(); /* TODO: REFACTOR router.pathname? */
   const isPublicPage = publicPages.includes(pathname);
+  console.log("THIS IS MY PATHNAME", pathname);
+  console.log("THIS IS MY isPublicPage", isPublicPage);
 
   return (
     <ClerkProvider {...pageProps}>

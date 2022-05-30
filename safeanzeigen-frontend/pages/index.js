@@ -164,7 +164,7 @@ export default function Home() {
         <link rel="manifest" href="/manifest.webmanifest" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png"></link>
       </Head>
-
+      {console.log(" I AM RENDERING THIS TO LOGGED OUT USER")}
       <Navigation />
       {/* Main Page */}
       {/* Section 1 */}

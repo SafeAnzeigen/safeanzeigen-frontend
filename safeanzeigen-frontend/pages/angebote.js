@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
+import Link from "next/link";
 import { useAuth, useUser } from "@clerk/clerk-react";
 
 import Footer from "../components/Footer/Footer";
 import Navigation from "../components/Navigation/Navigation";
 import RegularAdCard from "../components/Startpage/RegularAdCard";
-import AlertConfirmationModal from "../components/GeneralComponents/Modals/AlertConfirmationModal";
-import Link from "next/link";
 
 export default function Angebote() {
   const [offeredAdvertisements, setOfferedAdvertisements] = useState([]);
