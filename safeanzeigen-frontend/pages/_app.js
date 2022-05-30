@@ -33,7 +33,7 @@ const publicPages = [
   "/kontakt",
   "/safeanzeigen",
   "/suche",
-  "/anzeige/[id]",
+  "/anzeige/[aid]",
 ]; /* TODO: ADD MORE PAGES WITHOUT AUTHENTICATION AND DEFINE WHERE AUTH IS NEEDED TO CONTINUE */
 
 function MyApp({ Component, pageProps }) {
