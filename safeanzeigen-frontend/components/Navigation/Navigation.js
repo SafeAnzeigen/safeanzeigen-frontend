@@ -9,8 +9,19 @@ import {
   useAuth,
   useUser,
 } from "@clerk/clerk-react";
-import { SearchIcon, CheckIcon, SelectorIcon } from "@heroicons/react/solid";
-import { Menu, Popover, Transition, Combobox } from "@headlessui/react";
+import {
+  SearchIcon,
+  CheckIcon,
+  SelectorIcon,
+  ExclamationIcon,
+} from "@heroicons/react/solid";
+import {
+  Menu,
+  Popover,
+  Transition,
+  Combobox,
+  Listbox,
+} from "@headlessui/react";
 import { MenuIcon, XIcon } from "@heroicons/react/outline";
 
 function classNames(...classes) {
@@ -43,11 +54,11 @@ const createSearchPath = (
   }
 
   if (categoryInput) {
-    searchPath = searchPath + "-" + categoryInput?.name;
+    searchPath = searchPath + "-" + categoryInput;
   }
 
   if (subcategoryInput) {
-    searchPath = searchPath + "-" + subcategoryInput?.name;
+    searchPath = searchPath + "-" + subcategoryInput;
   }
 
   if (locationOrZipInput) {
@@ -221,7 +232,7 @@ function Navigation() {
   }, []);
 
   useEffect(() => {
-    retrieveSubCategoriesBelongingToCategory(selectedCategory?.name);
+    retrieveSubCategoriesBelongingToCategory(selectedCategory);
   }, [selectedCategory]);
 
   return (
@@ -260,8 +271,8 @@ function Navigation() {
             query: {
               sid: searchInput,
               search: searchInput,
-              category: selectedCategory?.name,
-              subcategory: selectedSubcategory?.name,
+              category: selectedCategory,
+              subcategory: selectedSubcategory,
               locality: locationOrZipInput,
               radius: locationRadiusInput,
             },
@@ -536,147 +547,119 @@ function Navigation() {
                 >
                   Kategorie auswählen
                 </button> */}
-                  <Combobox
-                    as="div"
+                  <Listbox
                     value={selectedCategory}
                     onChange={setSelectedCategory}
                   >
-                    <Combobox.Label className="block text-sm font-medium text-gray-700">
-                      Kategorie auswählen
-                    </Combobox.Label>
-                    <div className="relative mt-1">
-                      <Combobox.Input
-                        className="w-full py-2 pl-3 pr-10 text-gray-600 bg-white border border-white rounded-md shadow-sm focus:outline-none focus:ring-transparent sm:text-sm"
-                        onChange={(event) => setQuery(event.target.value)}
-                        displayValue={(category) => category?.name}
-                      />
-                      <Combobox.Button className="absolute inset-y-0 right-0 flex items-center px-2 rounded-r-md focus:outline-none">
-                        <SelectorIcon
-                          className="w-5 h-5 text-gray-400"
-                          aria-hidden="true"
-                        />
-                      </Combobox.Button>
-
-                      {filteredCategories.length > 0 && (
-                        <Combobox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                          {filteredCategories.map((category) => (
-                            <Combobox.Option
-                              key={category.category_id}
-                              value={category}
+                    <div className="relative mb-2">
+                      <Listbox.Label>
+                        <div className="pb-1 text-sm font-semibold text-gray-700">
+                          Kategorie
+                        </div>
+                      </Listbox.Label>
+                      <Listbox.Button
+                        className="relative w-full py-2 pl-3 pr-10 text-left rounded-lg shadow-md cursor-default focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm !text-sm font-medium text-gray-600 bg-white"
+                        style={{ height: "2.5rem", width: "14rem" }}
+                      >
+                        <span className="block truncate">
+                          {selectedCategory}
+                        </span>
+                        <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                          <SelectorIcon
+                            className="w-5 h-5 text-gray-400"
+                            aria-hidden="true"
+                          />
+                        </span>
+                      </Listbox.Button>
+                      <Transition
+                        as={Fragment}
+                        leave="transition ease-in duration-100"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                      >
+                        <Listbox.Options className="absolute w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm !z-50">
+                          {categories.map((category, index) => (
+                            <Listbox.Option
+                              key={index}
                               className={({ active }) =>
-                                classNames(
-                                  "relative cursor-pointer select-none py-2 pl-8 pr-4",
+                                `relative select-none py-2 cursor-pointer pl-10 pr-4 font-bold ${
                                   active
-                                    ? "bg-indigo-600 text-white"
+                                    ? "bg-[#2f70e9] text-white"
                                     : "text-gray-900"
-                                )
+                                }`
                               }
+                              value={category?.name}
                             >
-                              {({ active, selected }) => (
+                              {({ selected }) => (
                                 <>
-                                  <span
-                                    className={classNames(
-                                      "block truncate",
-                                      selected && "font-semibold"
-                                    )}
-                                  >
-                                    {category.name}
+                                  <span cclassName={`block truncate font-bold`}>
+                                    {category?.name}
                                   </span>
-
-                                  {selected && (
-                                    <span
-                                      className={classNames(
-                                        "absolute inset-y-0 left-0 flex items-center pl-1.5",
-                                        active
-                                          ? "text-white"
-                                          : "text-indigo-600"
-                                      )}
-                                    >
-                                      <CheckIcon
-                                        className="w-5 h-5"
-                                        aria-hidden="true"
-                                      />
-                                    </span>
-                                  )}
                                 </>
                               )}
-                            </Combobox.Option>
+                            </Listbox.Option>
                           ))}
-                        </Combobox.Options>
-                      )}
+                        </Listbox.Options>
+                      </Transition>
                     </div>
-                  </Combobox>
-                  <Combobox
-                    as="div"
+                  </Listbox>
+                  <Listbox
                     value={selectedSubcategory}
                     onChange={setSelectedSubcategory}
-                    className={`mt-4  ${!selectedCategory ? "invisible" : ""}`}
+                    className={`${!selectedCategory ? "invisible" : ""}`}
                   >
-                    <Combobox.Label className="block text-sm font-medium text-gray-700">
-                      Subkategorie auswählen
-                    </Combobox.Label>
                     <div className="relative mt-1">
-                      <Combobox.Input
-                        className="w-full py-2 pl-3 pr-10 text-gray-600 bg-white border border-white rounded-md shadow-sm focus:outline-none focus:ring-transparent sm:text-sm"
-                        onChange={(event) => setQuery(event.target.value)}
-                        displayValue={(subcategory) => subcategory?.name}
-                      />
-                      <Combobox.Button className="absolute inset-y-0 right-0 flex items-center px-2 rounded-r-md focus:outline-none">
-                        <SelectorIcon
-                          className="w-5 h-5 text-gray-400"
-                          aria-hidden="true"
-                        />
-                      </Combobox.Button>
-
-                      {filteredSubcategories.length > 0 && (
-                        <Combobox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                          {filteredSubcategories.map((subcategory) => (
-                            <Combobox.Option
-                              key={subcategory.subcategory_id}
-                              value={subcategory}
+                      <Listbox.Label>
+                        <div className="pb-1 text-sm font-semibold text-gray-700">
+                          Subkategorie
+                        </div>
+                      </Listbox.Label>
+                      <Listbox.Button
+                        className="relative w-full py-2 pl-3 pr-10 text-left rounded-lg shadow-md cursor-default focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm !text-sm font-medium text-gray-600 bg-white"
+                        style={{ height: "2.5rem" }}
+                      >
+                        <span className="block truncate">
+                          {selectedSubcategory}
+                        </span>
+                        <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                          <SelectorIcon
+                            className="w-5 h-5 text-gray-400"
+                            aria-hidden="true"
+                          />
+                        </span>
+                      </Listbox.Button>
+                      <Transition
+                        as={Fragment}
+                        leave="transition ease-in duration-100"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                      >
+                        <Listbox.Options className="absolute w-56 py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm !z-50">
+                          {subcategories.map((subcategory, index) => (
+                            <Listbox.Option
+                              key={index}
                               className={({ active }) =>
-                                classNames(
-                                  "relative select-none py-2 pl-8 pr-4 cursor-pointer",
+                                `relative select-none py-2 cursor-pointer pl-10 pr-4 font-bold ${
                                   active
-                                    ? "bg-indigo-600 text-white"
+                                    ? "bg-[#2f70e9] text-white"
                                     : "text-gray-900"
-                                )
+                                }`
                               }
+                              value={subcategory?.name}
                             >
-                              {({ active, selected }) => (
+                              {({ selected }) => (
                                 <>
-                                  <span
-                                    className={classNames(
-                                      "block truncate",
-                                      selected && "font-semibold"
-                                    )}
-                                  >
-                                    {subcategory.name}
+                                  <span cclassName={`block truncate font-bold`}>
+                                    {subcategory?.name}
                                   </span>
-
-                                  {selected && (
-                                    <span
-                                      className={classNames(
-                                        "absolute inset-y-0 left-0 flex items-center pl-1.5",
-                                        active
-                                          ? "text-white"
-                                          : "text-indigo-600"
-                                      )}
-                                    >
-                                      <CheckIcon
-                                        className="w-5 h-5"
-                                        aria-hidden="true"
-                                      />
-                                    </span>
-                                  )}
                                 </>
                               )}
-                            </Combobox.Option>
+                            </Listbox.Option>
                           ))}
-                        </Combobox.Options>
-                      )}
+                        </Listbox.Options>
+                      </Transition>
                     </div>
-                  </Combobox>
+                  </Listbox>
                 </div>
               </div>
             </div>
@@ -793,8 +776,8 @@ function Navigation() {
                 query: {
                   sid: searchInput,
                   search: searchInput,
-                  category: selectedCategory?.name,
-                  subcategory: selectedSubcategory?.name,
+                  category: selectedCategory,
+                  subcategory: selectedSubcategory,
                   locality: locationOrZipInput,
                   radius: locationRadiusInput,
                 },
