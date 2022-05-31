@@ -6,9 +6,13 @@ import { useAuth, useUser } from "@clerk/clerk-react";
 import Footer from "../components/Footer/Footer";
 import Navigation from "../components/Navigation/Navigation";
 import RegularAdCard from "../components/Startpage/RegularAdCard";
+import AlertConfirmationModal from "../components/GeneralComponents/Modals/AlertConfirmationModal";
 
 export default function Angebote() {
   const [offeredAdvertisements, setOfferedAdvertisements] = useState([]);
+  const [selectedAdId, setSelectedAdId] = useState(null);
+  const [showDeleteConfirmationModal, setShowDeleteConfirmationModal] =
+    useState(false);
   const [isfetchingData, setIsfetchingData] = useState(false);
   const clerkAuth = useAuth();
   const { user } = useUser();
@@ -41,6 +45,41 @@ export default function Angebote() {
       });
   };
 
+  const handleCloseModal = () => {
+    setSelectedAdId(null);
+    setShowDeleteConfirmationModal(false);
+  };
+
+  const deleteOffer = async () => {
+    console.log("I WOULD DELETE THIS OFFER", selectedAdId);
+    fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+        `/advertisements/delete/${selectedAdId}`,
+      {
+        method: "post",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `${await clerkAuth.getToken()}`,
+        },
+        body: JSON.stringify({
+          clerk_user_id: user?.id,
+        }),
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATA DELETE OFFER", data);
+        /* if (data?.advertisements) {
+          setOfferedAdvertisements([...data?.advertisements]);
+        } */
+      })
+      .catch((error) => {
+        console.log("ERROR DATA DELETE OFFER", error);
+      });
+    handleCloseModal();
+  };
+
   useEffect(() => {
     retrieveUserOffers(user);
   }, []);
@@ -61,6 +100,16 @@ export default function Angebote() {
 
       <Navigation />
       <div className="min-h-screen bg-gray-50">
+        {showDeleteConfirmationModal && (
+          <AlertConfirmationModal
+            title="Möchtest du die Anzeige wirklich löschen?"
+            subtitle="Die Anzeige wird nicht mehr gefunden werden."
+            alertButtonConfirmationText="Löschen"
+            showDislikeConfirmationModal={showDeleteConfirmationModal}
+            callbackCloseModal={handleCloseModal}
+            callbackConfirmAction={deleteOffer}
+          />
+        )}
         {!isfetchingData && (
           <div className="px-4 py-12 mx-auto max-w-7xl sm:py-16 sm:px-6 lg:px-8">
             <div className="max-w-3xl mx-auto divide-y-2 divide-gray-200">
@@ -83,7 +132,7 @@ export default function Angebote() {
                   {offeredAdvertisements.map((advertisement, index) => (
                     <div
                       key={index}
-                      className="flex flex-col justify-center p-4 text-6xl rounded-xl"
+                      className="flex flex-col items-center justify-center p-4 text-6xl border-2 border-gray-300 rounded-xl"
                       style={{ maxWidth: "16rem !important" }}
                     >
                       <RegularAdCard
@@ -101,10 +150,24 @@ export default function Angebote() {
                       <Link
                         href={`/editieren/${advertisement.advertisement_id}`}
                       >
-                        <button className="w-64 mt-3 items-center px-4 py-2 text-sm font-medium text-white bg-[#2f70e9] border border-transparent rounded-md shadow-sm hover:bg-[#2962cd] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent">
-                          <span>Anzeige editieren</span>
+                        <button className="w-full mt-3 items-center px-4 py-2 text-sm font-medium text-white bg-[#2f70e9] border border-transparent rounded-md shadow-sm hover:bg-[#2962cd] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent">
+                          <span>Editieren</span>
                         </button>
                       </Link>
+                      <div className="flex w-full">
+                        <button className="items-center w-64 px-4 py-2 mt-3 mr-2 text-sm font-medium text-white bg-teal-500 border border-transparent rounded-md shadow-sm hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent">
+                          <span>Reservieren</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            setShowDeleteConfirmationModal(true);
+                            setSelectedAdId(advertisement.advertisement_id);
+                          }}
+                          className="items-center w-64 px-4 py-2 mt-3 ml-2 text-sm font-medium text-white bg-red-400 border border-transparent rounded-md shadow-sm hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent"
+                        >
+                          <span>Löschen</span>
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>

@@ -215,9 +215,7 @@ export default function Home() {
       });
   };
 
-  useEffect(() => {}, []);
-
-  const addLikeForUser = async (adId, userData) => {
+  const addFavoriteForUser = async (adId, userData) => {
     fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/favorites/`, {
       method: "post",
       headers: {
@@ -258,7 +256,7 @@ export default function Home() {
       setShowDislikeConfirmationModal(true);
     }
     if (!currentLikeStatus) {
-      addLikeForUser(adId, user);
+      addFavoriteForUser(adId, user);
     }
   };
 
@@ -352,7 +350,6 @@ export default function Home() {
             {offeredAdvertisements?.map((element, index) => (
               <div key={index}>
                 <RegularAdCard
-                  key={index}
                   adId={element.advertisement_id}
                   title={element.title}
                   price={element.price}
@@ -360,13 +357,9 @@ export default function Home() {
                   articleIsVerified={element.is_verified}
                   sellerHasManySales={false}
                   imageUrl={element.article_image_1}
-                  callbackCloseModal={handleCloseModal}
                   isLiked={favoriteAdvertisements.includes(
                     element.advertisement_id
                   )}
-                  callbackConfirmAction={removeLikeOfAdForUser}
-                  alertButtonConfirmationText="Entfernen"
-                  showDislikeConfirmationModal={showDislikeConfirmationModal}
                   callbackSetLikeStatus={handleChangeOfLikeStatus}
                 />
               </div>

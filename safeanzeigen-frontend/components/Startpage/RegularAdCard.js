@@ -155,7 +155,7 @@ function RegularAdCard({
             style={{ objectFit: "cover", height: "256px", width: "256px" }}
           />
         </div>
-        <h3 className="mt-3 text-xl text-gray-600 break-words">
+        <h3 className="mt-3 text-xl text-center text-gray-600 break-words">
           {/* text-[#2f70e9] */}
           {truncateStringAfterCharacterLength(title, 44)}
         </h3>

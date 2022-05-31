@@ -45,19 +45,39 @@ export default function Favoriten() {
       });
   };
 
-  const removeLikeOfAdForUser = () => {
-    /*  console.log("REMOVE TRIGGER", selectedAdId);
-    console.log("REMOVE TRIGGER2", userId);
-    console.log("REMOVE TRIGGER3", getToken);
-    console.log("user!", user); */
-    /* test */
+  const removeLikeOfAdForUser = async () => {
+    fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/favorites/${selectedAdId}`,
+      {
+        method: "delete",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `${await clerkAuth.getToken()}`,
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATA DELETE FAVORITES", data);
+        if (data?.newFavoriteArray) {
+          retrieveUserFavoriteAdvertisements(user);
+        }
+      })
+      .catch((error) => {
+        console.log("ERROR DELETE FAVORITES", error);
+      });
     handleCloseModal();
   };
 
   const handleChangeOfLikeStatus = (adId, currentLikeStatus) => {
+    console.log("RECEIVED", adId, currentLikeStatus);
     if (currentLikeStatus) {
       setSelectedAdId(adId);
       setShowDislikeConfirmationModal(true);
+    }
+    if (!currentLikeStatus) {
+      addLikeForUser(adId, user);
     }
   };
 
@@ -121,15 +141,18 @@ export default function Favoriten() {
                       className="flex flex-col justify-center p-4 text-6xl rounded-xl"
                       style={{ maxWidth: "16rem !important" }}
                     >
+                      {console.log("HERE RERRE ", favoriteAdvertisements)}
                       <RegularAdCard
-                        adId={advertisement.advertisement_id}
+                        adId={advertisement.fk_advertisement_id}
                         title={advertisement.title}
                         price={advertisement.price}
-                        priceType={advertisement.priceType}
+                        priceType={advertisement.price_type}
                         imageUrl={advertisement.article_image_1}
                         articleIsVerified={advertisement.is_verified}
                         sellerHasManySales={false}
-                        isLiked={true}
+                        isLiked={favoriteAdvertisements
+                          .map((elem) => elem.fk_advertisement_id)
+                          .includes(advertisement.fk_advertisement_id)}
                         callbackSetLikeStatus={handleChangeOfLikeStatus}
                       />
                       <Link
