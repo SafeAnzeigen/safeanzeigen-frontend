@@ -1,14 +1,17 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useAuth, useUser } from "@clerk/clerk-react";
 
-import Footer from "../components/Footer/Footer";
-import Navigation from "../components/Navigation/Navigation";
-import RegularAdCard from "../components/Startpage/RegularAdCard";
-import AlertConfirmationModal from "../components/GeneralComponents/Modals/AlertConfirmationModal";
+import Footer from "../../components/Footer/Footer";
+import Navigation from "../../components/Navigation/Navigation";
+import RegularAdCard from "../../components/Startpage/RegularAdCard";
+import AlertConfirmationModal from "../../components/GeneralComponents/Modals/AlertConfirmationModal";
 
-export default function Angebote() {
+export default function Suche() {
+  const router = useRouter();
+  console.log("QUERY HERE", router.query);
   const [offeredAdvertisements, setOfferedAdvertisements] = useState([]);
   const [selectedAdId, setSelectedAdId] = useState(null);
   const [showDeleteConfirmationModal, setShowDeleteConfirmationModal] =
@@ -140,10 +143,55 @@ export default function Angebote() {
         )}
         {!isfetchingData && (
           <div className="px-4 py-12 mx-auto max-w-7xl sm:py-16 sm:px-6 lg:px-8">
-            <div className="max-w-3xl mx-auto divide-y-2 divide-gray-200">
+            <div className="mx-auto">
+              {/* max-w-3xl */}
               <h2 className="mb-8 text-3xl font-extrabold text-center text-gray-900 select-none sm:text-4xl">
-                Deine Angebote
+                Ergebnisse{" "}
+                {router.query?.search && (
+                  <span>
+                    für{" "}
+                    <span className="p-2 rounded-lg bg-orange-300/75">{`${router.query?.search}`}</span>
+                  </span>
+                )}
               </h2>
+              <div className="flex justify-center">
+                <h2 className="mb-8 mr-4 text-xl font-extrabold text-center text-gray-900 select-none sm:text-2xl">
+                  {router.query?.category && (
+                    <span>
+                      Kategorie{" "}
+                      <span className="p-2 rounded-lg bg-blue-200/75">{`${router.query?.category}`}</span>
+                    </span>
+                  )}
+                </h2>
+                <h2 className="mb-8 text-xl font-extrabold text-center text-gray-900 select-none sm:text-2xl">
+                  {router.query?.subcategory && (
+                    <span>
+                      Subkategorie{" "}
+                      <span className="p-2 rounded-lg bg-blue-200/75">{`${router.query?.subcategory}`}</span>
+                    </span>
+                  )}
+                </h2>
+              </div>
+              <div className="flex justify-center">
+                <h2 className="mb-8 mr-4 text-xl font-extrabold text-center text-gray-900 select-none sm:text-2xl">
+                  {router.query?.locality && (
+                    <span>
+                      in{" "}
+                      <span className="p-2 rounded-lg bg-gray-200/75">{`${router.query?.locality}`}</span>
+                    </span>
+                  )}
+                </h2>
+                <h2 className="mb-8 text-xl font-extrabold text-center text-gray-900 select-none sm:text-2xl">
+                  {router.query?.radius && router.query?.radius !== "0" && (
+                    <span>
+                      Umkreis{" "}
+                      <span className="p-2 rounded-lg bg-gray-200/75">
+                        {`${router.query?.radius}`} km
+                      </span>
+                    </span>
+                  )}
+                </h2>
+              </div>
             </div>
             <div className="container w-64 mx-auto select-none md:w-full lg:w-full">
               {offeredAdvertisements && offeredAdvertisements.length < 1 ? (

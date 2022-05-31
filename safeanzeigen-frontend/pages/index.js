@@ -11,11 +11,40 @@ import AlertConfirmationModal from "../components/GeneralComponents/Modals/Alert
 export default function Home() {
   const [verticalScrollIsActive, setVerticalScrollIsActive] = useState(true);
   const [offeredAdvertisements, setOfferedAdvertisements] = useState([]);
+  const [favoriteAdvertisements, setFavoriteAdvertisements] = useState([]);
   const [showDislikeConfirmationModal, setShowDislikeConfirmationModal] =
     useState(false);
+  const [selectedAdId, setSelectedAdId] = useState(null);
   const [isfetchingData, setIsfetchingData] = useState(false);
   const clerkAuth = useAuth();
   const { user } = useUser();
+
+  const retrieveUserFavoriteAdvertisements = async (user) => {
+    fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+        `/favorites/clerkuserid/${user?.id}`,
+      {
+        method: "get",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `${await clerkAuth.getToken()}`,
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATA GET FAVORITES", data);
+        if (data?.favorites) {
+          setFavoriteAdvertisements(
+            data?.favorites.map((element) => element.fk_advertisement_id)
+          );
+        }
+      })
+      .catch((error) => {
+        console.log("ERROR DATA GET FAVORITES", error);
+      });
+  };
 
   const newestAds = [
     {
@@ -186,12 +215,48 @@ export default function Home() {
       });
   };
 
-  useEffect(() => {}, []);
+  const addFavoriteForUser = async (adId, userData) => {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/favorites/`, {
+      method: "post",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `${await clerkAuth.getToken()}`,
+      },
+      body: JSON.stringify({
+        clerk_user_id: userData?.id,
+        fk_advertisement_id: adId,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATA ADD FAVORITES", data);
+        if (data?.newFavoriteArray) {
+          if (data?.newFavoriteArray?.length === 0) {
+            setFavoriteAdvertisements([]);
+          } else if (data?.newFavoriteArray?.length > 0) {
+            setFavoriteAdvertisements(
+              data?.newFavoriteArray.map(
+                (element) => element.fk_advertisement_id
+              )
+            );
+          }
+        }
+      })
+      .catch((error) => {
+        console.log("ERROR ADD FAVORITES", error);
+      });
+    handleCloseModal();
+  };
 
   const handleChangeOfLikeStatus = (adId, currentLikeStatus) => {
+    console.log("RECEIVED", adId, currentLikeStatus);
     if (currentLikeStatus) {
       setSelectedAdId(adId);
       setShowDislikeConfirmationModal(true);
+    }
+    if (!currentLikeStatus) {
+      addFavoriteForUser(adId, user);
     }
   };
 
@@ -200,17 +265,43 @@ export default function Home() {
     setShowDislikeConfirmationModal(false);
   };
 
-  const removeLikeOfAdForUser = () => {
-    /*  console.log("REMOVE TRIGGER", selectedAdId);
-    console.log("REMOVE TRIGGER2", userId);
-    console.log("REMOVE TRIGGER3", getToken);
-    console.log("user!", user); */
+  const removeLikeOfAdForUser = async () => {
+    fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/favorites/${selectedAdId}`,
+      {
+        method: "delete",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `${await clerkAuth.getToken()}`,
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATA DELETE FAVORITES", data);
+        if (data?.newFavoriteArray) {
+          if (data?.newFavoriteArray?.length === 0) {
+            setFavoriteAdvertisements([]);
+          } else if (data?.newFavoriteArray?.length > 0) {
+            setFavoriteAdvertisements(
+              data?.newFavoriteArray.map(
+                (element) => element.fk_advertisement_id
+              )
+            );
+          }
+        }
+      })
+      .catch((error) => {
+        console.log("ERROR DELETE FAVORITES", error);
+      });
     handleCloseModal();
   };
 
   useEffect(() => {
     if (user) {
       retrieveUserOffers(user);
+      retrieveUserFavoriteAdvertisements(user);
     }
   }, [user]);
 
@@ -257,21 +348,21 @@ export default function Home() {
             onMouseLeave={() => enableVerticalScroll()}
           >
             {offeredAdvertisements?.map((element, index) => (
-              <RegularAdCard
-                key={index}
-                adId={element.advertisement_id}
-                title={element.title}
-                price={element.price}
-                priceType={element.price_type}
-                articleIsVerified={element.is_verified}
-                sellerHasManySales={false}
-                imageUrl={element.article_image_1}
-                callbackCloseModal={handleCloseModal}
-                callbackConfirmAction={removeLikeOfAdForUser}
-                alertButtonConfirmationText="Entfernen"
-                showDislikeConfirmationModal={showDislikeConfirmationModal}
-                callbackSetLikeStatus={handleChangeOfLikeStatus}
-              />
+              <div key={index}>
+                <RegularAdCard
+                  adId={element.advertisement_id}
+                  title={element.title}
+                  price={element.price}
+                  priceType={element.price_type}
+                  articleIsVerified={element.is_verified}
+                  sellerHasManySales={false}
+                  imageUrl={element.article_image_1}
+                  isLiked={favoriteAdvertisements.includes(
+                    element.advertisement_id
+                  )}
+                  callbackSetLikeStatus={handleChangeOfLikeStatus}
+                />
+              </div>
             ))}
           </div>
         </div>
