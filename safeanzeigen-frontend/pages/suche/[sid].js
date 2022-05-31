@@ -205,52 +205,28 @@ export default function Suche() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-                  {offeredAdvertisements.map((advertisement, index) => (
-                    <div
-                      key={index}
-                      className="flex flex-col items-center justify-center p-4 text-6xl border-2 border-gray-300 rounded-xl"
-                      style={{ maxWidth: "16rem !important" }}
-                    >
-                      <RegularAdCard
-                        adId={advertisement.advertisement_id}
-                        title={advertisement.title}
-                        price={advertisement.price}
-                        priceType={advertisement.priceType}
-                        imageUrl={advertisement.article_image_1}
-                        articleIsVerified={advertisement.is_verified}
-                        sellerHasManySales={false}
-                        isLiked={true}
-                        disableFavorite={true}
-                        callbackSetLikeStatus={() => {}}
-                      />
-                      <Link
-                        href={`/editieren/${advertisement.advertisement_id}`}
+                  {offeredAdvertisements
+                    ?.filter((filterElement) => filterElement.is_published)
+                    .map((advertisement, index) => (
+                      <div
+                        key={index}
+                        className="flex flex-col items-center justify-center p-4 text-6xl rounded-xl"
+                        style={{ maxWidth: "16rem !important" }}
                       >
-                        <button className="w-full mt-3 items-center px-4 py-2 text-sm font-medium text-white bg-[#2f70e9] border border-transparent rounded-md shadow-sm hover:bg-[#2962cd] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent">
-                          <span>Editieren</span>
-                        </button>
-                      </Link>
-                      <div className="flex w-full">
-                        <button
-                          onClick={() =>
-                            setOfferAsReserved(advertisement.advertisement_id)
-                          }
-                          className="items-center w-64 px-4 py-2 mt-3 mr-2 text-sm font-medium text-white bg-teal-500 border border-transparent rounded-md shadow-sm hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent"
-                        >
-                          <span>Reservieren</span>
-                        </button>
-                        <button
-                          onClick={() => {
-                            setShowDeleteConfirmationModal(true);
-                            setSelectedAdId(advertisement.advertisement_id);
-                          }}
-                          className="items-center w-64 px-4 py-2 mt-3 ml-2 text-sm font-medium text-white bg-red-400 border border-transparent rounded-md shadow-sm hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent"
-                        >
-                          <span>Löschen</span>
-                        </button>
+                        <RegularAdCard
+                          adId={advertisement.advertisement_id}
+                          title={advertisement.title}
+                          price={advertisement.price}
+                          priceType={advertisement.priceType}
+                          imageUrl={advertisement.article_image_1}
+                          articleIsVerified={advertisement.is_verified}
+                          sellerHasManySales={false}
+                          isLiked={true}
+                          disableFavorite={true}
+                          callbackSetLikeStatus={() => {}}
+                        />
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               )}
             </div>

@@ -74,8 +74,8 @@ const createSearchPath = (
 function Navigation() {
   const { signOut } = useClerk();
   const clerkAuth = useAuth();
-  const { isLoaded, userId, sessionId, getToken } = useAuth();
-  const { isSignedIn, user } = useUser();
+  const { userId } = useAuth();
+  const { user } = useUser();
   const [
     isUserRedirectToSignInActive,
     setIsUserRedirectToSignInActivePayNowSelected,
@@ -85,7 +85,6 @@ function Navigation() {
   const [locationRadiusInput, setLocationRadiusInput] = useState(0);
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
-  const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState();
   const [selectedSubcategory, setSelectedSubcategory] = useState();
 
@@ -96,40 +95,6 @@ function Navigation() {
     setLocationOrZipInput("");
     setSearchInput("");
   };
-
-  const filteredCategories =
-    query === ""
-      ? categories
-      : categories.filter((category) => {
-          return category.name.toLowerCase().includes(query.toLowerCase());
-        });
-
-  const filteredSubcategories =
-    query === ""
-      ? subcategories
-      : subcategories.filter((subcategory) => {
-          return subcategory.subcategoryName
-            .toLowerCase()
-            .includes(query.toLowerCase());
-        });
-
-  /* const filteredCategories =
-    query === ""
-      ? categories
-      : categories.filter((category) => {
-          return category.categoryName
-            .toLowerCase()
-            .includes(query.toLowerCase());
-        });
-
-  const filteredSubcategories =
-    query === ""
-      ? subcategories
-      : subcategories.filter((subcategory) => {
-          return subcategory.subcategoryName
-            .toLowerCase()
-            .includes(query.toLowerCase());
-        }); */
 
   const success = (position) => {
     console.log(position);
@@ -265,31 +230,35 @@ function Navigation() {
           onChange={(event) => setSearchInput(event.target.value)}
           placeholder="Wonach suchst du?"
         />
-        <Link
-          href={{
-            pathname: "/suche/[sid]",
-            query: {
-              sid: searchInput,
-              search: searchInput,
-              category: selectedCategory,
-              subcategory: selectedSubcategory,
-              locality: locationOrZipInput,
-              radius: locationRadiusInput,
-            },
-          }}
-          as={createSearchPath(
-            searchInput,
-            selectedCategory,
-            selectedSubcategory,
-            locationOrZipInput,
-            locationRadiusInput
-          )}
-        >
-          <SearchIcon
-            onClick={() => resetSearchInputs()}
-            className="hidden h-8 p-2 text-white bg-orange-400 rounded-full cursor-pointer hover:bg-orange-500 md:inline-flex md:mx-3"
-          />
-        </Link>
+
+        {searchInput ? (
+          <div onClick={() => resetSearchInputs()}>
+            <Link
+              href={{
+                pathname: "/suche/[sid]",
+                query: {
+                  sid: searchInput,
+                  search: searchInput,
+                  category: selectedCategory,
+                  subcategory: selectedSubcategory,
+                  locality: locationOrZipInput,
+                  radius: locationRadiusInput,
+                },
+              }}
+              as={createSearchPath(
+                searchInput,
+                selectedCategory,
+                selectedSubcategory,
+                locationOrZipInput,
+                locationRadiusInput
+              )}
+            >
+              <SearchIcon className="hidden h-8 p-2 text-white bg-orange-400 rounded-full cursor-pointer hover:bg-orange-500 md:inline-flex md:mx-3" />
+            </Link>
+          </div>
+        ) : (
+          <SearchIcon className="hidden h-8 p-2 text-white bg-orange-400 rounded-full cursor-pointer hover:bg-orange-500 md:inline-flex md:mx-3" />
+        )}
       </div>
       {/* Right Navbar */}
       <Popover
