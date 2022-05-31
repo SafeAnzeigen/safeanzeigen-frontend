@@ -215,7 +215,7 @@ export default function Anzeige() {
                         height: "800px",
                         width: "800px",
                       }}
-                      className="rounded-xl"
+                      className="border-2 border-gray-200/75 rounded-xl"
                     />
 
                     <div className="absolute flex items-center justify-between w-full px-3 transform -translate-y-1/2 top-1/2">
@@ -257,8 +257,11 @@ export default function Anzeige() {
                       </button>
                     </div>
                   </div>
-                  <div className="flex justify-end">
-                    <div className="flex p-2">
+                  <div className="flex justify-end mt-4">
+                    <div
+                      title="Ansichten"
+                      className="flex px-4 py-2 mr-2 rounded-lg bg-gray-200/75"
+                    >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="w-6 h-6 text-orange-500"
@@ -278,11 +281,14 @@ export default function Anzeige() {
                           d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                         />
                       </svg>
-                      <span className="mx-2 text-gray-900">
+                      <span className="mx-2 font-semibold text-gray-900 select-none">
                         {advertisementInfoObject?.view_count}
                       </span>
                     </div>
-                    <div className="flex p-2">
+                    <div
+                      title="Favoriten"
+                      className="flex px-4 py-2 rounded-lg bg-gray-200/75"
+                    >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="w-6 h-6 text-orange-500"
@@ -297,7 +303,7 @@ export default function Anzeige() {
                           d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
                         />
                       </svg>
-                      <span className="mx-2 text-gray-900">
+                      <span className="mx-2 font-semibold text-gray-900 select-none">
                         {advertisementInfoObject?.favorite_count}
                       </span>
                     </div>
@@ -327,7 +333,7 @@ export default function Anzeige() {
                             <div className="rounded-md shadow">
                               <div
                                 href="#"
-                                className="cursor-pointer flex items-center justify-center px-5 py-3 text-base font-medium text-white bg-[#2f70e9] border border-transparent rounded-md hover:bg-[#2962cd]"
+                                className="cursor-pointer flex items-center justify-center px-5 py-3 text-base font-medium text-white bg-[#2f70e9] border border-transparent rounded-md hover:bg-[#2962cd] select-none"
                               >
                                 Anzeige Editieren
                               </div>
@@ -380,7 +386,7 @@ export default function Anzeige() {
                                 ? copyToClipboard(window.location)
                                 : "";
                             }}
-                            className="flex items-center justify-center px-5 py-3 text-base font-medium text-gray-700 bg-white border-gray-300 rounded-md cursor-pointer hover:bg-gray-200"
+                            className="flex items-center justify-center px-5 py-3 text-base font-medium text-gray-700 bg-white border-gray-300 rounded-md cursor-pointer select-none hover:bg-gray-200"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"

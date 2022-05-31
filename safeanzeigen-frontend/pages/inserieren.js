@@ -23,20 +23,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Inserieren({
-  adName,
-  categoryName,
-  subcategoryName,
-  dateOfCreation,
-  viewCount,
-  location,
-  price,
-  priceType,
-  imageURLArray,
-  description,
-  nameOfOwner,
-  adID,
-}) {
+export default function Inserieren() {
   const { asPath } = useRouter();
   const router = useRouter();
   const { user } = useUser();
@@ -70,13 +57,7 @@ export default function Inserieren({
   ] = useState(false);
   const [verificationQRCode, setVerificationQRCode] = useState("");
   const [validationSuccessToken, setValidationSuccessToken] = useState("");
-  const [adImages, setAdImages] = useState([
-    "/no-article-image.png",
-    /* "https://res.cloudinary.com/dbldlm9vw/image/upload/v1653846501/safeanzeigen/a9uvqrwtezgrpikcztqd.png", */
-    /* "https://res.cloudinary.com/dbldlm9vw/image/upload/v1653844890/safeanzeigen/ubj6rihex839xewfjpo1.jpg", */
-    /* "https://images.unsplash.com/photo-1602143407151-7111542de6e8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1287",
-    "https://images.unsplash.com/photo-1491637639811-60e2756cc1c7?ixlib=rb-1.2.1&raw_url=true&q=80&fm=jpg&crop=entropy&cs=tinysrgb&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1328", */
-  ]);
+  const [adImages, setAdImages] = useState(["/no-article-image.png"]);
 
   const priceTypes = [
     { id: 1, priceTypeName: "VB" },
@@ -1383,19 +1364,6 @@ export default function Inserieren({
               ) : (
                 <div className="flex justify-center mb-4">
                   <div className="p-2 mr-4 border-2 rounded-lg border-orange-500/50">
-                    {/* <div className="text-center">Verifikations-QR-Code</div> */}
-                    {/* <img
-                    src={adImages[carouselIndex]}
-                    alt=""
-                    layout="fill"
-                    style={{
-                      objectFit: "cover",
-                      height: "200px",
-                      width: "200px",
-                    }}
-                    className={`rounded-xl`}
-                  /> */}
-                    {console.log("verificationQRCode", verificationQRCode)}
                     <div ref={componentRef}>
                       <QRCodeCanvas
                         value={verificationQRCode}
@@ -1569,10 +1537,10 @@ export default function Inserieren({
                 !descriptionInput ||
                 !validationSuccessToken
                   ? "blur-[2px] select-none !cursor-default"
-                  : "cursor-pointer hover:bg-[#2962cd] hover:text-orange-500"
+                  : "cursor-pointer  hover:text-orange-500"
               }`}
             >
-              <button className="w-3/5 flex flex-col items-center mx-6 text-sm font-medium bg-[#2f70e9] border border-transparent rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent mt-4 text-orange-400 py-4">
+              <button className="w-3/5 flex flex-col items-center mx-6 text-sm font-medium bg-[#2f70e9] hover:bg-[#2962cd] border border-transparent rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent mt-4 text-orange-400 py-4">
                 <svg
                   id="Layer_1"
                   enableBackground="new 0 0 512 512"

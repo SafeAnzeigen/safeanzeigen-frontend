@@ -119,19 +119,22 @@ function RegularAdCard({
               currency: "EUR",
             }).format(price)}
           </div>
-
           {!disableFavorite && (
             <div
               onClick={(event) => {
                 callbackSetLikeStatus(adId, isLiked);
                 event.preventDefault();
               }}
-              title="Favorisieren"
+              title={`${isLiked ? "Entfavorisieren" : "Favorisieren"}`}
               className="absolute top-0 right-0 z-30 flex float-left py-1 pl-2 pr-2 text-lg font-bold text-transparent text-gray-800 rounded-bl-md rounded-tr-md"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="w-7 h-7 hover:text-[#2f70e9] text-gray-800/50"
+                className={`w-7 h-7 ${
+                  isLiked
+                    ? "text-[#2f70e9] hover:text-gray-800/50"
+                    : "hover:text-[#2f70e9] text-gray-800/50"
+                }`}
                 fill="currentColor"
                 viewBox="0 0 24 24"
                 stroke="white"
@@ -145,7 +148,6 @@ function RegularAdCard({
               </svg>
             </div>
           )}
-
           <img
             className="rounded-xl"
             src={imageUrl}
