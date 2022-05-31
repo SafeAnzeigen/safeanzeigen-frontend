@@ -1526,7 +1526,7 @@ export default function Inserieren() {
                   />
                 </svg>
 
-                <div
+                <button
                   onClick={() => {
                     if (
                       adImages.length >= 3 &&
@@ -1558,7 +1558,7 @@ export default function Inserieren() {
                   className="text-xl font-extrabold !text-white"
                 >
                   Anzeige Veröffentlichen
-                </div>
+                </button>
               </button>
             </div>
           </div>

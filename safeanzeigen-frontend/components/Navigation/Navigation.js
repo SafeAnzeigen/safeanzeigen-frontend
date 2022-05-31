@@ -197,7 +197,9 @@ function Navigation() {
   }, []);
 
   useEffect(() => {
-    retrieveSubCategoriesBelongingToCategory(selectedCategory);
+    if (selectedCategory) {
+      retrieveSubCategoriesBelongingToCategory(selectedCategory);
+    }
   }, [selectedCategory]);
 
   return (

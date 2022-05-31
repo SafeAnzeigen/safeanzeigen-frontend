@@ -204,29 +204,44 @@ export default function Suche() {
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-                  {offeredAdvertisements
-                    ?.filter((filterElement) => filterElement.is_published)
-                    .map((advertisement, index) => (
-                      <div
-                        key={index}
-                        className="flex flex-col items-center justify-center p-4 text-6xl rounded-xl"
-                        style={{ maxWidth: "16rem !important" }}
-                      >
-                        <RegularAdCard
-                          adId={advertisement.advertisement_id}
-                          title={advertisement.title}
-                          price={advertisement.price}
-                          priceType={advertisement.priceType}
-                          imageUrl={advertisement.article_image_1}
-                          articleIsVerified={advertisement.is_verified}
-                          sellerHasManySales={false}
-                          isLiked={true}
-                          disableFavorite={true}
-                          callbackSetLikeStatus={() => {}}
+                <div>
+                  {offeredAdvertisements?.filter(
+                    (filterElement) => filterElement.is_published
+                  ).length > 0 ? (
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+                      {offeredAdvertisements
+                        ?.filter((filterElement) => filterElement.is_published)
+                        .map((advertisement, index) => (
+                          <div
+                            key={index}
+                            className="flex flex-col items-center justify-center p-4 text-6xl rounded-xl"
+                            style={{ maxWidth: "16rem !important" }}
+                          >
+                            <RegularAdCard
+                              adId={advertisement.advertisement_id}
+                              title={advertisement.title}
+                              price={advertisement.price}
+                              priceType={advertisement.priceType}
+                              imageUrl={advertisement.article_image_1}
+                              articleIsVerified={advertisement.is_verified}
+                              sellerHasManySales={false}
+                              isLiked={true}
+                              disableFavorite={true}
+                              callbackSetLikeStatus={() => {}}
+                            />
+                          </div>
+                        ))}
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="flex justify-center opacity-50">
+                        <img
+                          src="/no-result.png"
+                          className="mb-2 not-draggable"
                         />
                       </div>
-                    ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
