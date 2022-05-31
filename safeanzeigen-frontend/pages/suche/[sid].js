@@ -145,12 +145,12 @@ export default function Suche() {
           <div className="px-4 py-12 mx-auto max-w-7xl sm:py-16 sm:px-6 lg:px-8">
             <div className="mx-auto">
               {/* max-w-3xl */}
-              <h2 className="mb-8 text-3xl font-extrabold text-center text-gray-900 select-none sm:text-4xl">
+              <h2 className="mb-8 text-3xl font-extrabold leading-loose text-center text-gray-900 select-none sm:text-4xl">
                 Ergebnisse{" "}
                 {router.query?.search && (
                   <span>
                     für{" "}
-                    <span className="p-2 rounded-lg bg-orange-300/75">{`${router.query?.search}`}</span>
+                    <span className="p-2 break-words rounded-lg bg-orange-300/75">{`${router.query?.search}`}</span>
                   </span>
                 )}
               </h2>
@@ -159,7 +159,7 @@ export default function Suche() {
                   {router.query?.category && (
                     <span>
                       Kategorie{" "}
-                      <span className="p-2 rounded-lg bg-blue-200/75">{`${router.query?.category}`}</span>
+                      <span className="p-2 leading-loose break-words rounded-lg bg-blue-200/75">{`${router.query?.category}`}</span>
                     </span>
                   )}
                 </h2>
@@ -167,7 +167,7 @@ export default function Suche() {
                   {router.query?.subcategory && (
                     <span>
                       Subkategorie{" "}
-                      <span className="p-2 rounded-lg bg-blue-200/75">{`${router.query?.subcategory}`}</span>
+                      <span className="p-2 leading-loose break-words rounded-lg bg-blue-200/75">{`${router.query?.subcategory}`}</span>
                     </span>
                   )}
                 </h2>
@@ -177,7 +177,7 @@ export default function Suche() {
                   {router.query?.locality && (
                     <span>
                       in{" "}
-                      <span className="p-2 rounded-lg bg-gray-200/75">{`${router.query?.locality}`}</span>
+                      <span className="p-2 leading-loose break-words rounded-lg bg-gray-200/75">{`${router.query?.locality}`}</span>
                     </span>
                   )}
                 </h2>
@@ -185,7 +185,7 @@ export default function Suche() {
                   {router.query?.radius && router.query?.radius !== "0" && (
                     <span>
                       Umkreis{" "}
-                      <span className="p-2 rounded-lg bg-gray-200/75">
+                      <span className="p-2 leading-loose break-words rounded-lg bg-gray-200/75">
                         {`${router.query?.radius}`} km
                       </span>
                     </span>

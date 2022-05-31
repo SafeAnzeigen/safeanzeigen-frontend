@@ -11,7 +11,7 @@ function CategoryCard({ category, imageURL, subText, ctaText }) {
           objectFit="cover"
           className="rounded-2xl"
         />
-        <div className="absolute p-5 bg-[#ffffff67] rounded-lg top-20 left-14">
+        <div className="absolute p-5 bg-[#ffffff67] rounded-lg top-20 left-8 md:left-14">
           <h3 className="w-64 mb-3 text-4xl font-medium text-gray-600">
             {category}
           </h3>

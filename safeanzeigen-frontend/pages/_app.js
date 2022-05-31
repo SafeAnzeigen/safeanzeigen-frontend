@@ -32,7 +32,7 @@ const publicPages = [
   "/datenschutz",
   "/kontakt",
   "/safeanzeigen",
-  "/suche",
+  "/suche/[sid]",
   "/anzeige/[aid]",
 ]; /* TODO: ADD MORE PAGES WITHOUT AUTHENTICATION AND DEFINE WHERE AUTH IS NEEDED TO CONTINUE */
 
