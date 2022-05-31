@@ -1509,7 +1509,48 @@ export default function Inserieren() {
                   : "cursor-pointer  hover:text-orange-500"
               }`}
             >
-              <button className="md:w-3/5 flex flex-col items-center md:mx-6 text-sm font-medium bg-[#2f70e9] hover:bg-[#2962cd] border border-transparent rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent mt-4 text-orange-400 py-4 w-full">
+              <button
+                onClick={() => {
+                  if (
+                    adImages.length >= 3 &&
+                    titleInput &&
+                    priceInput &&
+                    selectedPriceType &&
+                    selectedCategory &&
+                    locationInput &&
+                    descriptionInput &&
+                    validationSuccessToken
+                  ) {
+                    addAdvertisement(
+                      user,
+                      titleInput,
+                      adImages,
+                      priceInput,
+                      selectedPriceType,
+                      selectedCategory,
+                      selectedSubcategory,
+                      locationInput,
+                      descriptionInput,
+                      validationSuccessToken,
+                      namePublic,
+                      addressPublic,
+                      phoneNumberPublic
+                    );
+                  }
+                }}
+                className={`${
+                  adImages.length >= 3 &&
+                  titleInput &&
+                  priceInput &&
+                  selectedPriceType &&
+                  selectedCategory &&
+                  locationInput &&
+                  descriptionInput &&
+                  validationSuccessToken
+                    ? "cursor-pointer hover:bg-[#2962cd]"
+                    : "cursor-not-allowed"
+                } md:w-3/5 flex flex-col items-center md:mx-6 text-sm font-medium bg-[#2f70e9]  border border-transparent rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent mt-4 text-orange-400 py-4 w-full`}
+              >
                 <svg
                   id="Layer_1"
                   enableBackground="new 0 0 512 512"
@@ -1526,39 +1567,9 @@ export default function Inserieren() {
                   />
                 </svg>
 
-                <button
-                  onClick={() => {
-                    if (
-                      adImages.length >= 3 &&
-                      titleInput &&
-                      priceInput &&
-                      selectedPriceType &&
-                      selectedCategory &&
-                      locationInput &&
-                      descriptionInput &&
-                      validationSuccessToken
-                    ) {
-                      addAdvertisement(
-                        user,
-                        titleInput,
-                        adImages,
-                        priceInput,
-                        selectedPriceType,
-                        selectedCategory,
-                        selectedSubcategory,
-                        locationInput,
-                        descriptionInput,
-                        validationSuccessToken,
-                        namePublic,
-                        addressPublic,
-                        phoneNumberPublic
-                      );
-                    }
-                  }}
-                  className="text-xl font-extrabold !text-white"
-                >
+                <div className="text-xl font-extrabold !text-white">
                   Anzeige Veröffentlichen
-                </button>
+                </div>
               </button>
             </div>
           </div>

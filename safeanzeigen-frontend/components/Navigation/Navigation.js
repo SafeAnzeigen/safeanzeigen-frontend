@@ -445,6 +445,25 @@ function Navigation() {
                   aria-label="Global"
                 >
                   <div className="max-w-3xl px-2 pt-2 pb-3 mx-auto space-y-1 sm:px-4">
+                    <Link href="/inserieren">
+                      <p className="flex px-3 py-2 text-base font-medium text-white rounded-md cursor-pointer hover:bg-[#2962cd] bg-[#2f70e9]">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="w-6 h-6 pr-2"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M12 4v16m8-8H4"
+                          />{" "}
+                        </svg>
+                        Inserieren
+                      </p>
+                    </Link>
                     <Link href="/favoriten">
                       <p className="block px-3 py-2 text-base font-medium text-gray-900 rounded-md cursor-pointer hover:bg-gray-100 bg-gray-50">
                         Deine Favoriten
