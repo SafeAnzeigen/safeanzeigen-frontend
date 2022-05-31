@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Fragment } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { useUser, useAuth } from "@clerk/clerk-react";
@@ -13,7 +13,13 @@ import Head from "next/head";
 import Footer from "../components/Footer/Footer";
 import Navigation from "../components/Navigation/Navigation";
 import { format, set } from "date-fns";
-import { Menu, Popover, Transition, Combobox } from "@headlessui/react";
+import {
+  Menu,
+  Popover,
+  Transition,
+  Combobox,
+  Listbox,
+} from "@headlessui/react";
 import { QRCodeCanvas } from "qrcode.react";
 import { useReactToPrint } from "react-to-print";
 
@@ -23,20 +29,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Inserieren({
-  adName,
-  categoryName,
-  subcategoryName,
-  dateOfCreation,
-  viewCount,
-  location,
-  price,
-  priceType,
-  imageURLArray,
-  description,
-  nameOfOwner,
-  adID,
-}) {
+export default function Inserieren() {
   const { asPath } = useRouter();
   const router = useRouter();
   const { user } = useUser();
@@ -51,13 +44,13 @@ export default function Inserieren({
   const [verificationImageSecureURL, setVerificationImageSecureURL] =
     useState("");
   const [locationInput, setLocationInput] = useState("");
-  const [selectedPriceType, setSelectedPriceType] = useState("");
+
   const [descriptionInput, setDescriptionInput] = useState("");
   const [titleInput, setTitleInput] = useState("");
   const [namePublic, setNamePublic] = useState(false);
   const [phoneNumberPublic, setPhoneNumberPublic] = useState(false);
   const [addressPublic, setAddressPublic] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState();
+  const [selectedCategory, setSelectedCategory] = useState("Elektronik");
   const [categories, setCategories] = useState([]);
   const [selectedSubcategory, setSelectedSubcategory] = useState();
   const [subcategories, setSubcategories] = useState([]);
@@ -70,18 +63,10 @@ export default function Inserieren({
   ] = useState(false);
   const [verificationQRCode, setVerificationQRCode] = useState("");
   const [validationSuccessToken, setValidationSuccessToken] = useState("");
-  const [adImages, setAdImages] = useState([
-    "/no-article-image.png",
-    /* "https://res.cloudinary.com/dbldlm9vw/image/upload/v1653846501/safeanzeigen/a9uvqrwtezgrpikcztqd.png", */
-    /* "https://res.cloudinary.com/dbldlm9vw/image/upload/v1653844890/safeanzeigen/ubj6rihex839xewfjpo1.jpg", */
-    /* "https://images.unsplash.com/photo-1602143407151-7111542de6e8?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1287",
-    "https://images.unsplash.com/photo-1491637639811-60e2756cc1c7?ixlib=rb-1.2.1&raw_url=true&q=80&fm=jpg&crop=entropy&cs=tinysrgb&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1328", */
-  ]);
+  const [adImages, setAdImages] = useState(["/no-article-image.png"]);
 
-  const priceTypes = [
-    { id: 1, priceTypeName: "VB" },
-    { id: 2, priceTypeName: "Fix" },
-  ];
+  const priceTypes = ["VB", "Fix"];
+  const [selectedPriceType, setSelectedPriceType] = useState(priceTypes[0]);
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -176,6 +161,7 @@ export default function Inserieren({
               name: element.name,
             }))
           );
+          /* setSelectedSubcategory(data?.subcategories[0].name); */
         }
       })
       .catch((error) => {
@@ -280,6 +266,27 @@ export default function Inserieren({
     }
   };
 
+  const success = (position) => {
+    console.log(position);
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+    const geoAPIURL = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`;
+
+    fetch(geoAPIURL)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("GEO DATA", data);
+        const locality = data?.locality;
+        const postcode = data?.postcode;
+        setLocationInput(data?.locality);
+      });
+  };
+
+  const error = (position) => {
+    console.log(position);
+    alert("Bitte gebe das Recht frei deinen Standort zu nutzen");
+  };
+
   const uploadUserQRVerification = async (event) => {
     const fileUploaded = event.target.files[0];
     const formData = new FormData();
@@ -332,22 +339,6 @@ export default function Inserieren({
     }
   };
 
-  const filteredCategories =
-    query === ""
-      ? categories
-      : categories.filter((category) => {
-          return category.name.toLowerCase().includes(query.toLowerCase());
-        });
-
-  const filteredSubcategories =
-    query === ""
-      ? subcategories
-      : subcategories.filter((subcategory) => {
-          return subcategory.subcategoryName
-            .toLowerCase()
-            .includes(query.toLowerCase());
-        });
-
   const handleOnPreviousImageClick = () => {
     sliderCounter = (sliderCounter + 1) % adImages.length;
     setCarouselIndex(sliderCounter);
@@ -374,13 +365,8 @@ export default function Inserieren({
   }, []);
 
   useEffect(() => {
-    retrieveSubCategoriesBelongingToCategory(selectedCategory?.name);
+    retrieveSubCategoriesBelongingToCategory(selectedCategory);
   }, [selectedCategory]);
-
-  /*   categoryName = "Test";
-  subcategoryName = "Test2"; */
-  const testText =
-    "Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit deserunt qui eu. Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit deserunt qui eu. Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit deserunt qui eu. Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit deserunt qui eu. Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit deserunt qui eu. Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit deserunt qui eu. Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit deserunt qui eu.";
 
   return (
     <div className="h-full bg-gray-50">
@@ -688,77 +674,56 @@ export default function Inserieren({
                   <div className="px-6 text-center bg-gray-50 lg:flex-shrink-0 lg:flex lg:flex-col lg:justify-center">
                     <div className="flex items-center justify-center mt-2 text-5xl font-extrabold text-gray-900">
                       <span className="w-1/5 mt-1 mr-3 text-xl font-medium text-gray-500">
-                        <Combobox
-                          as="div"
+                        <Listbox
                           value={selectedPriceType}
                           onChange={setSelectedPriceType}
-                          className="!z-50"
                         >
                           <div className="relative mt-1">
-                            <Combobox.Input
-                              className="w-full py-2 pl-3 pr-10 !text-xl font-extrabold text-white bg-[#2f70e9] border border-white rounded-md shadow-sm cursor-pointer focus:outline-none focus:ring-transparent sm:text-sm text-center"
-                              onChange={(event) => setQuery(event.target.value)}
-                              readOnly
-                              displayValue={(priceType) =>
-                                priceType?.priceTypeName
-                              }
-                            />
-                            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center px-2 rounded-r-md focus:outline-none">
-                              <SelectorIcon
-                                className="w-5 h-5 text-white"
-                                aria-hidden="true"
-                              />
-                            </Combobox.Button>
-
-                            {priceTypes.length > 0 && (
-                              <Combobox.Options className="absolute z-50 w-full py-1 mt-1 overflow-auto !text-xl !font-bold bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                {priceTypes.map((priceType) => (
-                                  <Combobox.Option
-                                    key={priceType.id}
-                                    value={priceType}
+                            <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left rounded-lg shadow-md cursor-default focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm !text-lg font-bold text-white !bg-[#2f70e9]">
+                              <span className="block truncate">
+                                {selectedPriceType}
+                              </span>
+                              <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                <SelectorIcon
+                                  className="w-5 h-5 text-white"
+                                  aria-hidden="true"
+                                />
+                              </span>
+                            </Listbox.Button>
+                            <Transition
+                              as={Fragment}
+                              leave="transition ease-in duration-100"
+                              leaveFrom="opacity-100"
+                              leaveTo="opacity-0"
+                            >
+                              <Listbox.Options className="absolute w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                {priceTypes.map((priceType, index) => (
+                                  <Listbox.Option
+                                    key={index}
                                     className={({ active }) =>
-                                      classNames(
-                                        "relative cursor-pointer select-none py-2 pl-8 pr-4",
+                                      `relative cursor-pointer font-extrabold select-none py-2 text-center text-base ${
                                         active
                                           ? "bg-[#2f70e9] text-white"
                                           : "text-gray-900"
-                                      )
+                                      }`
                                     }
+                                    value={priceType}
                                   >
-                                    {({ active, selected }) => (
+                                    {({ selected }) => (
                                       <>
                                         <span
-                                          className={classNames(
-                                            "block truncate",
-                                            selected && "font-semibold"
-                                          )}
+                                          className={`block truncate font-bold`}
                                         >
-                                          {priceType.priceTypeName}
+                                          {priceType}
                                         </span>
-
-                                        {selected && (
-                                          <span
-                                            className={classNames(
-                                              "absolute inset-y-0 left-0 flex items-center pl-1.5",
-                                              active
-                                                ? "text-white"
-                                                : "text-indigo-600"
-                                            )}
-                                          >
-                                            <CheckIcon
-                                              className="w-5 h-5"
-                                              aria-hidden="true"
-                                            />
-                                          </span>
-                                        )}
                                       </>
                                     )}
-                                  </Combobox.Option>
+                                  </Listbox.Option>
                                 ))}
-                              </Combobox.Options>
-                            )}
+                              </Listbox.Options>
+                            </Transition>
                           </div>
-                        </Combobox>
+                        </Listbox>
                       </span>
                       <div className="flex">
                         <div className="mt-2">
@@ -975,155 +940,114 @@ export default function Inserieren({
                       <dt className="text-sm font-medium text-gray-500">
                         Kategorie
                       </dt>
-                      <dd className="mt-1 text-lg font-medium text-gray-900 sm:mt-0 sm:col-span-2">
-                        <Combobox
-                          as="div"
+                      <div className="mt-1 text-lg font-medium text-gray-900 sm:mt-0 sm:col-span-2">
+                        <Listbox
                           value={selectedCategory}
                           onChange={setSelectedCategory}
                         >
-                          <Combobox.Label className="block text-sm font-normal text-gray-700">
-                            Kategorie auswählen
-                          </Combobox.Label>
                           <div className="relative mt-1">
-                            <Combobox.Input
-                              className="w-full py-2 pl-3 pr-10 text-gray-60 border border-white rounded-md shadow-sm focus:outline-none focus:ring-transparent sm:text-sm !text-lg font-bold text-white !bg-[#2f70e9] cursor-pointer"
-                              onChange={(event) => setQuery(event.target.value)}
-                              displayValue={(category) => category?.name}
-                            />
-                            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center px-2 rounded-r-md focus:outline-none">
-                              <SelectorIcon
-                                className="w-5 h-5 text-white"
-                                aria-hidden="true"
-                              />
-                            </Combobox.Button>
-
-                            {filteredCategories.length > 0 && (
-                              <Combobox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                {filteredCategories.map((category) => (
-                                  <Combobox.Option
-                                    key={category.category_id}
-                                    value={category}
+                            <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left rounded-lg shadow-md cursor-default focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm !text-lg font-bold text-white !bg-[#2f70e9] min-h-12">
+                              <span className="block truncate">
+                                {selectedCategory}
+                              </span>
+                              <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                <SelectorIcon
+                                  className="w-5 h-5 text-white"
+                                  aria-hidden="true"
+                                />
+                              </span>
+                            </Listbox.Button>
+                            <Transition
+                              as={Fragment}
+                              leave="transition ease-in duration-100"
+                              leaveFrom="opacity-100"
+                              leaveTo="opacity-0"
+                            >
+                              <Listbox.Options className="absolute w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm !z-50">
+                                {categories.map((category, index) => (
+                                  <Listbox.Option
+                                    key={index}
                                     className={({ active }) =>
-                                      classNames(
-                                        "relative cursor-pointer select-none py-2 pl-8 pr-4",
+                                      `relative select-none py-2 cursor-pointer pl-10 pr-4 font-bold ${
                                         active
-                                          ? "bg-indigo-600 text-white"
+                                          ? "bg-[#2f70e9] text-white"
                                           : "text-gray-900"
-                                      )
+                                      }`
                                     }
+                                    value={category?.name}
                                   >
-                                    {({ active, selected }) => (
+                                    {({ selected }) => (
                                       <>
                                         <span
-                                          className={classNames(
-                                            "block truncate",
-                                            selected && "font-semibold"
-                                          )}
+                                          cclassName={`block truncate font-bold`}
                                         >
-                                          {category.name}
+                                          {category?.name}
                                         </span>
-
-                                        {selected && (
-                                          <span
-                                            className={classNames(
-                                              "absolute inset-y-0 left-0 flex items-center pl-1.5",
-                                              active
-                                                ? "text-white"
-                                                : "text-indigo-600"
-                                            )}
-                                          >
-                                            <CheckIcon
-                                              className="w-5 h-5"
-                                              aria-hidden="true"
-                                            />
-                                          </span>
-                                        )}
                                       </>
                                     )}
-                                  </Combobox.Option>
+                                  </Listbox.Option>
                                 ))}
-                              </Combobox.Options>
-                            )}
+                              </Listbox.Options>
+                            </Transition>
                           </div>
-                        </Combobox>
-                      </dd>
+                        </Listbox>
+                      </div>
                     </div>
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                       <dt className="text-sm font-medium text-gray-500">
                         Subkategorie
                       </dt>
                       <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        <Combobox
-                          as="div"
+                        <Listbox
                           value={selectedSubcategory}
                           onChange={setSelectedSubcategory}
-                          className={`${!selectedCategory ? "invisible" : ""}`}
                         >
-                          <Combobox.Label className="block text-sm text-gray-700 font-base">
-                            Subkategorie auswählen
-                          </Combobox.Label>
                           <div className="relative mt-1">
-                            <Combobox.Input
-                              className="w-full py-2 pl-3 pr-10 border border-white rounded-md shadow-sm focus:outline-none focus:ring-transparent sm:text-sm !text-lg font-bold text-white !bg-[#2f70e9] cursor-pointer"
-                              onChange={(event) => setQuery(event.target.value)}
-                              displayValue={(subcategory) => subcategory?.name}
-                            />
-                            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center px-2 rounded-r-md focus:outline-none">
-                              <SelectorIcon
-                                className="w-5 h-5 text-white"
-                                aria-hidden="true"
-                              />
-                            </Combobox.Button>
-
-                            {filteredSubcategories.length > 0 && (
-                              <Combobox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                {filteredSubcategories.map((subcategory) => (
-                                  <Combobox.Option
-                                    key={subcategory.subcategory_id}
-                                    value={subcategory}
+                            <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left rounded-lg shadow-md cursor-default focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm !text-lg font-bold text-white !bg-[#2f70e9] min-h-12">
+                              <span className="block truncate">
+                                {selectedSubcategory}
+                              </span>
+                              <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                <SelectorIcon
+                                  className="w-5 h-5 text-white"
+                                  aria-hidden="true"
+                                />
+                              </span>
+                            </Listbox.Button>
+                            <Transition
+                              as={Fragment}
+                              leave="transition ease-in duration-100"
+                              leaveFrom="opacity-100"
+                              leaveTo="opacity-0"
+                            >
+                              <Listbox.Options className="absolute w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm !z-50">
+                                {subcategories.map((subcategory, index) => (
+                                  <Listbox.Option
+                                    key={index}
                                     className={({ active }) =>
-                                      classNames(
-                                        "relative select-none py-2 pl-8 pr-4 cursor-pointer",
+                                      `relative select-none py-2 cursor-pointer pl-10 pr-4 font-bold ${
                                         active
-                                          ? "bg-indigo-600 text-white"
+                                          ? "bg-[#2f70e9] text-white"
                                           : "text-gray-900"
-                                      )
+                                      }`
                                     }
+                                    value={subcategory?.name}
                                   >
-                                    {({ active, selected }) => (
+                                    {({ selected }) => (
                                       <>
                                         <span
-                                          className={classNames(
-                                            "block truncate",
-                                            selected && "font-semibold"
-                                          )}
+                                          cclassName={`block truncate font-bold`}
                                         >
-                                          {subcategory.name}
+                                          {subcategory?.name}
                                         </span>
-
-                                        {selected && (
-                                          <span
-                                            className={classNames(
-                                              "absolute inset-y-0 left-0 flex items-center pl-1.5",
-                                              active
-                                                ? "text-white"
-                                                : "text-indigo-600"
-                                            )}
-                                          >
-                                            <CheckIcon
-                                              className="w-5 h-5"
-                                              aria-hidden="true"
-                                            />
-                                          </span>
-                                        )}
                                       </>
                                     )}
-                                  </Combobox.Option>
+                                  </Listbox.Option>
                                 ))}
-                              </Combobox.Options>
-                            )}
+                              </Listbox.Options>
+                            </Transition>
                           </div>
-                        </Combobox>
+                        </Listbox>
                       </dd>
                     </div>
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -1208,7 +1132,7 @@ export default function Inserieren({
                     </div>
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                       <dt className="text-sm font-medium text-gray-500">
-                        Adresse
+                        Stadt des Inserats
                       </dt>
                       <dd className="flex justify-between mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                         <div
@@ -1216,22 +1140,49 @@ export default function Inserieren({
                             addressPublic
                               ? "blur-sm !select-none cursor-default"
                               : ""
-                          } mr-2`}
+                          }`}
                         >
-                          <input
-                            type="text"
-                            name="locationInput"
-                            id="locationInput"
-                            disabled={addressPublic ? true : false}
-                            className={`${
-                              addressPublic ? "!select-none" : ""
-                            } block w-full border-gray-300 placeholder:text-white bg-[#2f70e9] text-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
-                            placeholder="Straße, Hausnummer, PLZ, Ort"
-                            value={locationInput}
-                            onChange={(event) =>
-                              setLocationInput(event.target.value)
-                            }
-                          />
+                          <div className="flex w-48">
+                            <input
+                              type="text"
+                              name="locationInput"
+                              id="locationInput"
+                              disabled={addressPublic ? true : false}
+                              className={`${
+                                addressPublic ? "!select-none" : ""
+                              } block w-3/5 border-gray-300 placeholder:text-white bg-[#2f70e9] text-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                              placeholder="Stadt"
+                              value={locationInput}
+                              onChange={(event) =>
+                                setLocationInput(event.target.value)
+                              }
+                            />
+                            {!addressPublic && (
+                              <div
+                                onClick={() =>
+                                  navigator.geolocation.getCurrentPosition(
+                                    success,
+                                    error
+                                  )
+                                }
+                                className="mb-1 mr-2 text-gray-500 cursor-pointer hover:text-orange-500"
+                                title="Meinen Standort nutzen"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="w-8 h-8 my-1 ml-2"
+                                  viewBox="0 0 20 20"
+                                  fill="currentColor"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                              </div>
+                            )}
+                          </div>
                         </div>
                         {locationInput && (
                           <span className="mt-2">
@@ -1298,7 +1249,7 @@ export default function Inserieren({
                                 </span>
                               </span>
                             </Switch>
-                            <span className="ml-2 font-bold text-[#2f70e9] text-base select-none">
+                            <span className="font-bold text-[#2f70e9] text-base select-none ml-2">
                               {addressPublic ? "Privat" : "Öffentlich"}
                             </span>
                           </span>
@@ -1312,7 +1263,6 @@ export default function Inserieren({
                       <div className="grow-wrap">
                         <textarea
                           spellCheck="false"
-                          rows={testText.split("\n").length}
                           name="comment"
                           id="comment"
                           className="block w-full mt-1 font-semibold text-gray-700 rounded-md cursor-default resize-none sm:text-sm focus:border-gray-700 focus:ring-0 h-96"
@@ -1383,19 +1333,6 @@ export default function Inserieren({
               ) : (
                 <div className="flex justify-center mb-4">
                   <div className="p-2 mr-4 border-2 rounded-lg border-orange-500/50">
-                    {/* <div className="text-center">Verifikations-QR-Code</div> */}
-                    {/* <img
-                    src={adImages[carouselIndex]}
-                    alt=""
-                    layout="fill"
-                    style={{
-                      objectFit: "cover",
-                      height: "200px",
-                      width: "200px",
-                    }}
-                    className={`rounded-xl`}
-                  /> */}
-                    {console.log("verificationQRCode", verificationQRCode)}
                     <div ref={componentRef}>
                       <QRCodeCanvas
                         value={verificationQRCode}
@@ -1569,10 +1506,10 @@ export default function Inserieren({
                 !descriptionInput ||
                 !validationSuccessToken
                   ? "blur-[2px] select-none !cursor-default"
-                  : "cursor-pointer hover:bg-[#2962cd] hover:text-orange-500"
+                  : "cursor-pointer  hover:text-orange-500"
               }`}
             >
-              <button className="w-3/5 flex flex-col items-center mx-6 text-sm font-medium bg-[#2f70e9] border border-transparent rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent mt-4 text-orange-400 py-4">
+              <button className="w-3/5 flex flex-col items-center mx-6 text-sm font-medium bg-[#2f70e9] hover:bg-[#2962cd] border border-transparent rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent mt-4 text-orange-400 py-4">
                 <svg
                   id="Layer_1"
                   enableBackground="new 0 0 512 512"

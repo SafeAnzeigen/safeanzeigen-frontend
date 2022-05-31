@@ -9,16 +9,71 @@ import {
   useAuth,
   useUser,
 } from "@clerk/clerk-react";
-import { SearchIcon, CheckIcon, SelectorIcon } from "@heroicons/react/solid";
-import { Menu, Popover, Transition, Combobox } from "@headlessui/react";
+import {
+  SearchIcon,
+  CheckIcon,
+  SelectorIcon,
+  ExclamationIcon,
+} from "@heroicons/react/solid";
+import {
+  Menu,
+  Popover,
+  Transition,
+  Combobox,
+  Listbox,
+} from "@headlessui/react";
 import { MenuIcon, XIcon } from "@heroicons/react/outline";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
+const kebabCase = (str) => {
+  if (str.length < 2) {
+    return str;
+  } else {
+    return str
+      .match(
+        /[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g
+      )
+      .join("-")
+      .toLowerCase();
+  }
+};
+
+const createSearchPath = (
+  searchInput,
+  categoryInput,
+  subcategoryInput,
+  locationOrZipInput,
+  locationRadiusInput
+) => {
+  let searchPath = "/suche/";
+  if (searchInput) {
+    searchPath = searchPath + kebabCase(searchInput);
+  }
+
+  if (categoryInput) {
+    searchPath = searchPath + "-" + categoryInput;
+  }
+
+  if (subcategoryInput) {
+    searchPath = searchPath + "-" + subcategoryInput;
+  }
+
+  if (locationOrZipInput) {
+    searchPath = searchPath + "-" + kebabCase(locationOrZipInput);
+  }
+
+  if (locationRadiusInput) {
+    searchPath = searchPath + "-" + locationRadiusInput;
+  }
+  return searchPath;
+};
+
 function Navigation() {
   const { signOut } = useClerk();
+  const clerkAuth = useAuth();
   const { isLoaded, userId, sessionId, getToken } = useAuth();
   const { isSignedIn, user } = useUser();
   const [
@@ -28,28 +83,37 @@ function Navigation() {
   const [searchInput, setSearchInput] = useState("");
   const [locationOrZipInput, setLocationOrZipInput] = useState("");
   const [locationRadiusInput, setLocationRadiusInput] = useState(0);
-  const [categoryInput, setCategoryInput] = useState("");
-  const [subcategoryInput, setSubcategoryInput] = useState("");
-
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState();
   const [selectedSubcategory, setSelectedSubcategory] = useState();
 
-  const categories = [
-    { id: 1, categoryName: "Elektronik" },
-    { id: 2, categoryName: "Schmuck" },
-    { id: 3, categoryName: "Garten" },
-    { id: 4, categoryName: "Haushalt" },
-  ];
-
-  const subcategories = [
-    { id: 1, subcategoryName: "Apple" },
-    { id: 2, subcategoryName: "Samsung" },
-    { id: 3, subcategoryName: "HTC" },
-    { id: 4, subcategoryName: "Sony" },
-  ];
+  const resetSearchInputs = () => {
+    setSelectedCategory("");
+    setSelectedSubcategory("");
+    setLocationRadiusInput(0);
+    setLocationOrZipInput("");
+    setSearchInput("");
+  };
 
   const filteredCategories =
+    query === ""
+      ? categories
+      : categories.filter((category) => {
+          return category.name.toLowerCase().includes(query.toLowerCase());
+        });
+
+  const filteredSubcategories =
+    query === ""
+      ? subcategories
+      : subcategories.filter((subcategory) => {
+          return subcategory.subcategoryName
+            .toLowerCase()
+            .includes(query.toLowerCase());
+        });
+
+  /* const filteredCategories =
     query === ""
       ? categories
       : categories.filter((category) => {
@@ -65,7 +129,84 @@ function Navigation() {
           return subcategory.subcategoryName
             .toLowerCase()
             .includes(query.toLowerCase());
-        });
+        }); */
+
+  const success = (position) => {
+    console.log(position);
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+    const geoAPIURL = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`;
+
+    fetch(geoAPIURL)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("GEO DATA", data);
+        const locality = data?.locality;
+        const postcode = data?.postcode;
+        setLocationOrZipInput(data?.locality);
+      });
+  };
+
+  const retrieveSubCategoriesBelongingToCategory = async (category_name) => {
+    fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+        `/subcategories/categoryname/${category_name}`,
+      {
+        method: "get",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `${await clerkAuth.getToken()}`,
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATA GET SUBCATEGORIES", data);
+        if (data?.subcategories) {
+          setSubcategories(
+            data?.subcategories.map((element) => ({
+              subcategory_id: element.subcategory_id,
+              name: element.name,
+            }))
+          );
+        }
+      })
+      .catch((error) => {
+        console.log("ERROR GET SUBCATEGORIES", error);
+      });
+  };
+
+  const retrieveCategories = async () => {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/categories/`, {
+      method: "get",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `${await clerkAuth.getToken()}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATA GET CATEGORIES", data);
+        if (data?.categories) {
+          setCategories(
+            data?.categories.map((element) => ({
+              category_id: element.category_id,
+              name: element.name,
+            }))
+          );
+        }
+      })
+      .catch((error) => {
+        console.log("ERROR GET CATEGORIES", error);
+      });
+  };
+
+  const error = (position) => {
+    console.log(position);
+    alert("Bitte gebe das Recht frei deinen Standort zu nutzen");
+  };
 
   /* if (!isLoaded || !userId || !isSignedIn) {
     return null;
@@ -85,6 +226,14 @@ function Navigation() {
       console.log("CHECKING FOR MINIMUM PROFILE DATA", user);
     }
   }, []); */
+
+  useEffect(() => {
+    retrieveCategories();
+  }, []);
+
+  useEffect(() => {
+    retrieveSubCategoriesBelongingToCategory(selectedCategory);
+  }, [selectedCategory]);
 
   return (
     <header className="sticky top-0 z-20 grid grid-cols-3 p-6 bg-white shadow-sm md:px-10 md:py-8 lg:pl-20">
@@ -116,7 +265,31 @@ function Navigation() {
           onChange={(event) => setSearchInput(event.target.value)}
           placeholder="Wonach suchst du?"
         />
-        <SearchIcon className="hidden h-8 p-2 text-white bg-orange-400 rounded-full cursor-pointer hover:bg-orange-500 md:inline-flex md:mx-3" />
+        <Link
+          href={{
+            pathname: "/suche/[sid]",
+            query: {
+              sid: searchInput,
+              search: searchInput,
+              category: selectedCategory,
+              subcategory: selectedSubcategory,
+              locality: locationOrZipInput,
+              radius: locationRadiusInput,
+            },
+          }}
+          as={createSearchPath(
+            searchInput,
+            selectedCategory,
+            selectedSubcategory,
+            locationOrZipInput,
+            locationRadiusInput
+          )}
+        >
+          <SearchIcon
+            onClick={() => resetSearchInputs()}
+            className="hidden h-8 p-2 text-white bg-orange-400 rounded-full cursor-pointer hover:bg-orange-500 md:inline-flex md:mx-3"
+          />
+        </Link>
       </div>
       {/* Right Navbar */}
       <Popover
@@ -374,164 +547,137 @@ function Navigation() {
                 >
                   Kategorie auswählen
                 </button> */}
-                  <Combobox
-                    as="div"
+                  <Listbox
                     value={selectedCategory}
                     onChange={setSelectedCategory}
                   >
-                    <Combobox.Label className="block text-sm font-medium text-gray-700">
-                      Kategorie auswählen
-                    </Combobox.Label>
-                    <div className="relative mt-1">
-                      <Combobox.Input
-                        className="w-full py-2 pl-3 pr-10 text-gray-600 bg-white border border-white rounded-md shadow-sm focus:outline-none focus:ring-transparent sm:text-sm"
-                        onChange={(event) => setQuery(event.target.value)}
-                        displayValue={(category) => category?.categoryName}
-                      />
-                      <Combobox.Button className="absolute inset-y-0 right-0 flex items-center px-2 rounded-r-md focus:outline-none">
-                        <SelectorIcon
-                          className="w-5 h-5 text-gray-400"
-                          aria-hidden="true"
-                        />
-                      </Combobox.Button>
-
-                      {filteredCategories.length > 0 && (
-                        <Combobox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                          {filteredCategories.map((category) => (
-                            <Combobox.Option
-                              key={category.id}
-                              value={category}
+                    <div className="relative mb-2">
+                      <Listbox.Label>
+                        <div className="pb-1 text-sm font-semibold text-gray-700">
+                          Kategorie
+                        </div>
+                      </Listbox.Label>
+                      <Listbox.Button
+                        className="relative w-full py-2 pl-3 pr-10 text-left rounded-lg shadow-md cursor-default focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm !text-sm font-medium text-gray-600 bg-white"
+                        style={{ height: "2.5rem", width: "14rem" }}
+                      >
+                        <span className="block truncate">
+                          {selectedCategory}
+                        </span>
+                        <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                          <SelectorIcon
+                            className="w-5 h-5 text-gray-400"
+                            aria-hidden="true"
+                          />
+                        </span>
+                      </Listbox.Button>
+                      <Transition
+                        as={Fragment}
+                        leave="transition ease-in duration-100"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                      >
+                        <Listbox.Options className="absolute w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm !z-50">
+                          {categories.map((category, index) => (
+                            <Listbox.Option
+                              key={index}
                               className={({ active }) =>
-                                classNames(
-                                  "relative cursor-pointer select-none py-2 pl-8 pr-4",
+                                `relative select-none py-2 cursor-pointer pl-10 pr-4 font-bold ${
                                   active
-                                    ? "bg-indigo-600 text-white"
+                                    ? "bg-[#2f70e9] text-white"
                                     : "text-gray-900"
-                                )
+                                }`
                               }
+                              value={category?.name}
                             >
-                              {({ active, selected }) => (
+                              {({ selected }) => (
                                 <>
-                                  <span
-                                    className={classNames(
-                                      "block truncate",
-                                      selected && "font-semibold"
-                                    )}
-                                  >
-                                    {category.categoryName}
+                                  <span cclassName={`block truncate font-bold`}>
+                                    {category?.name}
                                   </span>
-
-                                  {selected && (
-                                    <span
-                                      className={classNames(
-                                        "absolute inset-y-0 left-0 flex items-center pl-1.5",
-                                        active
-                                          ? "text-white"
-                                          : "text-indigo-600"
-                                      )}
-                                    >
-                                      <CheckIcon
-                                        className="w-5 h-5"
-                                        aria-hidden="true"
-                                      />
-                                    </span>
-                                  )}
                                 </>
                               )}
-                            </Combobox.Option>
+                            </Listbox.Option>
                           ))}
-                        </Combobox.Options>
-                      )}
+                        </Listbox.Options>
+                      </Transition>
                     </div>
-                  </Combobox>
-                  <Combobox
-                    as="div"
+                  </Listbox>
+                  <Listbox
                     value={selectedSubcategory}
                     onChange={setSelectedSubcategory}
-                    className={`mt-4  ${!selectedCategory ? "invisible" : ""}`}
+                    className={`${!selectedCategory ? "invisible" : ""}`}
                   >
-                    <Combobox.Label className="block text-sm font-medium text-gray-700">
-                      Subkategorie auswählen
-                    </Combobox.Label>
                     <div className="relative mt-1">
-                      <Combobox.Input
-                        className="w-full py-2 pl-3 pr-10 text-gray-600 bg-white border border-white rounded-md shadow-sm focus:outline-none focus:ring-transparent sm:text-sm"
-                        onChange={(event) => setQuery(event.target.value)}
-                        displayValue={(subcategory) =>
-                          subcategory?.subcategoryName
-                        }
-                      />
-                      <Combobox.Button className="absolute inset-y-0 right-0 flex items-center px-2 rounded-r-md focus:outline-none">
-                        <SelectorIcon
-                          className="w-5 h-5 text-gray-400"
-                          aria-hidden="true"
-                        />
-                      </Combobox.Button>
-
-                      {filteredSubcategories.length > 0 && (
-                        <Combobox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                          {filteredSubcategories.map((subcategory) => (
-                            <Combobox.Option
-                              key={subcategory.id}
-                              value={subcategory}
+                      <Listbox.Label>
+                        <div className="pb-1 text-sm font-semibold text-gray-700">
+                          Subkategorie
+                        </div>
+                      </Listbox.Label>
+                      <Listbox.Button
+                        className="relative w-full py-2 pl-3 pr-10 text-left rounded-lg shadow-md cursor-default focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm !text-sm font-medium text-gray-600 bg-white"
+                        style={{ height: "2.5rem" }}
+                      >
+                        <span className="block truncate">
+                          {selectedSubcategory}
+                        </span>
+                        <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                          <SelectorIcon
+                            className="w-5 h-5 text-gray-400"
+                            aria-hidden="true"
+                          />
+                        </span>
+                      </Listbox.Button>
+                      <Transition
+                        as={Fragment}
+                        leave="transition ease-in duration-100"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                      >
+                        <Listbox.Options className="absolute w-56 py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm !z-50">
+                          {subcategories.map((subcategory, index) => (
+                            <Listbox.Option
+                              key={index}
                               className={({ active }) =>
-                                classNames(
-                                  "relative select-none py-2 pl-8 pr-4 cursor-pointer",
+                                `relative select-none py-2 cursor-pointer pl-10 pr-4 font-bold ${
                                   active
-                                    ? "bg-indigo-600 text-white"
+                                    ? "bg-[#2f70e9] text-white"
                                     : "text-gray-900"
-                                )
+                                }`
                               }
+                              value={subcategory?.name}
                             >
-                              {({ active, selected }) => (
+                              {({ selected }) => (
                                 <>
-                                  <span
-                                    className={classNames(
-                                      "block truncate",
-                                      selected && "font-semibold"
-                                    )}
-                                  >
-                                    {subcategory.subcategoryName}
+                                  <span cclassName={`block truncate font-bold`}>
+                                    {subcategory?.name}
                                   </span>
-
-                                  {selected && (
-                                    <span
-                                      className={classNames(
-                                        "absolute inset-y-0 left-0 flex items-center pl-1.5",
-                                        active
-                                          ? "text-white"
-                                          : "text-indigo-600"
-                                      )}
-                                    >
-                                      <CheckIcon
-                                        className="w-5 h-5"
-                                        aria-hidden="true"
-                                      />
-                                    </span>
-                                  )}
                                 </>
                               )}
-                            </Combobox.Option>
+                            </Listbox.Option>
                           ))}
-                        </Combobox.Options>
-                      )}
+                        </Listbox.Options>
+                      </Transition>
                     </div>
-                  </Combobox>
+                  </Listbox>
                 </div>
               </div>
             </div>
             <div className="flex-col pt-2 mt-8 mb-4">
               <div className="flex">
                 <input
-                  className="flex-grow pl-6 text-sm text-gray-700 placeholder-gray-400 bg-transparent !bg-white border-transparent rounded-md outline-none xs:pl-4 focus:outline-none focus:border-transparent focus:ring-0"
+                  className="pl-6 text-sm text-gray-700 placeholder-gray-400 bg-transparent !bg-white border-transparent rounded-md outline-none xs:pl-4 focus:outline-none focus:border-transparent focus:ring-0 w-4/6"
                   type="text"
                   value={locationOrZipInput}
                   onChange={(event) =>
                     setLocationOrZipInput(event.target.value)
                   }
-                  placeholder="Ort oder PLZ"
+                  placeholder="Stadt"
                 />
                 <div
+                  onClick={() =>
+                    navigator.geolocation.getCurrentPosition(success, error)
+                  }
                   className="mr-2 text-gray-500 cursor-pointer hover:text-orange-500"
                   title="Meinen Standort nutzen"
                 >
@@ -548,7 +694,7 @@ function Navigation() {
                     />
                   </svg>
                 </div>
-                <div
+                {/*   <div
                   className="mt-1 mr-4 cursor-pointer hover:text-orange-500"
                   title="Ort auf der Karte markieren"
                 >
@@ -566,7 +712,7 @@ function Navigation() {
                       d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
                     />
                   </svg>
-                </div>
+                </div> */}
               </div>
               <div className="grid items-center grid-cols-2">
                 <div className="mt-6">
@@ -624,9 +770,33 @@ function Navigation() {
             </div>
           </div>
           <div className="flex justify-center pl-1">
-            <button className="w-full h-10 mx-20 mb-4 mr-24 font-semibold text-white bg-orange-400 rounded-md">
-              Jetzt Entdecken
-            </button>
+            <Link
+              href={{
+                pathname: "/suche/[sid]",
+                query: {
+                  sid: searchInput,
+                  search: searchInput,
+                  category: selectedCategory,
+                  subcategory: selectedSubcategory,
+                  locality: locationOrZipInput,
+                  radius: locationRadiusInput,
+                },
+              }}
+              as={createSearchPath(
+                searchInput,
+                selectedCategory,
+                selectedSubcategory,
+                locationOrZipInput,
+                locationRadiusInput
+              )}
+            >
+              <button
+                onClick={() => resetSearchInputs()}
+                className="w-full h-10 mx-20 mb-4 mr-24 font-semibold text-white bg-orange-400 rounded-md"
+              >
+                Jetzt Entdecken
+              </button>
+            </Link>
           </div>
         </div>
       )}
