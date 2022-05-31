@@ -22,65 +22,69 @@ export default function Anzeige() {
   const [adImages, setAdImages] = useState([]);
 
   const retrieveSpecificAdvertisement = (aid) => {
-    fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
-        `/advertisements/public/${aid}`,
-      {
-        method: "get",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      }
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("DATA GET SPECIFIC ADVERTISEMENT", data);
-        if (data?.advertisement) {
-          setAdvertisementInfoObject(data?.advertisement);
-          let tempAdImagesArray = [];
-          if (data?.advertisement?.article_image_1) {
-            tempAdImagesArray.push(data?.advertisement?.article_image_1);
-          }
-          if (data?.advertisement?.article_image_2) {
-            tempAdImagesArray.push(data?.advertisement?.article_image_2);
-          }
-          if (data?.advertisement?.article_image_3) {
-            tempAdImagesArray.push(data?.advertisement?.article_image_3);
-          }
-          if (data?.advertisement?.article_image_4) {
-            tempAdImagesArray.push(data?.advertisement?.article_image_4);
-          }
-          if (data?.advertisement?.article_image_5) {
-            tempAdImagesArray.push(data?.advertisement?.article_image_5);
-          }
-          setAdImages(tempAdImagesArray);
+    if (aid) {
+      fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+          `/advertisements/public/${aid}`,
+        {
+          method: "get",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
         }
-      })
-      .catch((error) => {
-        console.log("ERROR DATA GET SPECIFIC ADVERTISEMENT", error);
-      });
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA GET SPECIFIC ADVERTISEMENT", data);
+          if (data?.advertisement) {
+            setAdvertisementInfoObject(data?.advertisement);
+            let tempAdImagesArray = [];
+            if (data?.advertisement?.article_image_1) {
+              tempAdImagesArray.push(data?.advertisement?.article_image_1);
+            }
+            if (data?.advertisement?.article_image_2) {
+              tempAdImagesArray.push(data?.advertisement?.article_image_2);
+            }
+            if (data?.advertisement?.article_image_3) {
+              tempAdImagesArray.push(data?.advertisement?.article_image_3);
+            }
+            if (data?.advertisement?.article_image_4) {
+              tempAdImagesArray.push(data?.advertisement?.article_image_4);
+            }
+            if (data?.advertisement?.article_image_5) {
+              tempAdImagesArray.push(data?.advertisement?.article_image_5);
+            }
+            setAdImages(tempAdImagesArray);
+          }
+        })
+        .catch((error) => {
+          console.log("ERROR DATA GET SPECIFIC ADVERTISEMENT", error);
+        });
+    }
   };
 
   const increaseViewCount = (aid) => {
-    fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
-        `/advertisements/increaseviewcount/${aid}`,
-      {
-        method: "get",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      }
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("DATA INCREASE VIEWCOUNT", data);
-      })
-      .catch((error) => {
-        console.log("ERROR DATA INCREASE VIEWCOUNT", error);
-      });
+    if (aid) {
+      fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+          `/advertisements/increaseviewcount/${aid}`,
+        {
+          method: "get",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA INCREASE VIEWCOUNT", data);
+        })
+        .catch((error) => {
+          console.log("ERROR DATA INCREASE VIEWCOUNT", error);
+        });
+    }
   };
 
   const handleOnPreviousImageClick = () => {

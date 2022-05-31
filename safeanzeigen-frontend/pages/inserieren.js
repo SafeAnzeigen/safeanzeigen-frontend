@@ -139,34 +139,36 @@ export default function Inserieren() {
   };
 
   const retrieveSubCategoriesBelongingToCategory = async (category_name) => {
-    fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
-        `/subcategories/categoryname/${category_name}`,
-      {
-        method: "get",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `${await clerkAuth.getToken()}`,
-        },
-      }
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("DATA GET SUBCATEGORIES", data);
-        if (data?.subcategories) {
-          setSubcategories(
-            data?.subcategories.map((element) => ({
-              subcategory_id: element.subcategory_id,
-              name: element.name,
-            }))
-          );
-          /* setSelectedSubcategory(data?.subcategories[0].name); */
+    if (category_name) {
+      fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+          `/subcategories/categoryname/${category_name}`,
+        {
+          method: "get",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `${await clerkAuth.getToken()}`,
+          },
         }
-      })
-      .catch((error) => {
-        console.log("ERROR GET SUBCATEGORIES", error);
-      });
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA GET SUBCATEGORIES", data);
+          if (data?.subcategories) {
+            setSubcategories(
+              data?.subcategories.map((element) => ({
+                subcategory_id: element.subcategory_id,
+                name: element.name,
+              }))
+            );
+            /* setSelectedSubcategory(data?.subcategories[0].name); */
+          }
+        })
+        .catch((error) => {
+          console.log("ERROR GET SUBCATEGORIES", error);
+        });
+    }
   };
 
   const retrieveCategories = async () => {
