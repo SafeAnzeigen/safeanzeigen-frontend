@@ -129,7 +129,7 @@ function Navigation() {
     fetch(geoAPIURL)
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
+        console.log("GEO DATA", data);
         const locality = data?.locality;
         const postcode = data?.postcode;
         setLocationOrZipInput(data?.locality);
@@ -689,7 +689,7 @@ function Navigation() {
                   onChange={(event) =>
                     setLocationOrZipInput(event.target.value)
                   }
-                  placeholder="Ort oder PLZ"
+                  placeholder="Stadt"
                 />
                 <div
                   onClick={() =>
