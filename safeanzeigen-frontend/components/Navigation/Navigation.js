@@ -74,18 +74,15 @@ const createSearchPath = (
 function Navigation() {
   const { signOut } = useClerk();
   const clerkAuth = useAuth();
-  const { isLoaded, userId, sessionId, getToken } = useAuth();
-  const { isSignedIn, user } = useUser();
-  const [
-    isUserRedirectToSignInActive,
-    setIsUserRedirectToSignInActivePayNowSelected,
-  ] = useState(false);
+  const { userId } = useAuth();
+  const { user } = useUser();
+  const [isUserRedirectToSignInActive, setIsUserRedirectToSignInActive, ,] =
+    useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [locationOrZipInput, setLocationOrZipInput] = useState("");
   const [locationRadiusInput, setLocationRadiusInput] = useState(0);
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
-  const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState();
   const [selectedSubcategory, setSelectedSubcategory] = useState();
 
@@ -96,40 +93,6 @@ function Navigation() {
     setLocationOrZipInput("");
     setSearchInput("");
   };
-
-  const filteredCategories =
-    query === ""
-      ? categories
-      : categories.filter((category) => {
-          return category.name.toLowerCase().includes(query.toLowerCase());
-        });
-
-  const filteredSubcategories =
-    query === ""
-      ? subcategories
-      : subcategories.filter((subcategory) => {
-          return subcategory.subcategoryName
-            .toLowerCase()
-            .includes(query.toLowerCase());
-        });
-
-  /* const filteredCategories =
-    query === ""
-      ? categories
-      : categories.filter((category) => {
-          return category.categoryName
-            .toLowerCase()
-            .includes(query.toLowerCase());
-        });
-
-  const filteredSubcategories =
-    query === ""
-      ? subcategories
-      : subcategories.filter((subcategory) => {
-          return subcategory.subcategoryName
-            .toLowerCase()
-            .includes(query.toLowerCase());
-        }); */
 
   const success = (position) => {
     console.log(position);
@@ -232,189 +195,113 @@ function Navigation() {
   }, []);
 
   useEffect(() => {
-    retrieveSubCategoriesBelongingToCategory(selectedCategory);
+    if (selectedCategory) {
+      retrieveSubCategoriesBelongingToCategory(selectedCategory);
+    }
   }, [selectedCategory]);
 
   return (
-    <header className="sticky top-0 z-20 grid grid-cols-3 p-6 bg-white shadow-sm md:px-10 md:py-8 lg:pl-20">
+    <header className="sticky top-0 z-20 grid grid-rows-3 p-6 bg-white shadow-sm md:grid-rows-none md:grid-cols-3 md:px-10 md:py-8 lg:pl-20">
       {/* Left Navbar */}
-      <div className="relative flex items-center h-12 my-auto select-none">
+      <div className="relative flex items-center h-16 my-auto select-none md:h-12">
         <Link href="/">
-          <a>
+          <a className="flex items-center">
             <Image
               src="/safeanzeigen-logo-text.png"
               alt="Safeanzeigen Logo Image"
               layout="fill"
               objectFit="contain"
               objectPosition="left"
-              className="cursor-pointer"
+              className="relative transform cursor-pointer left-1/2 translate-x-[4rem]"
             />
           </a>
         </Link>
       </div>
       {/* Middle Navbar */}
       <div
-        className={`flex items-center border-2 select-none md:shadow-sm xs:ml-2 ${
+        className={`mt-4 md:mt-0 flex justify-between items-center border-2 select-none md:shadow-sm xs:ml-2 ${
           searchInput ? "rounded-tl-lg rounded-tr-lg" : "rounded-lg"
         }`}
       >
         <input
-          className="flex-grow text-lg text-gray-700 placeholder-gray-400 bg-transparent border-transparent outline-none pl- xs:pl-4 focus:outline-none focus:border-transparent focus:ring-0"
+          className="text-lg text-gray-700 placeholder-gray-400 bg-transparent border-transparent outline-none mt-4flex-grow pl- xs:pl-4 focus:outline-none focus:border-transparent focus:ring-0"
           type="text"
           value={searchInput}
           onChange={(event) => setSearchInput(event.target.value)}
           placeholder="Wonach suchst du?"
         />
-        <Link
-          href={{
-            pathname: "/suche/[sid]",
-            query: {
-              sid: searchInput,
-              search: searchInput,
-              category: selectedCategory,
-              subcategory: selectedSubcategory,
-              locality: locationOrZipInput,
-              radius: locationRadiusInput,
-            },
-          }}
-          as={createSearchPath(
-            searchInput,
-            selectedCategory,
-            selectedSubcategory,
-            locationOrZipInput,
-            locationRadiusInput
-          )}
-        >
-          <SearchIcon
-            onClick={() => resetSearchInputs()}
-            className="hidden h-8 p-2 text-white bg-orange-400 rounded-full cursor-pointer hover:bg-orange-500 md:inline-flex md:mx-3"
-          />
-        </Link>
+
+        {searchInput ? (
+          <div onClick={() => resetSearchInputs()}>
+            <Link
+              href={{
+                pathname: "/suche/[sid]",
+                query: {
+                  sid: searchInput,
+                  search: searchInput,
+                  category: selectedCategory,
+                  subcategory: selectedSubcategory,
+                  locality: locationOrZipInput,
+                  radius: locationRadiusInput,
+                },
+              }}
+              as={createSearchPath(
+                searchInput,
+                selectedCategory,
+                selectedSubcategory,
+                locationOrZipInput,
+                locationRadiusInput
+              )}
+            >
+              <SearchIcon className="hidden h-8 p-2 text-white bg-orange-400 rounded-full cursor-pointer hover:bg-orange-500 md:inline-flex md:mx-3" />
+            </Link>
+          </div>
+        ) : (
+          <SearchIcon className="hidden h-8 p-2 text-white bg-orange-400 rounded-full cursor-pointer hover:bg-orange-500 md:inline-flex md:mx-3" />
+        )}
       </div>
       {/* Right Navbar */}
-      <Popover
-        as="header"
-        className={({ open }) =>
-          classNames(
-            open ? "fixed inset-0 z-21 overflow-y-auto" : "",
-            "bg-white lg:static lg:overflow-y-visible py-2"
-          )
-        }
-      >
-        {({ open }) => (
-          <>
-            <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-              <div className="relative flex justify-between xl:grid xl:grid-cols-12 lg:gap-8">
-                <div className="flex items-center md:absolute md:right-0 md:inset-y-0 lg:hidden">
-                  {/* Mobile Button & Screen Reader Accessibility */}
-                  <Popover.Button className="inline-flex items-center justify-center p-2 -mx-2 focus:outline-none focus:ring-transparent text-[#9ca3af]cursor-pointer hover:bg-gray-200 border-gray-200 border-2 rounded-lg">
-                    <span className="sr-only">Navigation öffnen</span>
-                    {open ? (
-                      <XIcon className="block w-6 h-6" aria-hidden="true" />
-                    ) : (
-                      <MenuIcon className="block w-6 h-6" aria-hidden="true" />
-                    )}
-                  </Popover.Button>
-                </div>
-                {/*  {console.log("USER OBJECT", user)} */}
-                {/* Desktop View */}
-                <SignedIn>
-                  <div className="hidden lg:flex lg:items-center lg:justify-end xl:col-span-12">
-                    {/* CHAT ICON */}
-                    <Link href="/chat">
-                      <div
-                        href="#"
-                        className="flex-shrink-0 p-1 ml-5 rounded-full hover:text-gray-500 focus:outline-none focus:ring-transparent text-[#9ca3af]"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="cursor-pointer w-9 h-9"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={2}
+      <div className="order-first md:order-none">
+        <Popover
+          as="header"
+          className={({ open }) =>
+            classNames(
+              open ? "fixed inset-0 z-21 overflow-y-auto" : "",
+              "bg-white lg:static lg:overflow-y-visible py-2"
+            )
+          }
+        >
+          {({ open }) => (
+            <>
+              <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+                <div className="relative flex justify-between xl:grid xl:grid-cols-12 lg:gap-8">
+                  <div className="flex items-center md:absolute md:right-0 md:inset-y-0 lg:hidden">
+                    {/* Mobile Button & Screen Reader Accessibility */}
+                    <Popover.Button className="inline-flex items-center justify-center p-2 -mx-2 focus:outline-none focus:ring-transparent text-[#9ca3af] cursor-pointer hover:bg-gray-200 border-gray-200 border-2 rounded-lg">
+                      <span className="sr-only">Navigation öffnen</span>
+                      {open ? (
+                        <XIcon className="block w-6 h-6" aria-hidden="true" />
+                      ) : (
+                        <MenuIcon
+                          className="block w-6 h-6"
+                          aria-hidden="true"
+                        />
+                      )}
+                    </Popover.Button>
+                  </div>
+                  {/*  {console.log("USER OBJECT", user)} */}
+                  {/* Desktop View */}
+                  <SignedIn>
+                    <div className="hidden lg:flex lg:items-center lg:justify-end xl:col-span-12">
+                      {/* CHAT ICON */}
+                      <Link href="/chat">
+                        <div
+                          href="#"
+                          className="flex-shrink-0 p-1 ml-5 rounded-full hover:text-gray-500 focus:outline-none focus:ring-transparent text-[#9ca3af]"
                         >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                          />
-                        </svg>
-                      </div>
-                    </Link>
-
-                    {/* USER DROPDOWN */}
-                    <Menu
-                      as="div"
-                      className="relative flex-shrink-0 ml-5 select-none"
-                    >
-                      <div>
-                        <Menu.Button className="flex bg-white rounded-full focus:outline-none hover:ring-2 hover:ring-offset-0 hover:ring-gray-400">
-                          <span className="sr-only">Nutzermenü öffnen</span>
-                          <img
-                            className="w-10 h-10 rounded-full"
-                            src={`https://source.boringavatars.com/beam/300/${userId}${userId}${userId}?colors=2f70e9,e76f51,ffc638,f4a261,e97c2f`}
-                            alt="Benutzeridentifizierender Avatar"
-                          />
-                        </Menu.Button>
-                      </div>
-                      <Transition
-                        as={Fragment}
-                        enter="transition ease-out duration-100"
-                        enterFrom="transform opacity-0 scale-95"
-                        enterTo="transform opacity-100 scale-100"
-                        leave="transition ease-in duration-75"
-                        leaveFrom="transform opacity-100 scale-100"
-                        leaveTo="transform opacity-0 scale-95"
-                      >
-                        <Menu.Items className="absolute right-0 z-10 w-48 py-1 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                          <Menu.Item>
-                            <p className="block px-4 py-2 text-sm font-bold text-gray-700 select-none">
-                              Hallo, {user?.firstName}
-                            </p>
-                          </Menu.Item>
-                          <Menu.Item>
-                            <Link href="/favoriten">
-                              <p className="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100">
-                                Deine Favoriten
-                              </p>
-                            </Link>
-                          </Menu.Item>
-                          <Menu.Item>
-                            <Link href="/angebote">
-                              <p className="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100">
-                                Deine Angebote
-                              </p>
-                            </Link>
-                          </Menu.Item>
-                          <Menu.Item>
-                            <Link href="/profil">
-                              <p className="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100">
-                                Dein Profil
-                              </p>
-                            </Link>
-                          </Menu.Item>
-                          <Menu.Item>
-                            <Link href="/">
-                              <p
-                                onClick={() => signOut()}
-                                className="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100"
-                              >
-                                Ausloggen
-                              </p>
-                            </Link>
-                          </Menu.Item>
-                        </Menu.Items>
-                      </Transition>
-                    </Menu>
-
-                    {/* Inserieren Button */}
-                    <div className="hidden select-none lg:flex lg:items-center lg:justify-end xl:col-span-12">
-                      <Link href="/inserieren">
-                        <button className="inline-flex items-center px-4 py-2 ml-6 text-sm font-medium text-white bg-[#2f70e9] border border-transparent rounded-md shadow-sm hover:bg-[#2962cd] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            className="w-6 h-6 pr-2"
+                            className="cursor-pointer w-9 h-9"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -423,110 +310,214 @@ function Navigation() {
                             <path
                               strokeLinecap="round"
                               strokeLinejoin="round"
-                              d="M12 4v16m8-8H4"
-                            />{" "}
+                              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                            />
                           </svg>
-                          Inserieren
-                        </button>
+                        </div>
                       </Link>
-                    </div>
-                  </div>
-                </SignedIn>
 
-                <SignedOut>
-                  {isUserRedirectToSignInActive ? <RedirectToSignIn /> : ""}
-                  <div className="relative hidden lg:flex lg:items-center lg:justify-end xl:col-span-12 ">
-                    <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-orange-500 opacity-75 -top-0.5 -right-0.5"></span>
-                    <span className="absolute inline-flex rounded-full h-3 w-3 -top-0.5 -right-0.5 bg-orange-500"></span>
-                    <button
-                      onClick={() =>
-                        setIsUserRedirectToSignInActivePayNowSelected(true)
-                      }
-                      className="inline-flex items-center px-4 py-2 ml-6 text-medium font-medium text-white bg-[#2f70e9] border border-transparent rounded-md shadow-sm hover:bg-[#2962cd] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent"
-                    >
-                      Jetzt Loslegen!
-                    </button>
-                  </div>
-                </SignedOut>
-              </div>
-            </div>
-
-            {/* Mobile View */}
-            <Popover.Panel as="nav" className="lg:hidden" aria-label="Global">
-              <div className="max-w-3xl px-2 pt-2 pb-3 mx-auto space-y-1 sm:px-4">
-                <Link href="/favoriten">
-                  <p className="block px-3 py-2 text-base font-medium text-gray-900 rounded-md cursor-pointer hover:bg-gray-100 bg-gray-50">
-                    Deine Favoriten
-                  </p>
-                </Link>
-                <Link href="/angebote">
-                  <p className="block px-3 py-2 text-base font-medium text-gray-900 rounded-md cursor-pointer hover:bg-gray-100 bg-gray-50">
-                    Deine Angebote
-                  </p>
-                </Link>
-                <Link href="/profil">
-                  <p className="block px-3 py-2 text-base font-medium text-gray-900 rounded-md cursor-pointer hover:bg-gray-100 bg-gray-50">
-                    Dein Profil
-                  </p>
-                </Link>
-                <p
-                  onClick={() =>
-                    setIsUserRedirectToSignInActivePayNowSelected(true)
-                  }
-                  className="block px-3 py-2 text-base font-medium text-gray-900 rounded-md cursor-pointer hover:bg-gray-100 bg-gray-50"
-                >
-                  Registieren
-                </p>
-              </div>
-              <div className="pt-4 pb-3 border-t border-gray-200">
-                <div className="flex items-center max-w-3xl px-4 mx-auto sm:px-6">
-                  <div className="flex-shrink-0">
-                    <img
-                      className="w-10 h-10 rounded-full"
-                      src={`https://source.boringavatars.com/beam/300/${userId}${userId}${userId}?colors=2f70e9,e76f51,ffc638,f4a261,e97c2f`}
-                      alt="Nutzeridentifizierender Avatar"
-                    />
-                  </div>
-                  <div className="ml-3">
-                    {/* TODO: GRAB DATA FROM USER TO DISPLAY INFO */}
-                    <div className="text-base font-medium text-gray-800">
-                      Hallo, {user?.firstName} {user?.lastName}
-                    </div>
-                    <div className="text-sm font-medium text-gray-500">
-                      {user?.primaryPhoneNumber?.phoneNumber}
-                    </div>
-                    <div className="text-sm font-medium text-gray-500">
-                      {user?.emailAddresses[0]?.emailAddress}
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    className="flex-shrink-0 p-1 ml-auto bg-white rounded-full hover:text-gray-500 focus:outline-none focus:ring-transparent text-[#9ca3af]"
-                  >
-                    {/* CHAT ICON */}
-                    <Link href="/chat">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="cursor-pointer w-9 h-9"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
+                      {/* USER DROPDOWN */}
+                      <Menu
+                        as="div"
+                        className="relative flex-shrink-0 ml-5 select-none"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                        />
-                      </svg>
-                    </Link>
-                  </button>
+                        <div>
+                          <Menu.Button className="flex bg-white rounded-full focus:outline-none hover:ring-2 hover:ring-offset-0 hover:ring-gray-400">
+                            <span className="sr-only">Nutzermenü öffnen</span>
+                            <img
+                              className="w-10 h-10 rounded-full"
+                              src={`https://source.boringavatars.com/beam/300/${userId}${userId}${userId}?colors=2f70e9,e76f51,ffc638,f4a261,e97c2f`}
+                              alt="Benutzeridentifizierender Avatar"
+                            />
+                          </Menu.Button>
+                        </div>
+                        <Transition
+                          as={Fragment}
+                          enter="transition ease-out duration-100"
+                          enterFrom="transform opacity-0 scale-95"
+                          enterTo="transform opacity-100 scale-100"
+                          leave="transition ease-in duration-75"
+                          leaveFrom="transform opacity-100 scale-100"
+                          leaveTo="transform opacity-0 scale-95"
+                        >
+                          <Menu.Items className="absolute right-0 z-10 w-48 py-1 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                            <Menu.Item>
+                              <p className="block px-4 py-2 text-sm font-bold text-gray-700 select-none">
+                                Hallo, {user?.firstName}
+                              </p>
+                            </Menu.Item>
+                            <Menu.Item>
+                              <Link href="/favoriten">
+                                <p className="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100">
+                                  Deine Favoriten
+                                </p>
+                              </Link>
+                            </Menu.Item>
+                            <Menu.Item>
+                              <Link href="/angebote">
+                                <p className="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100">
+                                  Deine Angebote
+                                </p>
+                              </Link>
+                            </Menu.Item>
+                            <Menu.Item>
+                              <Link href="/profil">
+                                <p className="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100">
+                                  Dein Profil
+                                </p>
+                              </Link>
+                            </Menu.Item>
+                            <Menu.Item>
+                              <Link href="/">
+                                <p
+                                  onClick={() => signOut()}
+                                  className="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100"
+                                >
+                                  Ausloggen
+                                </p>
+                              </Link>
+                            </Menu.Item>
+                          </Menu.Items>
+                        </Transition>
+                      </Menu>
+
+                      {/* Inserieren Button */}
+                      <div className="hidden select-none lg:flex lg:items-center lg:justify-end xl:col-span-12">
+                        <Link href="/inserieren">
+                          <button className="inline-flex items-center px-4 py-2 ml-6 text-sm font-medium text-white bg-[#2f70e9] border border-transparent rounded-md shadow-sm hover:bg-[#2962cd] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="w-6 h-6 pr-2"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              strokeWidth={2}
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M12 4v16m8-8H4"
+                              />{" "}
+                            </svg>
+                            Inserieren
+                          </button>
+                        </Link>
+                      </div>
+                    </div>
+                  </SignedIn>
+
+                  <SignedOut>
+                    {isUserRedirectToSignInActive ? <RedirectToSignIn /> : ""}
+                    <div className="relative hidden lg:flex lg:items-center lg:justify-end xl:col-span-12 ">
+                      <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-orange-500 opacity-75 -top-0.5 -right-0.5"></span>
+                      <span className="absolute inline-flex rounded-full h-3 w-3 -top-0.5 -right-0.5 bg-orange-500"></span>
+                      <button
+                        onClick={() => setIsUserRedirectToSignInActive(true)}
+                        className="inline-flex items-center px-4 py-2 ml-6 text-medium font-medium text-white bg-[#2f70e9] border border-transparent rounded-md shadow-sm hover:bg-[#2962cd] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent"
+                      >
+                        Jetzt Loslegen!
+                      </button>
+                    </div>
+                  </SignedOut>
                 </div>
               </div>
-            </Popover.Panel>
-          </>
-        )}
-      </Popover>
+
+              {/* Mobile View */}
+              <SignedOut>
+                <Popover.Panel
+                  as="nav"
+                  className="lg:hidden"
+                  aria-label="Global"
+                >
+                  <div className="max-w-3xl px-2 pt-2 pb-3 mx-auto space-y-1 sm:px-4">
+                    <Link href="/sign-in">
+                      <p className="block px-3 py-2 text-base font-medium rounded-md cursor-pointer bg-[#2f70e9] text-white hover:bg-[#2962cd]">
+                        Jetzt Loslegen!
+                      </p>
+                    </Link>
+                  </div>
+                </Popover.Panel>
+              </SignedOut>
+              <SignedIn>
+                <Popover.Panel
+                  as="nav"
+                  className="lg:hidden !z-50"
+                  aria-label="Global"
+                >
+                  <div className="max-w-3xl px-2 pt-2 pb-3 mx-auto space-y-1 sm:px-4">
+                    <Link href="/favoriten">
+                      <p className="block px-3 py-2 text-base font-medium text-gray-900 rounded-md cursor-pointer hover:bg-gray-100 bg-gray-50">
+                        Deine Favoriten
+                      </p>
+                    </Link>
+                    <Link href="/angebote">
+                      <p className="block px-3 py-2 text-base font-medium text-gray-900 rounded-md cursor-pointer hover:bg-gray-100 bg-gray-50">
+                        Deine Angebote
+                      </p>
+                    </Link>
+                    <Link href="/profil">
+                      <p className="block px-3 py-2 text-base font-medium text-gray-900 rounded-md cursor-pointer hover:bg-gray-100 bg-gray-50">
+                        Dein Profil
+                      </p>
+                    </Link>
+                    <p
+                      onClick={() => signOut()}
+                      className="block px-3 py-2 text-base font-medium text-gray-900 rounded-md cursor-pointer hover:bg-gray-100 bg-gray-50"
+                    >
+                      Ausloggen
+                    </p>
+                  </div>
+                  <div className="pt-4 pb-3 border-t border-gray-200">
+                    <div className="flex items-center max-w-3xl px-4 mx-auto sm:px-6">
+                      <div className="flex-shrink-0">
+                        <img
+                          className="w-10 h-10 rounded-full"
+                          src={`https://source.boringavatars.com/beam/300/${userId}${userId}${userId}?colors=2f70e9,e76f51,ffc638,f4a261,e97c2f`}
+                          alt="Nutzeridentifizierender Avatar"
+                        />
+                      </div>
+                      <div className="ml-3">
+                        {/* TODO: GRAB DATA FROM USER TO DISPLAY INFO */}
+                        <div className="text-base font-medium text-gray-800">
+                          Hallo, {user?.firstName} {user?.lastName}
+                        </div>
+                        <div className="text-sm font-medium text-gray-500">
+                          {user?.primaryPhoneNumber?.phoneNumber}
+                        </div>
+                        <div className="text-sm font-medium text-gray-500">
+                          {user?.emailAddresses[0]?.emailAddress}
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        className="flex-shrink-0 p-1 ml-auto bg-white rounded-full hover:text-gray-500 focus:outline-none focus:ring-transparent text-[#9ca3af]"
+                      >
+                        {/* CHAT ICON */}
+                        <Link href="/chat">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="cursor-pointer w-9 h-9"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                            />
+                          </svg>
+                        </Link>
+                      </button>
+                    </div>
+                  </div>
+                </Popover.Panel>
+              </SignedIn>
+            </>
+          )}
+        </Popover>
+      </div>
       {/* <div className="flex flex-col col-span-3 mx-auto">
           <div className="h-10 w-96 bg-gray-50">Test</div>
         </div> */}
@@ -537,136 +528,139 @@ function Navigation() {
       <div className="flex items-center"></div>
       {searchInput && (
         <div className="bg-gray-200 rounded-bl-lg rounded-br-lg select-none md:shadow-sm xs:ml-2">
-          <div className="grid grid-cols-2 ">
+          <div className="grid md:grid-cols-2 ">
             <div className="grid items-center justify-center grid-flow-col grid-rows-3 gap-4 mt-3">
               <div className="col-span-3 row-span-3 mb-4">
-                <div>
-                  {/* <button
-                  type="button"
-                  className="inline-flex items-center px-6 py-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-0 focus:ring-transparent"
-                >
-                  Kategorie auswählen
-                </button> */}
-                  <Listbox
-                    value={selectedCategory}
-                    onChange={setSelectedCategory}
-                  >
-                    <div className="relative mb-2">
-                      <Listbox.Label>
-                        <div className="pb-1 text-sm font-semibold text-gray-700">
-                          Kategorie
-                        </div>
-                      </Listbox.Label>
-                      <Listbox.Button
-                        className="relative w-full py-2 pl-3 pr-10 text-left rounded-lg shadow-md cursor-default focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm !text-sm font-medium text-gray-600 bg-white"
-                        style={{ height: "2.5rem", width: "14rem" }}
-                      >
-                        <span className="block truncate">
-                          {selectedCategory}
-                        </span>
-                        <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                          <SelectorIcon
-                            className="w-5 h-5 text-gray-400"
-                            aria-hidden="true"
-                          />
-                        </span>
-                      </Listbox.Button>
-                      <Transition
-                        as={Fragment}
-                        leave="transition ease-in duration-100"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
-                      >
-                        <Listbox.Options className="absolute w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm !z-50">
-                          {categories.map((category, index) => (
-                            <Listbox.Option
-                              key={index}
-                              className={({ active }) =>
-                                `relative select-none py-2 cursor-pointer pl-10 pr-4 font-bold ${
-                                  active
-                                    ? "bg-[#2f70e9] text-white"
-                                    : "text-gray-900"
-                                }`
-                              }
-                              value={category?.name}
-                            >
-                              {({ selected }) => (
-                                <>
-                                  <span cclassName={`block truncate font-bold`}>
-                                    {category?.name}
-                                  </span>
-                                </>
-                              )}
-                            </Listbox.Option>
-                          ))}
-                        </Listbox.Options>
-                      </Transition>
-                    </div>
-                  </Listbox>
-                  <Listbox
-                    value={selectedSubcategory}
-                    onChange={setSelectedSubcategory}
-                    className={`${!selectedCategory ? "invisible" : ""}`}
-                  >
-                    <div className="relative mt-1">
-                      <Listbox.Label>
-                        <div className="pb-1 text-sm font-semibold text-gray-700">
-                          Subkategorie
-                        </div>
-                      </Listbox.Label>
-                      <Listbox.Button
-                        className="relative w-full py-2 pl-3 pr-10 text-left rounded-lg shadow-md cursor-default focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm !text-sm font-medium text-gray-600 bg-white"
-                        style={{ height: "2.5rem" }}
-                      >
-                        <span className="block truncate">
-                          {selectedSubcategory}
-                        </span>
-                        <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                          <SelectorIcon
-                            className="w-5 h-5 text-gray-400"
-                            aria-hidden="true"
-                          />
-                        </span>
-                      </Listbox.Button>
-                      <Transition
-                        as={Fragment}
-                        leave="transition ease-in duration-100"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
-                      >
-                        <Listbox.Options className="absolute w-56 py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm !z-50">
-                          {subcategories.map((subcategory, index) => (
-                            <Listbox.Option
-                              key={index}
-                              className={({ active }) =>
-                                `relative select-none py-2 cursor-pointer pl-10 pr-4 font-bold ${
-                                  active
-                                    ? "bg-[#2f70e9] text-white"
-                                    : "text-gray-900"
-                                }`
-                              }
-                              value={subcategory?.name}
-                            >
-                              {({ selected }) => (
-                                <>
-                                  <span cclassName={`block truncate font-bold`}>
-                                    {subcategory?.name}
-                                  </span>
-                                </>
-                              )}
-                            </Listbox.Option>
-                          ))}
-                        </Listbox.Options>
-                      </Transition>
-                    </div>
-                  </Listbox>
+                <div className="">
+                  <div>
+                    <Listbox
+                      value={selectedCategory}
+                      onChange={setSelectedCategory}
+                    >
+                      <div className="relative mb-2">
+                        <Listbox.Label>
+                          <div className="pb-1 text-sm font-semibold text-gray-700">
+                            Kategorie
+                          </div>
+                        </Listbox.Label>
+                        <Listbox.Button
+                          className="relative w-full py-2 pl-3 pr-10 text-left rounded-lg shadow-md cursor-default focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm !text-sm font-medium text-gray-600 bg-white"
+                          style={{ height: "2.5rem", width: "14rem" }}
+                        >
+                          <span className="block truncate">
+                            {selectedCategory}
+                          </span>
+                          <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                            <SelectorIcon
+                              className="w-5 h-5 text-gray-400"
+                              aria-hidden="true"
+                            />
+                          </span>
+                        </Listbox.Button>
+                        <Transition
+                          as={Fragment}
+                          leave="transition ease-in duration-100"
+                          leaveFrom="opacity-100"
+                          leaveTo="opacity-0"
+                        >
+                          <Listbox.Options className="absolute w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm !z-50">
+                            {categories.map((category, index) => (
+                              <Listbox.Option
+                                key={index}
+                                className={({ active }) =>
+                                  `relative select-none py-2 cursor-pointer pl-10 pr-4 font-bold ${
+                                    active
+                                      ? "bg-[#2f70e9] text-white"
+                                      : "text-gray-900"
+                                  }`
+                                }
+                                value={category?.name}
+                              >
+                                {({ selected }) => (
+                                  <>
+                                    <span
+                                      className={`block truncate font-bold`}
+                                    >
+                                      {category?.name}
+                                    </span>
+                                  </>
+                                )}
+                              </Listbox.Option>
+                            ))}
+                          </Listbox.Options>
+                        </Transition>
+                      </div>
+                    </Listbox>
+                  </div>
+                  <div>
+                    {" "}
+                    <Listbox
+                      value={selectedSubcategory}
+                      onChange={setSelectedSubcategory}
+                      className={`${!selectedCategory ? "invisible" : ""}`}
+                    >
+                      <div className="relative mt-1">
+                        <Listbox.Label>
+                          <div className="pb-1 text-sm font-semibold text-gray-700">
+                            Subkategorie
+                          </div>
+                        </Listbox.Label>
+                        <Listbox.Button
+                          className="relative w-full py-2 pl-3 pr-10 text-left rounded-lg shadow-md cursor-default focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm !text-sm font-medium text-gray-600 bg-white"
+                          style={{ height: "2.5rem" }}
+                        >
+                          <span className="block truncate">
+                            {selectedSubcategory}
+                          </span>
+                          <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                            <SelectorIcon
+                              className="w-5 h-5 text-gray-400"
+                              aria-hidden="true"
+                            />
+                          </span>
+                        </Listbox.Button>
+                        <Transition
+                          as={Fragment}
+                          leave="transition ease-in duration-100"
+                          leaveFrom="opacity-100"
+                          leaveTo="opacity-0"
+                        >
+                          <Listbox.Options className="absolute w-56 py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm !z-30">
+                            {subcategories.map((subcategory, index) => (
+                              <Listbox.Option
+                                key={index}
+                                className={({ active }) =>
+                                  `relative select-none py-2 cursor-pointer pl-10 pr-4 font-bold ${
+                                    active
+                                      ? "bg-[#2f70e9] text-white"
+                                      : "text-gray-900"
+                                  }`
+                                }
+                                value={subcategory?.name}
+                              >
+                                {({ selected }) => (
+                                  <>
+                                    <span
+                                      className={`block truncate font-bold`}
+                                    >
+                                      {subcategory?.name}
+                                    </span>
+                                  </>
+                                )}
+                              </Listbox.Option>
+                            ))}
+                          </Listbox.Options>
+                        </Transition>
+                      </div>
+                    </Listbox>
+                  </div>
                 </div>
               </div>
             </div>
-            <div className="flex-col pt-2 mt-8 mb-4">
-              <div className="flex">
+            <div className="flex flex-col pt-2 mx-auto mt-8 mb-4 flex-center">
+              <div className="flex justify-center md:justify-start">
                 <input
-                  className="pl-6 text-sm text-gray-700 placeholder-gray-400 bg-transparent !bg-white border-transparent rounded-md outline-none xs:pl-4 focus:outline-none focus:border-transparent focus:ring-0 w-4/6"
+                  className="ml-5 w-4/6 pl-8 md:pl-6 md:ml-0 font-semibold text-sm text-gray-700 placeholder-gray-400 bg-transparent !bg-white border-transparent rounded-md outline-none xs:pl-4 focus:outline-none focus:border-transparent focus:ring-0 md:w-4/6"
                   type="text"
                   value={locationOrZipInput}
                   onChange={(event) =>
@@ -714,8 +708,8 @@ function Navigation() {
                   </svg>
                 </div> */}
               </div>
-              <div className="grid items-center grid-cols-2">
-                <div className="mt-6">
+              <div className="flex flex-col items-center grid-cols-2 mt-4 md:flex-none md:mt-0 md:grid">
+                <div className="md:mt-6">
                   <input
                     type="range"
                     min="0"
@@ -763,7 +757,7 @@ function Navigation() {
                   </div>
                 </div>
 
-                <div className="mb-3 ml-2 text-sm font-bold text-orange-600">
+                <div className="order-first ml-2 text-sm font-bold text-orange-600 md:order-none md:mb-3">
                   +{locationRadiusInput} km Radius
                 </div>
               </div>
@@ -792,7 +786,7 @@ function Navigation() {
             >
               <button
                 onClick={() => resetSearchInputs()}
-                className="w-full h-10 mx-20 mb-4 mr-24 font-semibold text-white bg-orange-400 rounded-md"
+                className="w-full h-10 mx-8 mb-4 font-semibold text-white bg-orange-400 rounded-md md:mr-24 md:mx-20"
               >
                 Jetzt Entdecken
               </button>
