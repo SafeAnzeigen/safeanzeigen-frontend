@@ -308,7 +308,7 @@ export default function Home() {
   /* TODO: Detect if user scrolled to horizontal end then enable vertical scroll again*/
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen overflow-x-hidden bg-gray-50">
       <Head>
         <title>
           Safeanzeigen - Wir bringen Ihre Kleinanzeigen mit Sicherheit groß
@@ -326,7 +326,7 @@ export default function Home() {
       {/* TODO: CHECK IF VERTICAL SCROLL SHOULD BE TRANSFORMED TO HORIZONTAL SCROLL https://stackoverflow.com/questions/24639103/changing-vertical-scroll-to-horizontal*/}
       <CookieBanner />
 
-      <section className="mx-20">
+      <section className="mx-4 md:mx-20">
         {showDislikeConfirmationModal && (
           <AlertConfirmationModal
             title="Möchtest du die Anzeige wirklich aus deinen Favoriten entfernen?"
@@ -343,9 +343,9 @@ export default function Home() {
           </h2>
           <div
             className="flex p-4 -mt-2 -ml-4 space-x-5 overflow-scroll scrollbar-hide"
-            onWheel={(event) => transformScroll(event, "sideScroll")}
+            /* onWheel={(event) => transformScroll(event, "sideScroll")}
             onMouseOver={() => preventVerticalScroll()}
-            onMouseLeave={() => enableVerticalScroll()}
+            onMouseLeave={() => enableVerticalScroll()} */
           >
             {offeredAdvertisements
               ?.filter((filterElement) => filterElement.is_published)
@@ -478,7 +478,7 @@ export default function Home() {
         </div> */}
       </section>
       {/* Section 2 */}
-      <section className="mx-16 mb-20">
+      <section className="mx-4 mb-20 md:mx-16">
         <CategoryCard
           category="Hardware"
           imageURL="https://images.unsplash.com/photo-1604754742629-3e5728249d73?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2670"

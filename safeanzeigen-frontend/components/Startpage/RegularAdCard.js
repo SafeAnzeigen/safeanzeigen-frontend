@@ -25,7 +25,7 @@ function RegularAdCard({
     <Link href={`/anzeige/${adId}`}>
       <div
         className={`w-64 transition duration-300 ease-out transform cursor-pointer select-none ${
-          isReserved ? "" : "hover:scale-105"
+          isReserved ? "" : "md:hover:scale-105"
         }`}
       >
         <div
