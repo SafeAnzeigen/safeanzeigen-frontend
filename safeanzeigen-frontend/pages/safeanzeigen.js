@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Head from "next/head";
-import { useAuth, useUser } from "@clerk/clerk-react";
+import { useAuth, useUser, SignedIn, SignedOut } from "@clerk/clerk-react";
 
 import Footer from "../components/Footer/Footer";
 import Navigation from "../components/Navigation/Navigation";
@@ -33,7 +33,7 @@ const incentives = [
   },
 ];
 
-export default function Onboarding() {
+export default function Safeanzeigen() {
   const [showDislikeConfirmationModal, setShowDislikeConfirmationModal] =
     useState(false);
   const [selectedAdId, setSelectedAdId] = useState(null);
@@ -165,27 +165,51 @@ export default function Onboarding() {
                 </div>
               </div>
             </div>
-            <div className="px-4 mx-auto text-center max-w-7xl sm:px-6 lg:px-8">
-              <h2 className="mt-4 text-2xl font-extrabold tracking-tight text-gray-900 sm:text-3xl">
-                <span className="block">Möchtest du beginnen?</span>
-              </h2>
-              <div className="flex flex-col items-center w-1/2 mx-auto mt-2">
-                <span className="w-full mx-auto mb-4 text-lg font-bold tracking-tight text-gray-500 md:w-3/5">
-                  Damit das funktioniert möchten wir eine vertrauensvolle
-                  Grundlage schaffen. Dafür benötigen wir einzelne Daten von
-                  dir.
-                </span>
-              </div>
-              <div className="flex justify-center">
-                <div className="inline-flex rounded-md shadow">
-                  <Link href="/profil">
-                    <button className="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-white bg-[#2f70e9] border border-transparent rounded-md hover:bg-[#2962cd] cursor-pointer">
-                      Profil vervollständigen
-                    </button>
-                  </Link>
+            <SignedIn>
+              <div className="px-4 mx-auto text-center max-w-7xl sm:px-6 lg:px-8">
+                <h2 className="mt-4 text-2xl font-extrabold tracking-tight text-gray-900 sm:text-3xl">
+                  <span className="block">Möchtest du beginnen?</span>
+                </h2>
+                <div className="flex flex-col items-center w-1/2 mx-auto mt-2">
+                  <span className="w-full mx-auto mb-4 text-base font-bold tracking-tight text-gray-500 md:text-lg md:w-3/5">
+                    Entdecke authentische Angebote und biete selber deine
+                    gefundenen Schätze an.
+                  </span>
+                </div>
+                <div className="flex justify-center">
+                  <div className="inline-flex rounded-md shadow">
+                    <Link href="/">
+                      <button className="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-white bg-[#2f70e9] border border-transparent rounded-md hover:bg-[#2962cd] cursor-pointer">
+                        Angebote entdecken
+                      </button>
+                    </Link>
+                  </div>
                 </div>
               </div>
-            </div>
+            </SignedIn>
+
+            <SignedOut>
+              <div className="px-4 mx-auto text-center max-w-7xl sm:px-6 lg:px-8">
+                <h2 className="mt-4 text-2xl font-extrabold tracking-tight text-gray-900 sm:text-3xl">
+                  <span className="block">Möchtest du beginnen?</span>
+                </h2>
+                <div className="flex flex-col items-center w-1/2 mx-auto mt-2">
+                  <span className="w-4/5 mx-auto mb-4 text-lg font-bold tracking-tight text-gray-500">
+                    Werde Mitglied und finde noch heute verifizierte Angebote
+                    anderer
+                  </span>
+                </div>
+                <div className="flex justify-center">
+                  <div className="inline-flex rounded-md shadow">
+                    <Link href="/sign-in">
+                      <button className="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-white bg-[#2f70e9] border border-transparent rounded-md hover:bg-[#2962cd] cursor-pointer">
+                        Mitglied werden
+                      </button>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </SignedOut>
           </div>
         </div>
       </div>

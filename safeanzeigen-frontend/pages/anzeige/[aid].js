@@ -164,12 +164,20 @@ export default function Anzeige() {
                       >
                         <path d="M.293 0l22 22-22 22h1.414l22-22-22-22H.293z" />
                       </svg>
-                      <a
-                        href={`/suche/${advertisementInfoObject?.category_name}`}
-                        className="ml-4 text-sm font-medium text-gray-500 hover:text-orange-500"
+                      <Link
+                        href={{
+                          pathname: "/suche/[sid]",
+                          query: {
+                            sid: advertisementInfoObject?.category_name,
+                            category: advertisementInfoObject?.category_name,
+                          },
+                        }}
+                        as={advertisementInfoObject?.category_name}
                       >
-                        {advertisementInfoObject?.category_name}
-                      </a>
+                        <div className="ml-4 text-sm font-medium text-gray-500 cursor-pointer hover:text-orange-500">
+                          {advertisementInfoObject?.category_name}
+                        </div>
+                      </Link>
                     </div>
                   </li>
                 )}
@@ -186,12 +194,22 @@ export default function Anzeige() {
                       >
                         <path d="M.293 0l22 22-22 22h1.414l22-22-22-22H.293z" />
                       </svg>
-                      <a
-                        href={`/suche/${advertisementInfoObject?.subcategory_name}`}
-                        className="ml-4 text-sm font-medium text-gray-500 hover:text-orange-500"
+                      <Link
+                        href={{
+                          pathname: "/suche/[sid]",
+                          query: {
+                            sid: advertisementInfoObject?.subcategory_name,
+                            category: advertisementInfoObject?.category_name,
+                            subcategory:
+                              advertisementInfoObject?.subcategory_name,
+                          },
+                        }}
+                        as={`${advertisementInfoObject?.category_name}-${advertisementInfoObject?.subcategory_name}`}
                       >
-                        {advertisementInfoObject?.subcategory_name}
-                      </a>
+                        <div className="ml-4 text-sm font-medium text-gray-500 cursor-pointer hover:text-orange-500">
+                          {advertisementInfoObject?.subcategory_name}
+                        </div>
+                      </Link>
                     </div>
                   </li>
                 )}

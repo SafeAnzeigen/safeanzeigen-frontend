@@ -386,7 +386,7 @@ export default function Inserieren() {
       <div className="min-h-screen bg-gray-50">
         <div className="px-4 py-12 mx-auto max-w-7xl sm:py-16 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-screen">
-            <div className="w-3/5 p-4 mx-auto mb-8 rounded-md select-none bg-blue-300/50">
+            <div className="w-full p-4 mx-auto mb-8 rounded-md select-none md:w-3/5 bg-blue-300/50">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                   <InformationCircleIcon
@@ -663,15 +663,15 @@ export default function Inserieren() {
                       type="email"
                       name="email"
                       id="email"
-                      className="w-full !text-3xl font-bold text-center outline-none focus:border-blue-300/50 text-orange-500 bg-white border-blue-300/50 rounded-md shadow-sm placeholder:text-orange-500 placeholder:font-bold placeholder:text-2xl focus:ring-0 select-none"
-                      placeholder="Der Name deiner Kleinanzeige!"
+                      className="w-4/5 md:w-full !text-3xl font-bold text-center outline-none focus:border-blue-300/50 text-orange-500 bg-white border-blue-300/50 rounded-md shadow-sm placeholder:text-orange-500 placeholder:font-bold placeholder:text-2xl focus:ring-0 select-none"
+                      placeholder="NAME HINZUFÜGEN"
                       value={titleInput}
                       onChange={(event) => {
                         setTitleInput(event.target.value);
                       }}
                     />
                   </h2>
-                  <div className="px-6 text-center bg-gray-50 lg:flex-shrink-0 lg:flex lg:flex-col lg:justify-center">
+                  <div className="text-center md:px-6 bg-gray-50 lg:flex-shrink-0 lg:flex lg:flex-col lg:justify-center">
                     <div className="flex items-center justify-center mt-2 text-5xl font-extrabold text-gray-900">
                       <span className="w-1/5 mt-1 mr-3 text-xl font-medium text-gray-500">
                         <Listbox
@@ -679,7 +679,7 @@ export default function Inserieren() {
                           onChange={setSelectedPriceType}
                         >
                           <div className="relative mt-1">
-                            <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left rounded-lg shadow-md cursor-default focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm !text-lg font-bold text-white !bg-[#2f70e9]">
+                            <Listbox.Button className="relative md:w-full py-2 pl-3 pr-10 text-left rounded-lg shadow-md cursor-default focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm !text-lg font-bold text-white !bg-[#2f70e9]">
                               <span className="block truncate">
                                 {selectedPriceType}
                               </span>
@@ -822,10 +822,10 @@ export default function Inserieren() {
               </div>
               <div className="overflow-hidden bg-white sm:rounded-lg lg:ml-10">
                 <div className="px-4 py-5 sm:px-6">
-                  <h3 className="text-lg font-medium leading-6 text-orange-500">
+                  <h3 className="text-xl font-medium leading-6 text-orange-500 md:text-lg">
                     Anbieter
                   </h3>
-                  <p className="max-w-2xl mt-1 text-sm text-gray-500">
+                  <p className="max-w-2xl mt-1 text-base text-gray-500 md:text-sm">
                     Informationen zum Anbieter
                   </p>
                 </div>
@@ -833,22 +833,22 @@ export default function Inserieren() {
                 <div className="px-4 py-5 border-t border-gray-200 sm:p-0">
                   <dl className="sm:divide-y sm:divide-gray-200">
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                      <dt className="text-sm font-medium text-gray-500">
+                      <dt className="text-lg font-medium text-gray-500 md:text-sm">
                         Identicon
                       </dt>
                       <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                         <img
-                          className="w-10 h-10 rounded-full"
+                          className="w-16 h-16 rounded-full md:w-10 md:h-10"
                           src={`https://source.boringavatars.com/beam/300/${user?.id}${user?.id}${user?.id}?colors=2f70e9,e76f51,ffc638,f4a261,e97c2f`}
                           alt="Benutzeridentifizierender Avatar"
                         />
                       </dd>
                     </div>
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                      <dt className="text-sm font-medium text-gray-500">
+                      <dt className="text-lg font-medium text-gray-500 md:text-sm">
                         Name
                       </dt>
-                      <dd className="flex justify-between mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                      <dd className="flex justify-between mt-1 text-sm text-lg text-gray-900 sm:mt-0 sm:col-span-2 md:text-sm">
                         <span
                           className={`${
                             namePublic ? "blur-sm select-none" : ""
@@ -865,7 +865,6 @@ export default function Inserieren() {
                               "relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-0 focus:ring-offset-0 focus:ring-transparent"
                             )}
                           >
-                            <span className="sr-only">Use setting</span>
                             <span
                               className={classNames(
                                 namePublic ? "translate-x-5" : "translate-x-0",
@@ -921,18 +920,18 @@ export default function Inserieren() {
                       </dd>
                     </div>
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                      <dt className="text-sm font-medium text-gray-500">
+                      <dt className="text-lg font-medium text-gray-500 md:text-sm ">
                         Mitglied seit
                       </dt>
-                      <dd className="mt-1 text-sm text-gray-900 select-none sm:mt-0 sm:col-span-2">
+                      <dd className="mt-1 text-lg text-gray-900 select-none md:text-sm sm:mt-0 sm:col-span-2">
                         {format(user?.createdAt, "dd.MM.yyyy")}
                       </dd>
                     </div>
                     <div className="py-5 md:px-6 sm:px-0">
-                      <h3 className="text-lg font-medium leading-6 text-orange-500">
+                      <h3 className="text-xl font-medium leading-6 text-orange-500 md:text-lg">
                         Anzeige
                       </h3>
-                      <p className="max-w-2xl mt-1 text-sm text-gray-500">
+                      <p className="max-w-2xl mt-1 text-base text-gray-500 md:text-sm">
                         Informationen zur Anzeige
                       </p>
                     </div>
@@ -979,7 +978,7 @@ export default function Inserieren() {
                                     {({ selected }) => (
                                       <>
                                         <span
-                                          cclassName={`block truncate font-bold`}
+                                          className={`block truncate font-bold`}
                                         >
                                           {category?.name}
                                         </span>
@@ -1036,7 +1035,7 @@ export default function Inserieren() {
                                     {({ selected }) => (
                                       <>
                                         <span
-                                          cclassName={`block truncate font-bold`}
+                                          className={`block truncate font-bold`}
                                         >
                                           {subcategory?.name}
                                         </span>
@@ -1051,10 +1050,10 @@ export default function Inserieren() {
                       </dd>
                     </div>
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                      <dt className="text-sm font-medium text-gray-500">
+                      <dt className="text-lg font-medium text-gray-500 md:text-sm">
                         Telefonnummer
                       </dt>
-                      <dd className="flex justify-between mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 ">
+                      <dd className="flex justify-between mt-1 text-lg text-gray-900 sm:mt-0 sm:col-span-2 md:text-sm">
                         <span
                           className={`${
                             phoneNumberPublic ? "blur-sm select-none" : ""
@@ -1073,7 +1072,6 @@ export default function Inserieren() {
                               "relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-0 focus:ring-offset-0 focus:ring-transparent"
                             )}
                           >
-                            <span className="sr-only">Use setting</span>
                             <span
                               className={classNames(
                                 phoneNumberPublic
@@ -1131,7 +1129,7 @@ export default function Inserieren() {
                       </dd>
                     </div>
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                      <dt className="text-sm font-medium text-gray-500">
+                      <dt className="text-lg font-medium text-gray-500 md:text-sm">
                         Stadt des Inserats
                       </dt>
                       <dd className="flex justify-between mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
@@ -1282,7 +1280,7 @@ export default function Inserieren() {
               {validationSuccessToken ? (
                 ""
               ) : (
-                <div className="w-3/5 p-4 mx-auto my-8 rounded-md select-none bg-yellow-300/50">
+                <div className="w-full p-4 mx-auto my-8 rounded-md select-none md:w-3/5 bg-yellow-300/50">
                   <div className="flex items-start">
                     <div className="flex-shrink-0">
                       <ExclamationIcon
@@ -1331,9 +1329,9 @@ export default function Inserieren() {
                   </div>
                 </div>
               ) : (
-                <div className="flex justify-center mb-4">
-                  <div className="p-2 mr-4 border-2 rounded-lg border-orange-500/50">
-                    <div ref={componentRef}>
+                <div className="flex flex-col justify-center mb-4 md:flex-row">
+                  <div className="p-2 mb-4 border-2 rounded-lg md:mr-4 border-orange-500/50 md:mb-0">
+                    <div className="flex justify-center" ref={componentRef}>
                       <QRCodeCanvas
                         value={verificationQRCode}
                         size={220}
@@ -1346,7 +1344,7 @@ export default function Inserieren() {
                       <button
                         onClick={handlePrint}
                         type="button"
-                        className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-[#2f70e9] border border-transparent rounded-md shadow-sm hover:bg-[#2962cd] focus:outline-none focus:ring-0 focus:ring-offset-0 focus:ring-transparent m-2 mt-4"
+                        className="md:inline-flex items-center px-6 py-3 text-base font-medium text-white bg-[#2f70e9] border border-transparent rounded-md shadow-sm hover:bg-[#2962cd] focus:outline-none focus:ring-0 focus:ring-offset-0 focus:ring-transparent m-2 mt-4 w-2/6 flex justify-center"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -1366,7 +1364,7 @@ export default function Inserieren() {
                       <button
                         onClick={() => copyQRCodeCanvasToClipboard()}
                         type="button"
-                        className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-[#2f70e9] border border-transparent rounded-md shadow-sm hover:bg-[#2962cd] focus:outline-none focus:ring-0 focus:ring-offset-0 focus:ring-transparent m-2 mt-4"
+                        className="md:inline-flex items-center px-6 py-3 text-base font-medium text-white bg-[#2f70e9] border border-transparent rounded-md shadow-sm hover:bg-[#2962cd] focus:outline-none focus:ring-0 focus:ring-offset-0 focus:ring-transparent m-2 mt-4 w-2/6 flex justify-center"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -1385,64 +1383,66 @@ export default function Inserieren() {
                       </button>
                     </div>
                   </div>
-                  <div className="p-2 border-2 rounded-lg border-orange-500/50">
+                  <div className="w-full p-2 mx-auto border-2 rounded-lg border-orange-500/50 md:mx-0 md:w-64">
+                    {" "}
                     {/* <div className="text-center">Artikel neben dem QR-Code</div> */}
-                    <img
-                      src="/scan-verification-example.png"
-                      alt=""
-                      layout="fill"
-                      style={{
-                        objectFit: "cover",
-                        height: "200px",
-                        width: "200px",
-                      }}
-                      className={`rounded-xl m-4`}
-                    />
-
-                    <button
-                      onClick={() => handleVerificationButtonClick()}
-                      type="button"
-                      className="inline-flex px-6 py-3 text-base font-medium text-white bg-[#2f70e9] border border-transparent rounded-md shadow-sm hover:bg-[#2962cd] focus:outline-none focus:ring-0 focus:ring-offset-0 focus:ring-transparent m-2 ml-4"
-                    >
-                      {iscurrentlyUploadingVerification ? (
-                        <svg
-                          className="w-5 h-5 mr-3 -ml-1 text-white animate-spin"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx={12}
-                            cy={12}
-                            r={10}
+                    <div className="flex flex-col items-center justify-center md:flex-none">
+                      <img
+                        src="/scan-verification-example.png"
+                        alt=""
+                        layout="fill"
+                        style={{
+                          objectFit: "cover",
+                          height: "200px",
+                          width: "200px",
+                        }}
+                        className={`rounded-xl m-4`}
+                      />
+                      <button
+                        onClick={() => handleVerificationButtonClick()}
+                        type="button"
+                        className="inline-flex px-6 py-3 text-base font-medium text-white bg-[#2f70e9] border border-transparent rounded-md shadow-sm hover:bg-[#2962cd] focus:outline-none focus:ring-0 focus:ring-offset-0 focus:ring-transparent m-2 ml-4"
+                      >
+                        {iscurrentlyUploadingVerification ? (
+                          <svg
+                            className="w-5 h-5 mr-3 -ml-1 text-white animate-spin"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx={12}
+                              cy={12}
+                              r={10}
+                              stroke="currentColor"
+                              strokeWidth={4}
+                            />
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            />
+                          </svg>
+                        ) : (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="w-6 h-6 mr-2"
+                            fill="none"
+                            viewBox="0 0 24 24"
                             stroke="currentColor"
-                            strokeWidth={4}
-                          />
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          />
-                        </svg>
-                      ) : (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="w-6 h-6 mr-2"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
-                          />
-                        </svg>
-                      )}
-                      Bild Hochladen
-                    </button>
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                            />
+                          </svg>
+                        )}
+                        Bild Hochladen
+                      </button>
+                    </div>
                     <input
                       ref={hiddenVerificationFileInput}
                       onChange={uploadUserQRVerification}
@@ -1462,7 +1462,7 @@ export default function Inserieren() {
               !descriptionInput ||
               !validationSuccessToken) && (
               <div className="flex justify-center">
-                <ul className="w-3/5 p-4 mt-8 text-white list-disc rounded-lg bg-red-700/75">
+                <ul className="w-full p-4 mt-8 text-white list-disc rounded-lg md:w-3/5 bg-red-700/75">
                   Es fehlen noch folgende Dinge, um die Anzeige zu
                   veröffentlichen:
                   {adImages.length < 3 && (
@@ -1509,7 +1509,7 @@ export default function Inserieren() {
                   : "cursor-pointer  hover:text-orange-500"
               }`}
             >
-              <button className="w-3/5 flex flex-col items-center mx-6 text-sm font-medium bg-[#2f70e9] hover:bg-[#2962cd] border border-transparent rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent mt-4 text-orange-400 py-4">
+              <button className="md:w-3/5 flex flex-col items-center md:mx-6 text-sm font-medium bg-[#2f70e9] hover:bg-[#2962cd] border border-transparent rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent mt-4 text-orange-400 py-4 w-full">
                 <svg
                   id="Layer_1"
                   enableBackground="new 0 0 512 512"
@@ -1526,7 +1526,7 @@ export default function Inserieren() {
                   />
                 </svg>
 
-                <div
+                <button
                   onClick={() => {
                     if (
                       adImages.length >= 3 &&
@@ -1558,7 +1558,7 @@ export default function Inserieren() {
                   className="text-xl font-extrabold !text-white"
                 >
                   Anzeige Veröffentlichen
-                </div>
+                </button>
               </button>
             </div>
           </div>
