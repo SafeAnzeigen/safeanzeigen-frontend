@@ -153,6 +153,7 @@ export default function Favoriten() {
                         isLiked={favoriteAdvertisements
                           .map((elem) => elem.fk_advertisement_id)
                           .includes(advertisement.fk_advertisement_id)}
+                        isReserved={!advertisement.is_published}
                         callbackSetLikeStatus={handleChangeOfLikeStatus}
                       />
                       <Link

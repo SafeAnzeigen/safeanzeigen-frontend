@@ -347,23 +347,26 @@ export default function Home() {
             onMouseOver={() => preventVerticalScroll()}
             onMouseLeave={() => enableVerticalScroll()}
           >
-            {offeredAdvertisements?.map((element, index) => (
-              <div key={index}>
-                <RegularAdCard
-                  adId={element.advertisement_id}
-                  title={element.title}
-                  price={element.price}
-                  priceType={element.price_type}
-                  articleIsVerified={element.is_verified}
-                  sellerHasManySales={false}
-                  imageUrl={element.article_image_1}
-                  isLiked={favoriteAdvertisements.includes(
-                    element.advertisement_id
-                  )}
-                  callbackSetLikeStatus={handleChangeOfLikeStatus}
-                />
-              </div>
-            ))}
+            {offeredAdvertisements
+              ?.filter((filterElement) => filterElement.is_published)
+              .map((element, index) => (
+                <div key={index}>
+                  <RegularAdCard
+                    adId={element.advertisement_id}
+                    title={element.title}
+                    price={element.price}
+                    priceType={element.price_type}
+                    articleIsVerified={element.is_verified}
+                    sellerHasManySales={false}
+                    imageUrl={element.article_image_1}
+                    isLiked={favoriteAdvertisements.includes(
+                      element.advertisement_id
+                    )}
+                    isReserved={!element.is_published}
+                    callbackSetLikeStatus={handleChangeOfLikeStatus}
+                  />
+                </div>
+              ))}
           </div>
         </div>
         <div>
