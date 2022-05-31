@@ -38,6 +38,10 @@ export default function Angebote() {
         if (data?.advertisements) {
           setOfferedAdvertisements([...data?.advertisements]);
         }
+
+        if (data?.message === "Es konnten keine Anzeigen gefunden werden.") {
+          setOfferedAdvertisements([]);
+        }
       })
       .catch((error) => {
         setIsfetchingData(false);
@@ -50,7 +54,7 @@ export default function Angebote() {
     setShowDeleteConfirmationModal(false);
   };
 
-  const deleteOffer = async () => {
+  const setOfferAsReserved = async () => {
     console.log("I WOULD DELETE THIS OFFER", selectedAdId);
     fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
@@ -69,10 +73,34 @@ export default function Angebote() {
     )
       .then((response) => response.json())
       .then((data) => {
+        console.log("DATA RESERVE OFFER", data);
+      })
+      .catch((error) => {
+        console.log("ERROR DATA RESERVE OFFER", error);
+      });
+    handleCloseModal();
+  };
+
+  const deleteOffer = async () => {
+    fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+        `/advertisements/delete/${selectedAdId}`,
+      {
+        method: "post",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `${await clerkAuth.getToken()}`,
+        },
+        body: JSON.stringify({
+          clerk_user_id: user?.id,
+        }),
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
         console.log("DATA DELETE OFFER", data);
-        /* if (data?.advertisements) {
-          setOfferedAdvertisements([...data?.advertisements]);
-        } */
+        retrieveUserOffers(user);
       })
       .catch((error) => {
         console.log("ERROR DATA DELETE OFFER", error);
@@ -155,7 +183,12 @@ export default function Angebote() {
                         </button>
                       </Link>
                       <div className="flex w-full">
-                        <button className="items-center w-64 px-4 py-2 mt-3 mr-2 text-sm font-medium text-white bg-teal-500 border border-transparent rounded-md shadow-sm hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent">
+                        <button
+                          onClick={() =>
+                            setOfferAsReserved(advertisement.advertisement_id)
+                          }
+                          className="items-center w-64 px-4 py-2 mt-3 mr-2 text-sm font-medium text-white bg-teal-500 border border-transparent rounded-md shadow-sm hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent"
+                        >
                           <span>Reservieren</span>
                         </button>
                         <button

@@ -17,8 +17,45 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
+const kebabCase = (str) =>
+  str
+    .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
+    .join("-")
+    .toLowerCase();
+
+const createSearchPath = (
+  searchInput,
+  categoryInput,
+  subcategoryInput,
+  locationOrZipInput,
+  locationRadiusInput
+) => {
+  let searchPath = "suchen/";
+  if (searchInput) {
+    searchPath = searchPath + kebabCase(searchInput);
+  }
+
+  if (categoryInput) {
+    searchPath = searchPath + "-" + categoryInput?.name;
+  }
+
+  if (subcategoryInput) {
+    searchPath = searchPath + "-" + subcategoryInput?.name;
+  }
+
+  if (locationOrZipInput) {
+    searchPath = searchPath + "-" + kebabCase(locationOrZipInput);
+  }
+
+  if (locationRadiusInput) {
+    searchPath = searchPath + "-" + locationRadiusInput;
+  }
+  return searchPath;
+};
+
 function Navigation() {
   const { signOut } = useClerk();
+  const clerkAuth = useAuth();
   const { isLoaded, userId, sessionId, getToken } = useAuth();
   const { isSignedIn, user } = useUser();
   const [
@@ -30,12 +67,13 @@ function Navigation() {
   const [locationRadiusInput, setLocationRadiusInput] = useState(0);
   const [categoryInput, setCategoryInput] = useState("");
   const [subcategoryInput, setSubcategoryInput] = useState("");
-
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState();
   const [selectedSubcategory, setSelectedSubcategory] = useState();
 
-  const categories = [
+  /*  const categories = [
     { id: 1, categoryName: "Elektronik" },
     { id: 2, categoryName: "Schmuck" },
     { id: 3, categoryName: "Garten" },
@@ -48,8 +86,25 @@ function Navigation() {
     { id: 3, subcategoryName: "HTC" },
     { id: 4, subcategoryName: "Sony" },
   ];
+ */
 
   const filteredCategories =
+    query === ""
+      ? categories
+      : categories.filter((category) => {
+          return category.name.toLowerCase().includes(query.toLowerCase());
+        });
+
+  const filteredSubcategories =
+    query === ""
+      ? subcategories
+      : subcategories.filter((subcategory) => {
+          return subcategory.subcategoryName
+            .toLowerCase()
+            .includes(query.toLowerCase());
+        });
+
+  /* const filteredCategories =
     query === ""
       ? categories
       : categories.filter((category) => {
@@ -65,7 +120,84 @@ function Navigation() {
           return subcategory.subcategoryName
             .toLowerCase()
             .includes(query.toLowerCase());
-        });
+        }); */
+
+  const success = (position) => {
+    console.log(position);
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+    const geoAPIURL = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`;
+
+    fetch(geoAPIURL)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        const locality = data?.locality;
+        const postcode = data?.postcode;
+        setLocationOrZipInput(data?.locality);
+      });
+  };
+
+  const retrieveSubCategoriesBelongingToCategory = async (category_name) => {
+    fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+        `/subcategories/categoryname/${category_name}`,
+      {
+        method: "get",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `${await clerkAuth.getToken()}`,
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATA GET SUBCATEGORIES", data);
+        if (data?.subcategories) {
+          setSubcategories(
+            data?.subcategories.map((element) => ({
+              subcategory_id: element.subcategory_id,
+              name: element.name,
+            }))
+          );
+        }
+      })
+      .catch((error) => {
+        console.log("ERROR GET SUBCATEGORIES", error);
+      });
+  };
+
+  const retrieveCategories = async () => {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/categories/`, {
+      method: "get",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `${await clerkAuth.getToken()}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATA GET CATEGORIES", data);
+        if (data?.categories) {
+          setCategories(
+            data?.categories.map((element) => ({
+              category_id: element.category_id,
+              name: element.name,
+            }))
+          );
+        }
+      })
+      .catch((error) => {
+        console.log("ERROR GET CATEGORIES", error);
+      });
+  };
+
+  const error = (position) => {
+    console.log(position);
+    alert("Bitte gebe das Recht frei deinen Standort zu nutzen");
+  };
 
   /* if (!isLoaded || !userId || !isSignedIn) {
     return null;
@@ -85,6 +217,14 @@ function Navigation() {
       console.log("CHECKING FOR MINIMUM PROFILE DATA", user);
     }
   }, []); */
+
+  useEffect(() => {
+    retrieveCategories();
+  }, []);
+
+  useEffect(() => {
+    retrieveSubCategoriesBelongingToCategory(selectedCategory?.name);
+  }, [selectedCategory]);
 
   return (
     <header className="sticky top-0 z-20 grid grid-cols-3 p-6 bg-white shadow-sm md:px-10 md:py-8 lg:pl-20">
@@ -386,7 +526,7 @@ function Navigation() {
                       <Combobox.Input
                         className="w-full py-2 pl-3 pr-10 text-gray-600 bg-white border border-white rounded-md shadow-sm focus:outline-none focus:ring-transparent sm:text-sm"
                         onChange={(event) => setQuery(event.target.value)}
-                        displayValue={(category) => category?.categoryName}
+                        displayValue={(category) => category?.name}
                       />
                       <Combobox.Button className="absolute inset-y-0 right-0 flex items-center px-2 rounded-r-md focus:outline-none">
                         <SelectorIcon
@@ -399,7 +539,7 @@ function Navigation() {
                         <Combobox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                           {filteredCategories.map((category) => (
                             <Combobox.Option
-                              key={category.id}
+                              key={category.category_id}
                               value={category}
                               className={({ active }) =>
                                 classNames(
@@ -418,7 +558,7 @@ function Navigation() {
                                       selected && "font-semibold"
                                     )}
                                   >
-                                    {category.categoryName}
+                                    {category.name}
                                   </span>
 
                                   {selected && (
@@ -457,9 +597,7 @@ function Navigation() {
                       <Combobox.Input
                         className="w-full py-2 pl-3 pr-10 text-gray-600 bg-white border border-white rounded-md shadow-sm focus:outline-none focus:ring-transparent sm:text-sm"
                         onChange={(event) => setQuery(event.target.value)}
-                        displayValue={(subcategory) =>
-                          subcategory?.subcategoryName
-                        }
+                        displayValue={(subcategory) => subcategory?.name}
                       />
                       <Combobox.Button className="absolute inset-y-0 right-0 flex items-center px-2 rounded-r-md focus:outline-none">
                         <SelectorIcon
@@ -472,7 +610,7 @@ function Navigation() {
                         <Combobox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                           {filteredSubcategories.map((subcategory) => (
                             <Combobox.Option
-                              key={subcategory.id}
+                              key={subcategory.subcategory_id}
                               value={subcategory}
                               className={({ active }) =>
                                 classNames(
@@ -491,7 +629,7 @@ function Navigation() {
                                       selected && "font-semibold"
                                     )}
                                   >
-                                    {subcategory.subcategoryName}
+                                    {subcategory.name}
                                   </span>
 
                                   {selected && (
@@ -523,7 +661,7 @@ function Navigation() {
             <div className="flex-col pt-2 mt-8 mb-4">
               <div className="flex">
                 <input
-                  className="flex-grow pl-6 text-sm text-gray-700 placeholder-gray-400 bg-transparent !bg-white border-transparent rounded-md outline-none xs:pl-4 focus:outline-none focus:border-transparent focus:ring-0"
+                  className="pl-6 text-sm text-gray-700 placeholder-gray-400 bg-transparent !bg-white border-transparent rounded-md outline-none xs:pl-4 focus:outline-none focus:border-transparent focus:ring-0 w-4/6"
                   type="text"
                   value={locationOrZipInput}
                   onChange={(event) =>
@@ -532,6 +670,9 @@ function Navigation() {
                   placeholder="Ort oder PLZ"
                 />
                 <div
+                  onClick={() =>
+                    navigator.geolocation.getCurrentPosition(success, error)
+                  }
                   className="mr-2 text-gray-500 cursor-pointer hover:text-orange-500"
                   title="Meinen Standort nutzen"
                 >
@@ -548,7 +689,7 @@ function Navigation() {
                     />
                   </svg>
                 </div>
-                <div
+                {/*   <div
                   className="mt-1 mr-4 cursor-pointer hover:text-orange-500"
                   title="Ort auf der Karte markieren"
                 >
@@ -566,7 +707,7 @@ function Navigation() {
                       d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
                     />
                   </svg>
-                </div>
+                </div> */}
               </div>
               <div className="grid items-center grid-cols-2">
                 <div className="mt-6">
@@ -624,9 +765,29 @@ function Navigation() {
             </div>
           </div>
           <div className="flex justify-center pl-1">
-            <button className="w-full h-10 mx-20 mb-4 mr-24 font-semibold text-white bg-orange-400 rounded-md">
-              Jetzt Entdecken
-            </button>
+            <Link
+              href={{
+                pathname: "suchen/[sid]",
+                query: {
+                  sid: searchInput,
+                  category: selectedCategory,
+                  subcategory: selectedSubcategory,
+                  locality: locationOrZipInput,
+                  radius: locationRadiusInput,
+                },
+              }}
+              as={createSearchPath(
+                searchInput,
+                selectedCategory,
+                selectedSubcategory,
+                locationOrZipInput,
+                locationRadiusInput
+              )}
+            >
+              <button className="w-full h-10 mx-20 mb-4 mr-24 font-semibold text-white bg-orange-400 rounded-md">
+                Jetzt Entdecken
+              </button>
+            </Link>
           </div>
         </div>
       )}
