@@ -216,37 +216,39 @@ export default function Home() {
   };
 
   const addFavoriteForUser = async (adId, userData) => {
-    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/favorites/`, {
-      method: "post",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `${await clerkAuth.getToken()}`,
-      },
-      body: JSON.stringify({
-        clerk_user_id: userData?.id,
-        fk_advertisement_id: adId,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("DATA ADD FAVORITES", data);
-        if (data?.newFavoriteArray) {
-          if (data?.newFavoriteArray?.length === 0) {
-            setFavoriteAdvertisements([]);
-          } else if (data?.newFavoriteArray?.length > 0) {
-            setFavoriteAdvertisements(
-              data?.newFavoriteArray.map(
-                (element) => element.fk_advertisement_id
-              )
-            );
-          }
-        }
+    if (adId) {
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/favorites/`, {
+        method: "post",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `${await clerkAuth.getToken()}`,
+        },
+        body: JSON.stringify({
+          clerk_user_id: userData?.id,
+          fk_advertisement_id: adId,
+        }),
       })
-      .catch((error) => {
-        console.log("ERROR ADD FAVORITES", error);
-      });
-    handleCloseModal();
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA ADD FAVORITES", data);
+          if (data?.newFavoriteArray) {
+            if (data?.newFavoriteArray?.length === 0) {
+              setFavoriteAdvertisements([]);
+            } else if (data?.newFavoriteArray?.length > 0) {
+              setFavoriteAdvertisements(
+                data?.newFavoriteArray.map(
+                  (element) => element.fk_advertisement_id
+                )
+              );
+            }
+          }
+        })
+        .catch((error) => {
+          console.log("ERROR ADD FAVORITES", error);
+        });
+      handleCloseModal();
+    }
   };
 
   const handleChangeOfLikeStatus = (adId, currentLikeStatus) => {
@@ -266,36 +268,38 @@ export default function Home() {
   };
 
   const removeLikeOfAdForUser = async () => {
-    fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/favorites/${selectedAdId}`,
-      {
-        method: "delete",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `${await clerkAuth.getToken()}`,
-        },
-      }
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("DATA DELETE FAVORITES", data);
-        if (data?.newFavoriteArray) {
-          if (data?.newFavoriteArray?.length === 0) {
-            setFavoriteAdvertisements([]);
-          } else if (data?.newFavoriteArray?.length > 0) {
-            setFavoriteAdvertisements(
-              data?.newFavoriteArray.map(
-                (element) => element.fk_advertisement_id
-              )
-            );
-          }
+    if (selectedAdId) {
+      fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/favorites/${selectedAdId}`,
+        {
+          method: "delete",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `${await clerkAuth.getToken()}`,
+          },
         }
-      })
-      .catch((error) => {
-        console.log("ERROR DELETE FAVORITES", error);
-      });
-    handleCloseModal();
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA DELETE FAVORITES", data);
+          if (data?.newFavoriteArray) {
+            if (data?.newFavoriteArray?.length === 0) {
+              setFavoriteAdvertisements([]);
+            } else if (data?.newFavoriteArray?.length > 0) {
+              setFavoriteAdvertisements(
+                data?.newFavoriteArray.map(
+                  (element) => element.fk_advertisement_id
+                )
+              );
+            }
+          }
+        })
+        .catch((error) => {
+          console.log("ERROR DELETE FAVORITES", error);
+        });
+      handleCloseModal();
+    }
   };
 
   useEffect(() => {

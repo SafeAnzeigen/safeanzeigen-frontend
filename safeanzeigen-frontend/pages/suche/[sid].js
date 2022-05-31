@@ -57,58 +57,33 @@ export default function Suche() {
     setShowDeleteConfirmationModal(false);
   };
 
-  const setOfferAsReserved = async () => {
-    console.log("I WOULD DELETE THIS OFFER", selectedAdId);
-    fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
-        `/advertisements/delete/${selectedAdId}`,
-      {
-        method: "post",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `${await clerkAuth.getToken()}`,
-        },
-        body: JSON.stringify({
-          clerk_user_id: user?.id,
-        }),
-      }
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("DATA RESERVE OFFER", data);
-      })
-      .catch((error) => {
-        console.log("ERROR DATA RESERVE OFFER", error);
-      });
-    handleCloseModal();
-  };
-
   const deleteOffer = async () => {
-    fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
-        `/advertisements/delete/${selectedAdId}`,
-      {
-        method: "post",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `${await clerkAuth.getToken()}`,
-        },
-        body: JSON.stringify({
-          clerk_user_id: user?.id,
-        }),
-      }
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("DATA DELETE OFFER", data);
-        retrieveUserOffers(user);
-      })
-      .catch((error) => {
-        console.log("ERROR DATA DELETE OFFER", error);
-      });
-    handleCloseModal();
+    if (selectedAdId) {
+      fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+          `/advertisements/delete/${selectedAdId}`,
+        {
+          method: "post",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `${await clerkAuth.getToken()}`,
+          },
+          body: JSON.stringify({
+            clerk_user_id: user?.id,
+          }),
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA DELETE OFFER", data);
+          retrieveUserOffers(user);
+        })
+        .catch((error) => {
+          console.log("ERROR DATA DELETE OFFER", error);
+        });
+      handleCloseModal();
+    }
   };
 
   useEffect(() => {

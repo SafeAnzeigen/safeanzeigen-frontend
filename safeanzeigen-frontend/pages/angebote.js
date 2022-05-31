@@ -59,60 +59,64 @@ export default function Angebote() {
   };
 
   const toggleReserveOffer = async (optionalAdid) => {
-    console.log("I WOULD RESERVE THIS OFFER", selectedAdId);
-    fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
-        `/advertisements/togglereservation/${
-          optionalAdid ? optionalAdid : selectedAdId
-        }`,
-      {
-        method: "post",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `${await clerkAuth.getToken()}`,
-        },
-        body: JSON.stringify({
-          clerk_user_id: user?.id,
-        }),
-      }
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("DATA RESERVE OFFER", data);
-        retrieveUserOffers(user);
-      })
-      .catch((error) => {
-        console.log("ERROR DATA RESERVE OFFER", error);
-      });
-    handleCloseModal();
+    if (optionalAdid || selectedAdId) {
+      console.log("I WOULD RESERVE THIS OFFER", selectedAdId);
+      fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+          `/advertisements/togglereservation/${
+            optionalAdid ? optionalAdid : selectedAdId
+          }`,
+        {
+          method: "post",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `${await clerkAuth.getToken()}`,
+          },
+          body: JSON.stringify({
+            clerk_user_id: user?.id,
+          }),
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA RESERVE OFFER", data);
+          retrieveUserOffers(user);
+        })
+        .catch((error) => {
+          console.log("ERROR DATA RESERVE OFFER", error);
+        });
+      handleCloseModal();
+    }
   };
 
   const deleteOffer = async () => {
-    fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
-        `/advertisements/delete/${selectedAdId}`,
-      {
-        method: "post",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `${await clerkAuth.getToken()}`,
-        },
-        body: JSON.stringify({
-          clerk_user_id: user?.id,
-        }),
-      }
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("DATA DELETE OFFER", data);
-        retrieveUserOffers(user);
-      })
-      .catch((error) => {
-        console.log("ERROR DATA DELETE OFFER", error);
-      });
-    handleCloseModal();
+    if (selectedAdId) {
+      fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+          `/advertisements/delete/${selectedAdId}`,
+        {
+          method: "post",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `${await clerkAuth.getToken()}`,
+          },
+          body: JSON.stringify({
+            clerk_user_id: user?.id,
+          }),
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA DELETE OFFER", data);
+          retrieveUserOffers(user);
+        })
+        .catch((error) => {
+          console.log("ERROR DATA DELETE OFFER", error);
+        });
+      handleCloseModal();
+    }
   };
 
   useEffect(() => {
