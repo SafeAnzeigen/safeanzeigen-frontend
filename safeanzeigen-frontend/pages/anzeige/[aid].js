@@ -261,7 +261,7 @@ export default function Anzeige() {
                       <svg
                         id="Capa_1"
                         className="w-5 h-5 text-black-500"
-                        enable-background="new 0 0 512 512"
+                        enableBackground="new 0 0 512 512"
                         height="512"
                         fill="white"
                         viewBox="0 0 512 512"
