@@ -173,9 +173,9 @@ const Kontakt = () => {
             >
               <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <h2 id="contactHeading" className="sr-only"></h2>
-                <div className="flex justify-center mx-auto">
+                <div className="mx-4 md:flex md:justify-center md:mx-auto">
                   {/* Contact form */}
-                  <div className="px-6 py-10 bg-gray-100 rounded-lg sm:px-10 lg:col-span-2 xl:p-12">
+                  <div className="col-span-12 px-6 py-10 bg-gray-100 rounded-lg sm:px-10 lg:col-span-2 xl:p-12">
                     <h3 className="text-lg font-medium text-warm-gray-900">
                       {contactPageFormHeaderText}
                     </h3>

@@ -170,7 +170,7 @@ export default function Onboarding() {
                 <span className="block">Möchtest du beginnen?</span>
               </h2>
               <div className="flex flex-col items-center w-1/2 mx-auto mt-2">
-                <span className="w-3/5 mx-auto mb-4 text-lg font-bold tracking-tight text-gray-500">
+                <span className="w-full mx-auto mb-4 text-lg font-bold tracking-tight text-gray-500 md:w-3/5">
                   Damit das funktioniert möchten wir eine vertrauensvolle
                   Grundlage schaffen. Dafür benötigen wir einzelne Daten von
                   dir.

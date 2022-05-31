@@ -171,7 +171,7 @@ export default function Profil() {
         !user?.emailAddresses[0]?.verification?.status === "verified") ? (
         <div className="bg-white">
           <div className="pt-4">
-            <div className="w-1/5 p-4 pt-2 mx-auto rounded-md bg-red-50">
+            <div className="w-3/4 p-4 pt-2 mx-auto rounded-md bg-red-50 md:w-1/6">
               <div className="flex">
                 <div className="flex-shrink-0">
                   <XCircleIcon
@@ -210,7 +210,7 @@ export default function Profil() {
       ) : (
         <div className="bg-white">
           <div className="pt-4">
-            <div className="w-1/6 p-4 mx-auto rounded-md bg-green-50">
+            <div className="w-2/4 p-4 mx-auto rounded-md md:w-1/6 bg-green-50">
               <div className="flex">
                 <div className="flex-shrink-0">
                   <CheckCircleIcon

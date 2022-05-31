@@ -19,7 +19,7 @@ const Footer = () => {
           aria-label="Footer"
         >
           {navigation.main.map((item) => (
-            <div key={item.name} className="px-5 py-2">
+            <div key={item.name} className="px-2 py-1 md:px-5 md:py-2">
               <Link
                 href={item.href}
                 className="text-base text-gray-500 hover:text-gray-900"
