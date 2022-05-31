@@ -17,11 +17,18 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-const kebabCase = (str) =>
-  str
-    .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
-    .join("-")
-    .toLowerCase();
+const kebabCase = (str) => {
+  if (str.length < 2) {
+    return str;
+  } else {
+    return str
+      .match(
+        /[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g
+      )
+      .join("-")
+      .toLowerCase();
+  }
+};
 
 const createSearchPath = (
   searchInput,
@@ -30,7 +37,7 @@ const createSearchPath = (
   locationOrZipInput,
   locationRadiusInput
 ) => {
-  let searchPath = "suchen/";
+  let searchPath = "/suche/";
   if (searchInput) {
     searchPath = searchPath + kebabCase(searchInput);
   }
@@ -65,28 +72,19 @@ function Navigation() {
   const [searchInput, setSearchInput] = useState("");
   const [locationOrZipInput, setLocationOrZipInput] = useState("");
   const [locationRadiusInput, setLocationRadiusInput] = useState(0);
-  const [categoryInput, setCategoryInput] = useState("");
-  const [subcategoryInput, setSubcategoryInput] = useState("");
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState();
   const [selectedSubcategory, setSelectedSubcategory] = useState();
 
-  /*  const categories = [
-    { id: 1, categoryName: "Elektronik" },
-    { id: 2, categoryName: "Schmuck" },
-    { id: 3, categoryName: "Garten" },
-    { id: 4, categoryName: "Haushalt" },
-  ];
-
-  const subcategories = [
-    { id: 1, subcategoryName: "Apple" },
-    { id: 2, subcategoryName: "Samsung" },
-    { id: 3, subcategoryName: "HTC" },
-    { id: 4, subcategoryName: "Sony" },
-  ];
- */
+  const resetSearchInputs = () => {
+    setSelectedCategory("");
+    setSelectedSubcategory("");
+    setLocationRadiusInput(0);
+    setLocationOrZipInput("");
+    setSearchInput("");
+  };
 
   const filteredCategories =
     query === ""
@@ -256,7 +254,31 @@ function Navigation() {
           onChange={(event) => setSearchInput(event.target.value)}
           placeholder="Wonach suchst du?"
         />
-        <SearchIcon className="hidden h-8 p-2 text-white bg-orange-400 rounded-full cursor-pointer hover:bg-orange-500 md:inline-flex md:mx-3" />
+        <Link
+          href={{
+            pathname: "/suche/[sid]",
+            query: {
+              sid: searchInput,
+              search: searchInput,
+              category: selectedCategory?.name,
+              subcategory: selectedSubcategory?.name,
+              locality: locationOrZipInput,
+              radius: locationRadiusInput,
+            },
+          }}
+          as={createSearchPath(
+            searchInput,
+            selectedCategory,
+            selectedSubcategory,
+            locationOrZipInput,
+            locationRadiusInput
+          )}
+        >
+          <SearchIcon
+            onClick={() => resetSearchInputs()}
+            className="hidden h-8 p-2 text-white bg-orange-400 rounded-full cursor-pointer hover:bg-orange-500 md:inline-flex md:mx-3"
+          />
+        </Link>
       </div>
       {/* Right Navbar */}
       <Popover
@@ -767,11 +789,12 @@ function Navigation() {
           <div className="flex justify-center pl-1">
             <Link
               href={{
-                pathname: "suchen/[sid]",
+                pathname: "/suche/[sid]",
                 query: {
                   sid: searchInput,
-                  category: selectedCategory,
-                  subcategory: selectedSubcategory,
+                  search: searchInput,
+                  category: selectedCategory?.name,
+                  subcategory: selectedSubcategory?.name,
                   locality: locationOrZipInput,
                   radius: locationRadiusInput,
                 },
@@ -784,7 +807,10 @@ function Navigation() {
                 locationRadiusInput
               )}
             >
-              <button className="w-full h-10 mx-20 mb-4 mr-24 font-semibold text-white bg-orange-400 rounded-md">
+              <button
+                onClick={() => resetSearchInputs()}
+                className="w-full h-10 mx-20 mb-4 mr-24 font-semibold text-white bg-orange-400 rounded-md"
+              >
                 Jetzt Entdecken
               </button>
             </Link>
