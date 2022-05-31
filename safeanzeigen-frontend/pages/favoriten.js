@@ -46,28 +46,30 @@ export default function Favoriten() {
   };
 
   const removeLikeOfAdForUser = async () => {
-    fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/favorites/${selectedAdId}`,
-      {
-        method: "delete",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `${await clerkAuth.getToken()}`,
-        },
-      }
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("DATA DELETE FAVORITES", data);
-        if (data?.newFavoriteArray) {
-          retrieveUserFavoriteAdvertisements(user);
+    if (selectedAdId) {
+      fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/favorites/${selectedAdId}`,
+        {
+          method: "delete",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `${await clerkAuth.getToken()}`,
+          },
         }
-      })
-      .catch((error) => {
-        console.log("ERROR DELETE FAVORITES", error);
-      });
-    handleCloseModal();
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA DELETE FAVORITES", data);
+          if (data?.newFavoriteArray) {
+            retrieveUserFavoriteAdvertisements(user);
+          }
+        })
+        .catch((error) => {
+          console.log("ERROR DELETE FAVORITES", error);
+        });
+      handleCloseModal();
+    }
   };
 
   const handleChangeOfLikeStatus = (adId, currentLikeStatus) => {
