@@ -7,11 +7,14 @@ import Footer from "../components/Footer/Footer";
 import Navigation from "../components/Navigation/Navigation";
 import RegularAdCard from "../components/Startpage/RegularAdCard";
 import AlertConfirmationModal from "../components/GeneralComponents/Modals/AlertConfirmationModal";
+import InfoConfirmationModal from "../components/GeneralComponents/Modals/InfoConfirmationModal";
 
 export default function Angebote() {
   const [offeredAdvertisements, setOfferedAdvertisements] = useState([]);
   const [selectedAdId, setSelectedAdId] = useState(null);
   const [showDeleteConfirmationModal, setShowDeleteConfirmationModal] =
+    useState(false);
+  const [showReserveConfirmationModal, setShowReserveConfirmationModal] =
     useState(false);
   const [isfetchingData, setIsfetchingData] = useState(false);
   const clerkAuth = useAuth();
@@ -52,13 +55,16 @@ export default function Angebote() {
   const handleCloseModal = () => {
     setSelectedAdId(null);
     setShowDeleteConfirmationModal(false);
+    setShowReserveConfirmationModal(false);
   };
 
-  const setOfferAsReserved = async () => {
-    console.log("I WOULD DELETE THIS OFFER", selectedAdId);
+  const toggleReserveOffer = async (optionalAdid) => {
+    console.log("I WOULD RESERVE THIS OFFER", selectedAdId);
     fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
-        `/advertisements/delete/${selectedAdId}`,
+        `/advertisements/togglereservation/${
+          optionalAdid ? optionalAdid : selectedAdId
+        }`,
       {
         method: "post",
         headers: {
@@ -74,6 +80,7 @@ export default function Angebote() {
       .then((response) => response.json())
       .then((data) => {
         console.log("DATA RESERVE OFFER", data);
+        retrieveUserOffers(user);
       })
       .catch((error) => {
         console.log("ERROR DATA RESERVE OFFER", error);
@@ -131,11 +138,21 @@ export default function Angebote() {
         {showDeleteConfirmationModal && (
           <AlertConfirmationModal
             title="Möchtest du die Anzeige wirklich löschen?"
-            subtitle="Die Anzeige wird nicht mehr gefunden werden."
+            subtitle="Die Anzeige wird nicht mehr angesehen werden können."
             alertButtonConfirmationText="Löschen"
             showDislikeConfirmationModal={showDeleteConfirmationModal}
             callbackCloseModal={handleCloseModal}
             callbackConfirmAction={deleteOffer}
+          />
+        )}
+        {showReserveConfirmationModal && (
+          <InfoConfirmationModal
+            title="Anzeige als reserviert darstellen?"
+            subtitle="Die Anzeige bleibt für Kontaktpartner einsehbar aber taucht in Suchergebnissen nicht mehr auf. Sollte ein Käufer abspringen, so kann die Anzeige wieder suchbar geschaltet werden."
+            alertButtonConfirmationText="Reservieren"
+            showDislikeConfirmationModal={showReserveConfirmationModal}
+            callbackCloseModal={handleCloseModal}
+            callbackConfirmAction={toggleReserveOffer}
           />
         )}
         {!isfetchingData && (
@@ -172,6 +189,7 @@ export default function Angebote() {
                         articleIsVerified={advertisement.is_verified}
                         sellerHasManySales={false}
                         isLiked={true}
+                        isReserved={!advertisement.is_published}
                         disableFavorite={true}
                         callbackSetLikeStatus={() => {}}
                       />
@@ -184,12 +202,23 @@ export default function Angebote() {
                       </Link>
                       <div className="flex w-full">
                         <button
-                          onClick={() =>
-                            setOfferAsReserved(advertisement.advertisement_id)
-                          }
+                          onClick={() => {
+                            if (!advertisement.is_published) {
+                              toggleReserveOffer(
+                                advertisement.advertisement_id
+                              );
+                            } else {
+                              setShowReserveConfirmationModal(true);
+                              setSelectedAdId(advertisement.advertisement_id);
+                            }
+                          }}
                           className="items-center w-64 px-4 py-2 mt-3 mr-2 text-sm font-medium text-white bg-teal-500 border border-transparent rounded-md shadow-sm hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent"
                         >
-                          <span>Reservieren</span>
+                          <span>
+                            {advertisement.is_published
+                              ? "Reservieren"
+                              : "Entreservieren"}
+                          </span>
                         </button>
                         <button
                           onClick={() => {
