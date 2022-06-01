@@ -27,6 +27,80 @@ export default function Suche() {
 
   const [isfetchingData, setIsfetchingData] = useState(false);
   const [searchedAdvertisements, setSearchedAdvertisements] = useState([]);
+  const [favoriteAdvertisements, setFavoriteAdvertisements] = useState([]);
+  const [selectedAdId, setSelectedAdId] = useState(null);
+  const [showDislikeConfirmationModal, setShowDislikeConfirmationModal] =
+    useState(false);
+
+  const retrieveUserFavoriteAdvertisements = async (user) => {
+    if (user?.id) {
+      fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+          `/favorites/clerkuserid/${user?.id}`,
+        {
+          method: "get",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `${await clerkAuth.getToken()}`,
+          },
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA GET FAVORITES", data);
+          if (data?.favorites) {
+            setFavoriteAdvertisements(
+              data?.favorites?.map((element) => element?.fk_advertisement_id)
+            );
+          }
+        })
+        .catch((error) => {
+          console.log("ERROR DATA GET FAVORITES", error);
+        });
+    }
+  };
+
+  const handleCloseModal = () => {
+    setSelectedAdId(null);
+    setShowDislikeConfirmationModal(false);
+  };
+
+  const addFavoriteForUser = async (adId, userData) => {
+    if (adId && userData?.id) {
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/favorites/`, {
+        method: "post",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `${await clerkAuth.getToken()}`,
+        },
+        body: JSON.stringify({
+          clerk_user_id: userData?.id,
+          fk_advertisement_id: adId,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA ADD FAVORITES", data);
+          if (data?.newFavoriteArray) {
+            if (data?.newFavoriteArray?.length === 0) {
+              setFavoriteAdvertisements([]);
+            } else if (data?.newFavoriteArray?.length > 0) {
+              setFavoriteAdvertisements(
+                data?.newFavoriteArray?.map(
+                  (element) => element?.fk_advertisement_id
+                )
+              );
+            }
+          }
+        })
+        .catch((error) => {
+          console.log("ERROR ADD FAVORITES", error);
+        });
+      handleCloseModal();
+    }
+  };
 
   const retrievePublicOffers = async () => {
     setIsfetchingData(true);
@@ -54,6 +128,51 @@ export default function Suche() {
       });
   };
 
+  const handleChangeOfLikeStatus = (adId, currentLikeStatus) => {
+    if (currentLikeStatus) {
+      setSelectedAdId(adId);
+      setShowDislikeConfirmationModal(true);
+    }
+    if (!currentLikeStatus) {
+      addFavoriteForUser(adId, user);
+    }
+  };
+
+  const removeLikeOfAdForUser = async () => {
+    if (selectedAdId) {
+      fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/favorites/${selectedAdId}`,
+        {
+          method: "delete",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `${await clerkAuth.getToken()}`,
+          },
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA DELETE FAVORITE", data);
+          if (data?.newFavoriteArray) {
+            if (data?.newFavoriteArray?.length === 0) {
+              setFavoriteAdvertisements([]);
+            } else if (data?.newFavoriteArray?.length > 0) {
+              setFavoriteAdvertisements(
+                data?.newFavoriteArray?.map(
+                  (element) => element?.fk_advertisement_id
+                )
+              );
+            }
+          }
+        })
+        .catch((error) => {
+          console.log("ERROR DELETE FAVORITE", error);
+        });
+      handleCloseModal();
+    }
+  };
+
   useEffect(() => {
     if (router.isReady) {
       // Code using query const { search, category, subcategory, locality, radius } = router.query;
@@ -65,6 +184,12 @@ export default function Suche() {
       console.log(router.query);
     }
   }, [router.isReady]);
+
+  useEffect(() => {
+    if (user) {
+      retrieveUserFavoriteAdvertisements(user);
+    }
+  }, [user]);
 
   useEffect(() => {
     window.onscroll = function () {};
@@ -141,6 +266,16 @@ export default function Suche() {
 
       <Navigation />
       <div className="min-h-screen bg-gray-50">
+        {showDislikeConfirmationModal && (
+          <AlertConfirmationModal
+            title="Möchtest du die Anzeige wirklich aus deinen Favoriten entfernen?"
+            subtitle="Die Anzeige wird nicht mehr unter den Favoriten für dich aufgelistet sein."
+            alertButtonConfirmationText="Entfernen"
+            showDislikeConfirmationModal={showDislikeConfirmationModal}
+            callbackCloseModal={handleCloseModal}
+            callbackConfirmAction={removeLikeOfAdForUser}
+          />
+        )}
         {!isfetchingData && (
           <div className="px-4 py-12 mx-auto max-w-7xl sm:py-16 sm:px-6 lg:px-8">
             <div className="mx-auto">
@@ -243,10 +378,18 @@ export default function Suche() {
                             price={advertisement?.price}
                             priceType={advertisement?.priceType}
                             imageUrl={advertisement?.article_image_1}
+                            isLiked={favoriteAdvertisements.includes(
+                              advertisement?.advertisement_id
+                            )}
                             articleIsVerified={advertisement?.is_verified}
                             sellerHasManySales={false}
-                            isLiked={true}
-                            callbackSetLikeStatus={() => {}}
+                            callbackSetLikeStatus={
+                              user
+                                ? handleChangeOfLikeStatus
+                                : () => {
+                                    router.push("/sign-in");
+                                  }
+                            }
                           />
                         </div>
                       ))}
