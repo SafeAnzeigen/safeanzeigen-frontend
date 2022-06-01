@@ -598,6 +598,7 @@ export default function Inserieren() {
                     type="text"
                     className="w-full !text-3xl font-bold text-center outline-none focus:border-blue-300/50 text-orange-500 bg-white border-blue-300/50 rounded-md shadow-sm placeholder:text-orange-500 placeholder:font-bold placeholder:text-2xl focus:ring-0 mt-16 "
                     placeholder="NAME HINZUFÜGEN"
+                    maxLength="55"
                     value={titleInput}
                     onChange={(event) => setTitleInput(event.target.value)}
                   />
@@ -1008,6 +1009,7 @@ export default function Inserieren() {
                           <div className="flex w-48">
                             <input
                               type="text"
+                              maxLength="30"
                               name="locationInput"
                               id="locationInput"
                               disabled={addressPublic ? true : false}
