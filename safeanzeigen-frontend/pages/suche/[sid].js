@@ -71,6 +71,60 @@ export default function Suche() {
     retrievePublicOffers();
   }, []);
 
+  const categoryFilter = (
+    advertisement,
+    search,
+    category,
+    subcategory,
+    locality
+  ) => {
+    let filterLength = 0;
+    let passedFiltersCount = 0;
+
+    if (search) {
+      filterLength++;
+      if (
+        advertisement.title.toLowerCase().includes(search.toLowerCase()) ||
+        advertisement.description.toLowerCase().includes(search.toLowerCase())
+      ) {
+        passedFiltersCount++;
+      }
+    }
+    if (category) {
+      filterLength++;
+      if (advertisement.category_name === category) {
+        passedFiltersCount++;
+      }
+    }
+    if (locality) {
+      filterLength++;
+      if (
+        advertisement.locality.toLowerCase() === locality.toLowerCase() ||
+        advertisement.locality.toLowerCase().includes(locality.toLowerCase())
+      ) {
+        passedFiltersCount++;
+      }
+    }
+
+    if (subcategory) {
+      filterLength++;
+      if (advertisement.subcategory === subcategory) {
+        passedFiltersCount++;
+      }
+    }
+
+    console.log("filterLength", filterLength);
+    console.log("passedFiltersCount", passedFiltersCount);
+    console.log("advertisement", advertisement);
+    console.log("search", search);
+
+    if (filterLength === passedFiltersCount) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Head>
@@ -150,12 +204,25 @@ export default function Suche() {
             </div>
             <div className="container w-64 mx-auto select-none md:w-full lg:w-full">
               <div>
-                {searchedAdvertisements?.filter(
-                  (filterElement) => filterElement?.is_published
-                )?.length > 0 ? (
+                {searchedAdvertisements?.length > 0 ? (
                   <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
                     {searchedAdvertisements
-                      ?.filter((filterElement) => filterElement?.is_published)
+                      .filter((advertisement) =>
+                        categoryFilter(
+                          advertisement,
+                          search,
+                          category,
+                          subcategory,
+                          locality
+                        )
+                      )
+                      ?.sort(function (a, b) {
+                        return a.created_at > b.created_at
+                          ? -1
+                          : a.created_at < b.created_at
+                          ? 1
+                          : 0;
+                      })
                       ?.map((advertisement, index) => (
                         <div
                           key={index}

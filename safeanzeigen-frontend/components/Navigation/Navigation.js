@@ -76,6 +76,10 @@ export default function Navigation() {
   const [subcategories, setSubcategories] = useState([]);
   const [selectedSubcategory, setSelectedSubcategory] = useState();
 
+  const [showSearchBar, setShowSearchBar] = useState(false);
+  const handleFocus = () => setShowSearchBar(true);
+  const handleBlur = () => setShowSearchBar(false);
+
   const resetSearchInputs = () => {
     setSelectedCategory("");
     setSelectedSubcategory("");
@@ -210,9 +214,13 @@ export default function Navigation() {
   }, [selectedCategory]);
 
   return (
-    <header className="sticky top-0 z-20 grid grid-rows-3 bg-white shadow-sm md:p-6 md:grid-rows-none md:grid-cols-3 md:px-10 md:py-8 lg:pl-20">
+    <header
+      className={`sticky top-0 z-20 grid grid-rows-2 bg-white ${
+        searchInput || showSearchBar ? "shadow-sm" : "shadow-none"
+      } md:p-6 md:grid-rows-none md:grid-cols-3 md:px-10 md:py-8 lg:pl-20`}
+    >
       {/* Left Navbar */}
-      <div className="relative flex items-center h-16 my-auto select-none md:h-12">
+      <div className="relative items-center hidden h-16 my-auto select-none md:flex md:h-12">
         <Link href="/">
           <a className="flex items-center">
             <Image
@@ -251,7 +259,7 @@ export default function Navigation() {
                   category: selectedCategory,
                   subcategory: selectedSubcategory,
                   locality: locationOrZipInput,
-                  radius: locationRadiusInput,
+                  radius: locationOrZipInput ? locationRadiusInput : "",
                 },
               }}
               as={createSearchPath(
@@ -259,7 +267,7 @@ export default function Navigation() {
                 selectedCategory,
                 selectedSubcategory,
                 locationOrZipInput,
-                locationRadiusInput
+                locationOrZipInput ? locationRadiusInput : ""
               )}
             >
               <SearchIcon className="hidden h-8 p-2 text-white bg-orange-400 rounded-full cursor-pointer hover:bg-orange-500 md:inline-flex md:mx-3" />
@@ -284,21 +292,36 @@ export default function Navigation() {
             <>
               <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div className="relative flex justify-between xl:grid xl:grid-cols-12 lg:gap-8">
+                  <div className="md:hidden">
+                    <Link href="/">
+                      <a className="flex items-center ">
+                        <Image
+                          src="/safeanzeigen-logo-text.png"
+                          alt="Safeanzeigen Logo Image"
+                          layout="fill"
+                          objectFit="contain"
+                          objectPosition="left"
+                          className="relative transform cursor-pointer left-1/2 translate-x-[7rem]"
+                        />
+                      </a>
+                    </Link>
+                  </div>
                   <div className="flex items-center md:absolute md:right-0 md:inset-y-0 lg:hidden">
                     {/* Mobile Button & Screen Reader Accessibility */}
-                    <Popover.Button className="inline-flex items-center justify-center p-2 -mx-2 focus:outline-none focus:ring-transparent text-[#9ca3af] cursor-pointer hover:bg-gray-200 border-gray-200 border-2 rounded-lg">
+                    <Popover.Button className="inline-flex items-center justify-center p-2 -mx-2 focus:outline-none focus:ring-transparent text-[#9ca3af] cursor-pointer hover:bg-gray-200 border-gray-200 border-2 rounded-lg z-50">
                       <span className="sr-only">Navigation öffnen</span>
                       {open ? (
                         <XIcon className="block w-6 h-6" aria-hidden="true" />
                       ) : (
                         <MenuIcon
+                          onClick={() => resetSearchInputs()}
                           className="block w-6 h-6"
                           aria-hidden="true"
                         />
                       )}
                     </Popover.Button>
                   </div>
-                  {/*  {console.log("USER OBJECT", user)} */}
+
                   {/* Desktop View */}
                   <SignedIn>
                     <div className="hidden lg:flex lg:items-center lg:justify-end xl:col-span-12">
@@ -414,7 +437,6 @@ export default function Navigation() {
                       </div>
                     </div>
                   </SignedIn>
-
                   <SignedOut>
                     {isUserRedirectToSignInActive && <RedirectToSignIn />}
                     <div className="relative hidden lg:flex lg:items-center lg:justify-end xl:col-span-12 ">
@@ -435,7 +457,7 @@ export default function Navigation() {
               <SignedOut>
                 <Popover.Panel
                   as="nav"
-                  className="lg:hidden"
+                  className="z-50 lg:hidden"
                   aria-label="Global"
                 >
                   <div className="max-w-3xl px-2 pt-2 pb-3 mx-auto space-y-1 sm:px-4">
@@ -453,9 +475,9 @@ export default function Navigation() {
                   className="lg:hidden !z-50"
                   aria-label="Global"
                 >
-                  <div className="max-w-3xl px-2 pt-2 pb-3 mx-auto space-y-1 sm:px-4">
+                  <div className="max-w-3xl px-2 pt-2 pb-3 mx-auto space-y-1 sm:px-4 !z-50">
                     <Link href="/inserieren">
-                      <p className="flex px-3 py-2 text-base font-medium text-white rounded-md cursor-pointer hover:bg-[#2962cd] bg-[#2f70e9]">
+                      <p className="flex px-3 py-2 text-base font-medium text-white rounded-md cursor-pointer hover:bg-[#2962cd] bg-[#2f70e9] !z-50">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="w-6 h-6 pr-2"
@@ -484,13 +506,13 @@ export default function Navigation() {
                       </p>
                     </Link>
                     <Link href="/profil">
-                      <p className="block px-3 py-2 text-base font-medium text-gray-900 rounded-md cursor-pointer hover:bg-gray-100 bg-gray-50">
+                      <p className="block px-3 py-2 text-base font-medium text-gray-900 rounded-md cursor-pointer hover:bg-gray-100 bg-gray-50 !z-50">
                         Dein Profil
                       </p>
                     </Link>
                     <p
                       onClick={() => signOut()}
-                      className="block px-3 py-2 text-base font-medium text-gray-900 rounded-md cursor-pointer hover:bg-gray-100 bg-gray-50"
+                      className="block px-3 py-2 text-base font-medium text-gray-900 rounded-md cursor-pointer hover:bg-gray-100 bg-gray-50 !z-50"
                     >
                       Ausloggen
                     </p>
@@ -546,11 +568,15 @@ export default function Navigation() {
         </Popover>
       </div>
 
-      <div className="flex items-center"></div>
-      {searchInput && (
+      <div
+        className={`flex items-center ${
+          searchInput || showSearchBar ? "bg-gray-200" : "bg-white"
+        } md:bg-white`}
+      ></div>
+      {(searchInput || showSearchBar) && (
         <div className="bg-gray-200 rounded-bl-lg rounded-br-lg select-none md:shadow-sm xs:ml-2">
           <div className="grid md:grid-cols-2 ">
-            <div className="grid items-center justify-center grid-flow-col grid-rows-3 gap-4 mt-3">
+            <div className="grid items-center justify-center grid-flow-col grid-rows-3 gap-4 mt-3 md:mt-1">
               <div className="col-span-3 row-span-3 mb-4">
                 <div>
                   <div>
@@ -584,7 +610,7 @@ export default function Navigation() {
                           leaveFrom="opacity-100"
                           leaveTo="opacity-0"
                         >
-                          <Listbox.Options className="absolute w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm !z-50">
+                          <Listbox.Options className="absolute w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm !z-40">
                             {categories?.map((category, index) => (
                               <Listbox.Option
                                 key={index}
@@ -678,7 +704,7 @@ export default function Navigation() {
                 </div>
               </div>
             </div>
-            <div className="flex flex-col pt-2 mx-auto mt-8 mb-4 flex-center">
+            <div className="flex flex-col pt-2 mx-auto mb-4 md:mt-8 flex-center">
               <div className="flex justify-center md:justify-start">
                 <input
                   className="ml-5 w-4/6 pl-8 md:pl-6 md:ml-0 font-semibold shadow-md text-sm text-gray-700 placeholder-gray-400 bg-transparent !bg-white border-transparent rounded-md outline-none xs:pl-4 focus:outline-none focus:border-transparent focus:ring-0 md:w-4/6"
@@ -690,9 +716,10 @@ export default function Navigation() {
                   placeholder="Stadt"
                 />
                 <div
-                  onClick={() =>
-                    navigator.geolocation.getCurrentPosition(success, error)
-                  }
+                  onClick={() => {
+                    navigator.geolocation.getCurrentPosition(success, error);
+                  }}
+                  onblur=""
                   className="mr-2 text-gray-500 cursor-pointer hover:text-orange-500"
                   title="Meinen Standort nutzen"
                 >
@@ -710,8 +737,8 @@ export default function Navigation() {
                   </svg>
                 </div>
               </div>
-              <div className="flex flex-col items-center grid-cols-2 mt-4 md:flex-none md:mt-0 md:grid">
-                <div className="md:mt-6">
+              <div className="flex flex-col grid-cols-2 mx-4 mt-4 md:items-center md:mx-0 md:flex-none md:mt-0 md:grid">
+                <div className="px-4 md:px-0 md:mt-6">
                   <input
                     type="range"
                     min="0"
@@ -759,8 +786,9 @@ export default function Navigation() {
                   </div>
                 </div>
 
-                <div className="order-first ml-2 text-sm font-bold text-orange-600 md:order-none md:mb-3">
-                  +{locationRadiusInput} km Radius
+                <div className="flex justify-center order-first ml-2 text-sm font-bold text-center text-orange-600 md:ml-4 md:text-left text- md:order-none md:mb-3 md:flex-col">
+                  <div>{`+${locationRadiusInput?.toString()} km`}</div>
+                  <div className="ml-1">Radius</div>
                 </div>
               </div>
             </div>
@@ -775,7 +803,7 @@ export default function Navigation() {
                   category: selectedCategory,
                   subcategory: selectedSubcategory,
                   locality: locationOrZipInput,
-                  radius: locationRadiusInput,
+                  radius: locationOrZipInput ? locationRadiusInput : "",
                 },
               }}
               as={createSearchPath(
@@ -783,12 +811,12 @@ export default function Navigation() {
                 selectedCategory,
                 selectedSubcategory,
                 locationOrZipInput,
-                locationRadiusInput
+                locationOrZipInput ? locationRadiusInput : ""
               )}
             >
               <button
                 onClick={() => resetSearchInputs()}
-                className="w-full h-10 mx-8 mb-4 font-semibold text-white bg-orange-400 rounded-md md:mr-24 md:mx-20"
+                className="w-7/12 h-10 mx-8 mb-4 font-semibold text-white bg-orange-400 rounded-md md:w-full md:mr-24 md:mx-20"
               >
                 Jetzt Entdecken
               </button>

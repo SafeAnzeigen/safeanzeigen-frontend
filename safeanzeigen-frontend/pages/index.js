@@ -6,8 +6,9 @@ import { useAuth, useUser } from "@clerk/clerk-react";
 import Navigation from "../components/Navigation/Navigation";
 import CookieBanner from "../components/GeneralComponents/Cookies/CookieBanner";
 import AlertConfirmationModal from "../components/GeneralComponents/Modals/AlertConfirmationModal";
-import CategoryCard from "../components/Startpage/CategoryCard";
+import TinyCategoryCard from "../components/Startpage/TinyCategoryCard";
 import RegularAdCard from "../components/Startpage/RegularAdCard";
+import CategoryCard from "../components/Startpage/CategoryCard";
 import Footer from "../components/Footer/Footer";
 
 export default function Home() {
@@ -15,6 +16,7 @@ export default function Home() {
   const { user } = useUser();
   const clerkAuth = useAuth();
   const [verticalScrollIsActive, setVerticalScrollIsActive] = useState(true);
+  const [geoPermission, setGeoPermission] = useState(false);
 
   const [showDislikeConfirmationModal, setShowDislikeConfirmationModal] =
     useState(false);
@@ -185,8 +187,11 @@ export default function Home() {
     }
   };
 
+  /* navigator &&
+    navigator.permissions.query({ name: "geolocation" }).then(console.log); */
+
   const checkIfGeoLocationIsEnabledByUsersBrowser = () =>
-    navigator.geolocation !== null && navigator.geolocation !== undefined;
+    navigator.permissions.query({ name: "geolocation" }).then(console.log);
 
   useEffect(() => {
     if (user) {
@@ -196,6 +201,10 @@ export default function Home() {
 
   useEffect(() => {
     retrieveNewestPublicAdvertisements();
+    navigator.permissions.query({ name: "geolocation" }).then((permission) => {
+      console.log("GEO LOCATION PERMISSION", permission);
+      setGeoPermission(permission.state === "granted");
+    });
   }, []);
 
   return (
@@ -226,6 +235,51 @@ export default function Home() {
             callbackConfirmAction={removeLikeOfAdForUser}
           />
         )}
+        <div>
+          <h2 className="pt-8 pb-4 text-3xl font-semibold text-gray-600 select-none">
+            Kategorien
+          </h2>
+          <div
+            className="flex p-4 -mt-2 -ml-4 space-x-1 overflow-scroll scrollbar-hide"
+            onWheel={(event) => transformScroll(event, "sideScroll")}
+            onMouseOver={() => preventVerticalScroll()}
+            onMouseLeave={() => enableVerticalScroll()}
+          >
+            {publicAdvertisements?.length > 0 &&
+              publicAdvertisements
+                ?.sort(function (a, b) {
+                  return a.created_at > b.created_at
+                    ? -1
+                    : a.created_at < b.created_at
+                    ? 1
+                    : 0;
+                })
+                ?.map((element, index) => (
+                  <div key={index}>
+                    <TinyCategoryCard
+                      adId={element?.advertisement_id}
+                      title={element?.title}
+                      price={element?.price}
+                      priceType={element?.price_type}
+                      articleIsVerified={element?.is_verified}
+                      sellerHasManySales={false}
+                      imageUrl={element?.article_image_1}
+                      isLiked={favoriteAdvertisements.includes(
+                        element?.advertisement_id
+                      )}
+                      isReserved={!element?.is_published}
+                      callbackSetLikeStatus={
+                        user
+                          ? handleChangeOfLikeStatus
+                          : () => {
+                              router.push("/sign-in");
+                            }
+                      }
+                    />
+                  </div>
+                ))}
+          </div>
+        </div>
         <div>
           <h2 className="pt-8 pb-4 text-3xl font-semibold text-gray-600 select-none">
             Neueste Angebote
@@ -275,7 +329,7 @@ export default function Home() {
           <h2 className="pt-8 pb-4 text-3xl font-semibold text-gray-600 select-none">
             Angebote in deiner Nähe
           </h2>
-          {checkIfGeoLocationIsEnabledByUsersBrowser ? (
+          {geoPermission ? (
             <div
               className="flex p-4 -mt-2 -ml-4 space-x-5 overflow-scroll scrollbar-hide"
               onWheel={(event) => transformScroll(event, "sideScroll")}
