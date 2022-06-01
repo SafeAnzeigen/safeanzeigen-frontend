@@ -1,27 +1,19 @@
 import { useState, useEffect, useRef, Fragment } from "react";
 import { useRouter } from "next/router";
-import Link from "next/link";
+import Head from "next/head";
 import { useUser, useAuth } from "@clerk/clerk-react";
-import { Switch } from "@headlessui/react";
+import { useReactToPrint } from "react-to-print";
+import { QRCodeCanvas } from "qrcode.react";
+import { Transition, Listbox, Switch } from "@headlessui/react";
+import { format } from "date-fns";
 import {
   InformationCircleIcon,
-  CheckIcon,
   SelectorIcon,
   ExclamationIcon,
 } from "@heroicons/react/solid";
-import Head from "next/head";
+
 import Footer from "../components/Footer/Footer";
 import Navigation from "../components/Navigation/Navigation";
-import { format, set } from "date-fns";
-import {
-  Menu,
-  Popover,
-  Transition,
-  Combobox,
-  Listbox,
-} from "@headlessui/react";
-import { QRCodeCanvas } from "qrcode.react";
-import { useReactToPrint } from "react-to-print";
 
 let sliderCounter = 0;
 
@@ -30,21 +22,18 @@ function classNames(...classes) {
 }
 
 export default function Inserieren() {
-  const { asPath } = useRouter();
   const router = useRouter();
   const { user } = useUser();
   const clerkAuth = useAuth();
-  const fileUpload = useRef(null);
+
   const componentRef = useRef();
   const canvasRef = useRef();
   const carouselRef = useRef();
   const hiddenFileInput = useRef(null);
   const hiddenVerificationFileInput = useRef(null);
-  const [priceInput, setPriceInput] = useState(0);
-  const [verificationImageSecureURL, setVerificationImageSecureURL] =
-    useState("");
-  const [locationInput, setLocationInput] = useState("");
 
+  const [locationInput, setLocationInput] = useState("");
+  const [priceInput, setPriceInput] = useState(0);
   const [descriptionInput, setDescriptionInput] = useState("");
   const [titleInput, setTitleInput] = useState("");
   const [namePublic, setNamePublic] = useState(false);
@@ -54,19 +43,20 @@ export default function Inserieren() {
   const [categories, setCategories] = useState([]);
   const [selectedSubcategory, setSelectedSubcategory] = useState();
   const [subcategories, setSubcategories] = useState([]);
-  const [query, setQuery] = useState("");
-  const [carouselIndex, setCarouselIndex] = useState(0);
+  const priceTypes = ["VB", "Fix"];
+  const [selectedPriceType, setSelectedPriceType] = useState(priceTypes[0]);
+
   const [iscurrentlyUploading, setIscurrentlyUploading] = useState(false);
   const [
     iscurrentlyUploadingVerification,
     setIscurrentlyUploadingVerification,
   ] = useState(false);
+  const [verificationImageSecureURL, setVerificationImageSecureURL] =
+    useState("");
   const [verificationQRCode, setVerificationQRCode] = useState("");
   const [validationSuccessToken, setValidationSuccessToken] = useState("");
+  const [carouselIndex, setCarouselIndex] = useState(0);
   const [adImages, setAdImages] = useState(["/no-article-image.png"]);
-
-  const priceTypes = ["VB", "Fix"];
-  const [selectedPriceType, setSelectedPriceType] = useState(priceTypes[0]);
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -157,12 +147,11 @@ export default function Inserieren() {
           console.log("DATA GET SUBCATEGORIES", data);
           if (data?.subcategories) {
             setSubcategories(
-              data?.subcategories.map((element) => ({
-                subcategory_id: element.subcategory_id,
-                name: element.name,
+              data?.subcategories?.map((element) => ({
+                subcategory_id: element?.subcategory_id,
+                name: element?.name,
               }))
             );
-            /* setSelectedSubcategory(data?.subcategories[0].name); */
           }
         })
         .catch((error) => {
@@ -185,9 +174,9 @@ export default function Inserieren() {
         console.log("DATA GET CATEGORIES", data);
         if (data?.categories) {
           setCategories(
-            data?.categories.map((element) => ({
-              category_id: element.category_id,
-              name: element.name,
+            data?.categories?.map((element) => ({
+              category_id: element?.category_id,
+              name: element?.name,
             }))
           );
         }
@@ -223,8 +212,6 @@ export default function Inserieren() {
   };
 
   const copyQRCodeCanvasToClipboard = () => {
-    console.log("COMPO", componentRef);
-    console.log("COMPO2", componentRef?.current?.childNodes[0]);
     componentRef?.current?.childNodes[0].toBlob(function (blob) {
       const item = new ClipboardItem({ "image/png": blob });
       navigator.clipboard.write([item]);
@@ -232,11 +219,11 @@ export default function Inserieren() {
     });
   };
 
-  const handleClick = (event) => {
+  const handleClick = () => {
     hiddenFileInput.current.click();
   };
 
-  const handleVerificationButtonClick = (event) => {
+  const handleVerificationButtonClick = () => {
     hiddenVerificationFileInput.current.click();
   };
 
@@ -251,25 +238,25 @@ export default function Inserieren() {
 
       setIscurrentlyUploading(true);
       const data = await fetch(
-        "https://api.cloudinary.com/v1_1/dbldlm9vw/image/upload" /* TODO: CHANGE THIS TO AUTO TO ENABLE VIDEO UPLOAD */,
+        `${process.env.NEXT_PUBLIC_CLOUDINARY_PUBLIC_API_URL}` /* TODO: CHANGE THIS TO AUTO TO ENABLE VIDEO UPLOAD */,
         {
           method: "POST",
           body: formData,
         }
       ).then((r) => r.json());
 
-      if (adImages.length === 1 && adImages[0] === "/no-article-image.png") {
-        setAdImages([data.secure_url]);
+      if (adImages?.length === 1 && adImages[0] === "/no-article-image.png") {
+        setAdImages([data?.secure_url]);
       } else {
-        setAdImages([...adImages, data.secure_url]);
+        setAdImages([...adImages, data?.secure_url]);
       }
       setIscurrentlyUploading(false);
-      console.log("SECURE URL", data.secure_url);
+      console.log("SECURE URL", data?.secure_url);
     }
   };
 
   const success = (position) => {
-    console.log(position);
+    console.log("POSITION SUCCESS", position);
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
     const geoAPIURL = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`;
@@ -285,7 +272,7 @@ export default function Inserieren() {
   };
 
   const error = (position) => {
-    console.log(position);
+    console.log("POSITION ERROR", position);
     alert("Bitte gebe das Recht frei deinen Standort zu nutzen");
   };
 
@@ -300,7 +287,7 @@ export default function Inserieren() {
 
       setIscurrentlyUploadingVerification(true);
       const data = await fetch(
-        "https://api.cloudinary.com/v1_1/dbldlm9vw/image/upload" /* TODO: CHANGE THIS TO AUTO TO ENABLE VIDEO UPLOAD */,
+        `${process.env.NEXT_PUBLIC_CLOUDINARY_PUBLIC_API_URL}` /* TODO: CHANGE THIS TO AUTO TO ENABLE VIDEO UPLOAD */,
         {
           method: "POST",
           body: formData,
@@ -320,7 +307,7 @@ export default function Inserieren() {
               Authorization: `${await clerkAuth.getToken()}`,
             },
             body: JSON.stringify({
-              verification_url: data.secure_url,
+              verification_url: data?.secure_url,
               verification_code: verificationQRCode,
             }),
           }
@@ -328,7 +315,7 @@ export default function Inserieren() {
           .then((response) => response.json())
           .then((data) => {
             console.log("DATA VERIFICATION IMAGE DECODING", data);
-            if (data.validationsuccesstoken) {
+            if (data?.validationsuccesstoken) {
               setValidationSuccessToken(data.validationsuccesstoken);
             }
           })
@@ -337,18 +324,18 @@ export default function Inserieren() {
           });
       }
       setIscurrentlyUploadingVerification(false);
-      console.log("SECURE URL VERIFICATION IMAGE", data.secure_url);
+      console.log("SECURE URL VERIFICATION IMAGE", data?.secure_url);
     }
   };
 
   const handleOnPreviousImageClick = () => {
-    sliderCounter = (sliderCounter + 1) % adImages.length;
+    sliderCounter = (sliderCounter + 1) % adImages?.length;
     setCarouselIndex(sliderCounter);
     carouselRef.current.classList.add("carousel-flash-animation");
   };
 
   const handleOnNextImageClick = () => {
-    const adImagesLength = adImages.length;
+    const adImagesLength = adImages?.length;
     sliderCounter = (carouselIndex + adImagesLength - 1) % adImagesLength;
     setCarouselIndex(sliderCounter);
     carouselRef.current.classList.add("carousel-flash-animation");
@@ -363,7 +350,6 @@ export default function Inserieren() {
     carouselRef.current.addEventListener("animationend", removeAnimation);
     generateVerificationQRCode(user);
     retrieveCategories();
-    /* retrieveSubCategories(); */
   }, []);
 
   useEffect(() => {
@@ -381,9 +367,9 @@ export default function Inserieren() {
         <meta name="theme-color" content="#2f70e9" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="manifest" href="/manifest.webmanifest" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png"></link>
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </Head>
-      {/* Navigation */}
+
       <Navigation />
       <div className="min-h-screen bg-gray-50">
         <div className="px-4 py-12 mx-auto max-w-7xl sm:py-16 sm:px-6 lg:px-8">
@@ -396,7 +382,7 @@ export default function Inserieren() {
                     aria-hidden="true"
                   />
                 </div>
-                {console.log("selectedCategory", selectedCategory?.name)}
+
                 <div className="flex-1 ml-3 md:flex md:justify-between">
                   <p className="font-semibold text-blue-900 text-md">
                     Dies ist eine Vorabsicht, wie deine Anzeige anderen Nutzern
@@ -422,27 +408,14 @@ export default function Inserieren() {
                     className={`rounded-xl`}
                   />
 
-                  {/*  </div> */}
-                  {/* <div className="absolute flex items-center justify-center w-full px-3 transform top-1/2">
-                      <button className="flex flex-col items-center px-4 py-3 ml-6 text-sm font-medium text-white bg-[#2f70e9] border border-transparent rounded-md shadow-sm hover:bg-[#2962cd] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent">
-                        <img src="/add.png" className="mb-2 w-9 h-9" />
-                        <div className="text-lg font-extrabold">
-                          Artikelbilder hochladen
-                        </div>
-                      </button>
-                    </div> */}
-                  {adImages.length > 1 &&
+                  {adImages?.length > 1 &&
                     adImages[0] !== "/no-article-image.png" && (
                       <div
                         className={`${
-                          adImages.length === 1
+                          adImages?.length === 1
                             ? "cursor-pointer"
                             : "cursor-default"
                         } absolute flex items-center justify-between w-full px-3 transform -translate-y-1/2 top-1/2`}
-                        onClick={() => {
-                          if (adImages.length === 1) {
-                          }
-                        }}
                       >
                         <button onClick={() => handleOnPreviousImageClick()}>
                           <div className="p-2 bg-orange-400 rounded-full hover:bg-orange-500">
@@ -536,21 +509,21 @@ export default function Inserieren() {
                     style={{ display: "none" }}
                   />
                 </div>
-                {console.log("ADIMAGEARRAY", adImages)}
+
                 <div className="flex">
                   {adImages
-                    .filter((imageURL) => imageURL !== "/no-article-image.png")
-                    .map((imageURL, index) => (
+                    ?.filter((imageURL) => imageURL !== "/no-article-image.png")
+                    ?.map((imageURL, index) => (
                       <div
                         key={index}
                         className="relative p-4 mx-2 mt-2 border-orange-500 rounded-lg bg-blue-400/50"
                       >
-                        {adImages.length > 1 && (
+                        {adImages?.length > 1 && (
                           <div>
                             <div
                               onClick={() => {
                                 setAdImages([
-                                  ...adImages.filter(
+                                  ...adImages?.filter(
                                     (element) => element !== imageURL
                                   ),
                                 ]);
@@ -618,47 +591,7 @@ export default function Inserieren() {
                       </div>
                     ))}
                 </div>
-                {/* <div className="flex justify-end">
-                  <div className="flex p-2 mt-2 rounded-lg select-none bg-gray-200/75 blur-sm">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-6 h-6 text-orange-500"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                      />
-                    </svg>
-                    <span className="mx-2 text-gray-900">Anzahl Ansichten</span>
-                  </div>
-                  <div className="flex p-2 mt-2 ml-2 rounded-lg select-none bg-gray-200/75 blur-sm">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-6 h-6 text-orange-500"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                      />
-                    </svg>
-                    <span className="mx-2 text-gray-900">Anzahl Favorit</span>
-                  </div>
-                </div> */}
+
                 <div>
                   <h2 className="mt-16 text-3xl font-bold text-center text-orange-500 break-words sm:text-4xl">
                     <input
@@ -699,7 +632,7 @@ export default function Inserieren() {
                               leaveTo="opacity-0"
                             >
                               <Listbox.Options className="absolute w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                {priceTypes.map((priceType, index) => (
+                                {priceTypes?.map((priceType, index) => (
                                   <Listbox.Option
                                     key={index}
                                     className={({ active }) =>
@@ -754,71 +687,6 @@ export default function Inserieren() {
                         EURO
                       </span>
                     </div>
-                    {/*  <div className="relative">
-                      <div className="mt-6 opacity-50 select-none blur">
-                        <div className="rounded-md shadow">
-                          <a
-                            href="#"
-                            className="flex items-center justify-center px-5 py-3 text-base font-medium text-white bg-[#2f70e9] border border-transparent rounded-md cursor-default"
-                          >
-                            Kontakt aufnehmen
-                          </a>
-                        </div>
-                        <div className="mt-4 rounded-md shadow cursor-default">
-                          <a
-                            href="#"
-                            className="flex items-center justify-center px-5 py-3 text-base font-medium text-gray-700 bg-white border-gray-300 rounded-md cursor-default"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="w-6 h-6 mr-2"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              strokeWidth={2}
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                              />
-                            </svg>
-                            Favorisieren / Entfavorisieren
-                          </a>
-                        </div>
-
-                        <div className="mt-4 rounded-md shadow">
-                          <span
-                            onClick={() => {
-                              typeof window !== "undefined"
-                                ? copyToClipboard(window.location)
-                                : "";
-                            }}
-                            className="flex items-center justify-center px-5 py-3 text-base font-medium text-gray-700 bg-white border-gray-300 rounded-md cursor-default"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="w-6 h-6 mr-2"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              strokeWidth={2}
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-                              />
-                            </svg>
-                            Teilen
-                          </span>
-                        </div>
-                      </div>
-                      <div className="absolute left-0 z-30 float-left w-full px-2 py-1 text-lg font-bold text-black rounded-lg select-none bg-gray-200/50 top-20">
-                        Hier werden Nutzer mit deiner Anzeige interagieren
-                        können.
-                      </div>
-                    </div> */}
                   </div>
                 </div>
               </div>
@@ -831,7 +699,7 @@ export default function Inserieren() {
                     Informationen zum Anbieter
                   </p>
                 </div>
-                {console.log("USER", user)}
+
                 <div className="px-4 py-5 border-t border-gray-200 sm:p-0">
                   <dl className="sm:divide-y sm:divide-gray-200">
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -850,7 +718,7 @@ export default function Inserieren() {
                       <dt className="text-lg font-medium text-gray-500 md:text-sm">
                         Name
                       </dt>
-                      <dd className="flex justify-between mt-1 text-sm text-lg text-gray-900 sm:mt-0 sm:col-span-2 md:text-sm">
+                      <dd className="flex justify-between mt-1 text-lg text-gray-900 sm:mt-0 sm:col-span-2 md:text-sm">
                         <span
                           className={`${
                             namePublic ? "blur-sm select-none" : ""
@@ -965,7 +833,7 @@ export default function Inserieren() {
                               leaveTo="opacity-0"
                             >
                               <Listbox.Options className="absolute w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm !z-50">
-                                {categories.map((category, index) => (
+                                {categories?.map((category, index) => (
                                   <Listbox.Option
                                     key={index}
                                     className={({ active }) =>
@@ -1022,7 +890,7 @@ export default function Inserieren() {
                               leaveTo="opacity-0"
                             >
                               <Listbox.Options className="absolute w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm !z-50">
-                                {subcategories.map((subcategory, index) => (
+                                {subcategories?.map((subcategory, index) => (
                                   <Listbox.Option
                                     key={index}
                                     className={({ active }) =>
@@ -1198,7 +1066,6 @@ export default function Inserieren() {
                                 "relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-0 focus:ring-offset-0 focus:ring-transparent"
                               )}
                             >
-                              <span className="sr-only">Use setting</span>
                               <span
                                 className={classNames(
                                   addressPublic
@@ -1386,8 +1253,6 @@ export default function Inserieren() {
                     </div>
                   </div>
                   <div className="w-full p-2 mx-auto border-2 rounded-lg border-orange-500/50 md:mx-0 md:w-64">
-                    {" "}
-                    {/* <div className="text-center">Artikel neben dem QR-Code</div> */}
                     <div className="flex flex-col items-center justify-center md:flex-none">
                       <img
                         src="/scan-verification-example.png"
@@ -1457,7 +1322,7 @@ export default function Inserieren() {
               )}
             </div>
 
-            {(adImages.length < 3 ||
+            {(adImages?.length < 3 ||
               !titleInput ||
               !priceInput ||
               !selectedPriceType ||
@@ -1500,7 +1365,7 @@ export default function Inserieren() {
             )}
             <div
               className={`flex justify-center ${
-                adImages.length < 3 ||
+                adImages?.length < 3 ||
                 !titleInput ||
                 !priceInput ||
                 !selectedPriceType ||
@@ -1514,7 +1379,7 @@ export default function Inserieren() {
               <button
                 onClick={() => {
                   if (
-                    adImages.length >= 3 &&
+                    adImages?.length >= 3 &&
                     titleInput &&
                     priceInput &&
                     selectedPriceType &&
@@ -1541,7 +1406,7 @@ export default function Inserieren() {
                   }
                 }}
                 className={`${
-                  adImages.length >= 3 &&
+                  adImages?.length >= 3 &&
                   titleInput &&
                   priceInput &&
                   selectedPriceType &&
@@ -1577,7 +1442,6 @@ export default function Inserieren() {
           </div>
         </div>
       </div>
-
       <Footer />
     </div>
   );
