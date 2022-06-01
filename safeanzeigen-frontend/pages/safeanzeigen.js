@@ -1,65 +1,12 @@
-import { useState } from "react";
 import Image from "next/image";
 import Head from "next/head";
-import { useAuth, useUser, SignedIn, SignedOut } from "@clerk/clerk-react";
-
-import Footer from "../components/Footer/Footer";
-import Navigation from "../components/Navigation/Navigation";
-import RegularAdCard from "../components/Startpage/RegularAdCard";
-import AlertConfirmationModal from "../components/GeneralComponents/Modals/AlertConfirmationModal";
 import Link from "next/link";
+import { SignedIn, SignedOut } from "@clerk/clerk-react";
 
-const incentives = [
-  {
-    name: "Free shipping",
-    imageSrc:
-      "https://tailwindui.com/img/ecommerce/icons/icon-shipping-simple.svg",
-    description:
-      "It's not actually free we just price it into the products. Someone's paying for it, and it's not us.",
-  },
-  {
-    name: "10-year warranty",
-    imageSrc:
-      "https://tailwindui.com/img/ecommerce/icons/icon-warranty-simple.svg",
-    description:
-      "If it breaks in the first 10 years we'll replace it. After that you're on your own though.",
-  },
-  {
-    name: "Exchanges",
-    imageSrc:
-      "https://tailwindui.com/img/ecommerce/icons/icon-exchange-simple.svg",
-    description:
-      "If you don't like it, trade it to one of your friends for something of theirs. Don't send it here though.",
-  },
-];
+import Navigation from "../components/Navigation/Navigation";
+import Footer from "../components/Footer/Footer";
 
 export default function Safeanzeigen() {
-  const [showDislikeConfirmationModal, setShowDislikeConfirmationModal] =
-    useState(false);
-  const [selectedAdId, setSelectedAdId] = useState(null);
-  const { userId, getToken } = useAuth();
-  const { user } = useUser();
-
-  const removeLikeOfAdForUser = () => {
-    /*  console.log("REMOVE TRIGGER", selectedAdId);
-    console.log("REMOVE TRIGGER2", userId);
-    console.log("REMOVE TRIGGER3", getToken);
-    console.log("user!", user); */
-    handleCloseModal();
-  };
-
-  const handleChangeOfLikeStatus = (adId, currentLikeStatus) => {
-    if (currentLikeStatus) {
-      setSelectedAdId(adId);
-      setShowDislikeConfirmationModal(true);
-    }
-  };
-
-  const handleCloseModal = () => {
-    setSelectedAdId(null);
-    setShowDislikeConfirmationModal(false);
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
       <Head>
@@ -71,21 +18,11 @@ export default function Safeanzeigen() {
         <meta name="theme-color" content="#2f70e9" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="manifest" href="/manifest.webmanifest" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png"></link>
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </Head>
 
       <Navigation />
       <div className="min-h-screen bg-gray-50">
-        {showDislikeConfirmationModal && (
-          <AlertConfirmationModal
-            title="Möchtest du die Anzeige wirklich aus deinen Favoriten entfernen?"
-            subtitle="Die Anzeige wird nicht mehr unter den Favoriten für dich aufgelistet sein."
-            alertButtonConfirmationText="Entfernen"
-            showDislikeConfirmationModal={showDislikeConfirmationModal}
-            callbackCloseModal={handleCloseModal}
-            callbackConfirmAction={removeLikeOfAdForUser}
-          />
-        )}
         <div className="px-4 pt-12 pb-12 mx-auto max-w-7xl sm:pb-16 sm:pt-12 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto">
             <h2 className="mb-3 text-3xl font-extrabold text-center text-gray-900 sm:text-4xl">

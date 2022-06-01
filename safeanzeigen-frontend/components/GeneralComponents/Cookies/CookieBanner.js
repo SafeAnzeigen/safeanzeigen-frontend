@@ -1,7 +1,7 @@
 import CookieConsent from "react-cookie-consent";
 import Cookies from "js-cookie";
 
-const CookieBanner = () => {
+export default function CookieBanner() {
   return (
     <div>
       {Cookies.get("CookieConsent") !== "true" ? (
@@ -54,6 +54,4 @@ const CookieBanner = () => {
       )}
     </div>
   );
-};
-
-export default CookieBanner;
+}

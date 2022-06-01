@@ -1,88 +1,52 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useAuth, useUser } from "@clerk/clerk-react";
 
-import Footer from "../../components/Footer/Footer";
 import Navigation from "../../components/Navigation/Navigation";
-import RegularAdCard from "../../components/Startpage/RegularAdCard";
 import AlertConfirmationModal from "../../components/GeneralComponents/Modals/AlertConfirmationModal";
+import RegularAdCard from "../../components/Startpage/RegularAdCard";
+import Footer from "../../components/Footer/Footer";
 
 export default function Suche() {
   const router = useRouter();
-  console.log("QUERY HERE", router.query);
-  const [offeredAdvertisements, setOfferedAdvertisements] = useState([]);
-  const [selectedAdId, setSelectedAdId] = useState(null);
-  const [showDeleteConfirmationModal, setShowDeleteConfirmationModal] =
-    useState(false);
-  const [isfetchingData, setIsfetchingData] = useState(false);
-  const clerkAuth = useAuth();
   const { user } = useUser();
+  const clerkAuth = useAuth();
+
+  const [isfetchingData, setIsfetchingData] = useState(false);
+  const [offeredAdvertisements, setOfferedAdvertisements] = useState([]);
 
   const retrieveUserOffers = async (user) => {
-    setIsfetchingData(true);
-    fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
-        `/advertisements/clerkuserid/${user?.id}`,
-      {
-        method: "get",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `${await clerkAuth.getToken()}`,
-        },
-      }
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setIsfetchingData(false);
-        console.log("DATA GET OFFERS", data);
-        if (data?.advertisements) {
-          setOfferedAdvertisements([...data?.advertisements]);
-        }
-
-        if (data?.message === "Es konnten keine Anzeigen gefunden werden.") {
-          setOfferedAdvertisements([]);
-        }
-      })
-      .catch((error) => {
-        setIsfetchingData(false);
-        console.log("ERROR DATA GET OFFERS", error);
-      });
-  };
-
-  const handleCloseModal = () => {
-    setSelectedAdId(null);
-    setShowDeleteConfirmationModal(false);
-  };
-
-  const deleteOffer = async () => {
-    if (selectedAdId) {
+    if (user?.id) {
+      setIsfetchingData(true);
       fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
-          `/advertisements/delete/${selectedAdId}`,
+          `/advertisements/clerkuserid/${user?.id}`,
         {
-          method: "post",
+          method: "get",
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
             Authorization: `${await clerkAuth.getToken()}`,
           },
-          body: JSON.stringify({
-            clerk_user_id: user?.id,
-          }),
         }
       )
         .then((response) => response.json())
         .then((data) => {
-          console.log("DATA DELETE OFFER", data);
-          retrieveUserOffers(user);
+          setIsfetchingData(false);
+          console.log("DATA GET OFFERS", data);
+          if (data?.advertisements) {
+            setOfferedAdvertisements([...data?.advertisements]);
+          }
+
+          if (data?.message === "Es konnten keine Anzeigen gefunden werden.") {
+            setOfferedAdvertisements([]);
+          }
         })
         .catch((error) => {
-          console.log("ERROR DATA DELETE OFFER", error);
+          setIsfetchingData(false);
+          console.log("ERROR DATA GET OFFERS", error);
         });
-      handleCloseModal();
     }
   };
 
@@ -102,25 +66,14 @@ export default function Suche() {
         <meta name="theme-color" content="#2f70e9" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="manifest" href="/manifest.webmanifest" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png"></link>
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </Head>
 
       <Navigation />
       <div className="min-h-screen bg-gray-50">
-        {showDeleteConfirmationModal && (
-          <AlertConfirmationModal
-            title="Möchtest du die Anzeige wirklich löschen?"
-            subtitle="Die Anzeige wird nicht mehr gefunden werden."
-            alertButtonConfirmationText="Löschen"
-            showDislikeConfirmationModal={showDeleteConfirmationModal}
-            callbackCloseModal={handleCloseModal}
-            callbackConfirmAction={deleteOffer}
-          />
-        )}
         {!isfetchingData && (
           <div className="px-4 py-12 mx-auto max-w-7xl sm:py-16 sm:px-6 lg:px-8">
             <div className="mx-auto">
-              {/* max-w-3xl */}
               <h2 className="mb-8 text-3xl font-extrabold leading-loose text-center text-gray-900 select-none sm:text-4xl">
                 Ergebnisse{" "}
                 {router.query?.search && (
@@ -170,7 +123,7 @@ export default function Suche() {
               </div>
             </div>
             <div className="container w-64 mx-auto select-none md:w-full lg:w-full">
-              {offeredAdvertisements && offeredAdvertisements.length < 1 ? (
+              {offeredAdvertisements && offeredAdvertisements?.length < 1 ? (
                 <div>
                   <div className="flex justify-center opacity-50">
                     <img
@@ -182,24 +135,24 @@ export default function Suche() {
               ) : (
                 <div>
                   {offeredAdvertisements?.filter(
-                    (filterElement) => filterElement.is_published
-                  ).length > 0 ? (
+                    (filterElement) => filterElement?.is_published
+                  )?.length > 0 ? (
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
                       {offeredAdvertisements
-                        ?.filter((filterElement) => filterElement.is_published)
-                        .map((advertisement, index) => (
+                        ?.filter((filterElement) => filterElement?.is_published)
+                        ?.map((advertisement, index) => (
                           <div
                             key={index}
                             className="flex flex-col items-center justify-center p-4 text-6xl rounded-xl"
                             style={{ maxWidth: "16rem !important" }}
                           >
                             <RegularAdCard
-                              adId={advertisement.advertisement_id}
-                              title={advertisement.title}
-                              price={advertisement.price}
-                              priceType={advertisement.priceType}
-                              imageUrl={advertisement.article_image_1}
-                              articleIsVerified={advertisement.is_verified}
+                              adId={advertisement?.advertisement_id}
+                              title={advertisement?.title}
+                              price={advertisement?.price}
+                              priceType={advertisement?.priceType}
+                              imageUrl={advertisement?.article_image_1}
+                              articleIsVerified={advertisement?.is_verified}
                               sellerHasManySales={false}
                               isLiked={true}
                               disableFavorite={true}

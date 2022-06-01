@@ -1,15 +1,15 @@
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ExclamationIcon } from "@heroicons/react/outline";
 
-const AlertConfirmationModal = ({
+export default function AlertConfirmationModal({
   title,
   subtitle,
   alertButtonConfirmationText,
   showDislikeConfirmationModal,
   callbackConfirmAction,
   callbackCloseModal,
-}) => {
+}) {
   const cancelButtonRef = useRef(null);
 
   return (
@@ -77,7 +77,6 @@ const AlertConfirmationModal = ({
                     onClick={() => callbackCloseModal(false)}
                     type="button"
                     className="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-0 focus:ring-offset-0 focus:ring-transparent sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                    /* onClick={() => setOpen(false)} */
                     ref={cancelButtonRef}
                   >
                     Abbrechen
@@ -90,6 +89,4 @@ const AlertConfirmationModal = ({
       </Dialog>
     </Transition.Root>
   );
-};
-
-export default AlertConfirmationModal;
+}

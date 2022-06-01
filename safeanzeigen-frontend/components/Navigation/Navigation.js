@@ -9,37 +9,23 @@ import {
   useAuth,
   useUser,
 } from "@clerk/clerk-react";
-import {
-  SearchIcon,
-  CheckIcon,
-  SelectorIcon,
-  ExclamationIcon,
-} from "@heroicons/react/solid";
-import {
-  Menu,
-  Popover,
-  Transition,
-  Combobox,
-  Listbox,
-} from "@headlessui/react";
+import { Menu, Popover, Transition, Listbox } from "@headlessui/react";
+import { SearchIcon, SelectorIcon } from "@heroicons/react/solid";
 import { MenuIcon, XIcon } from "@heroicons/react/outline";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-const kebabCase = (str) => {
-  if (str.length < 2) {
-    return str;
-  } else {
-    return str
-      .match(
-        /[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g
-      )
-      .join("-")
-      .toLowerCase();
-  }
-};
+const kebabCase = (string) =>
+  string?.length < 2
+    ? string
+    : string
+        ?.match(
+          /[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g
+        )
+        .join("-")
+        .toLowerCase();
 
 const createSearchPath = (
   searchInput,
@@ -71,19 +57,20 @@ const createSearchPath = (
   return searchPath;
 };
 
-function Navigation() {
-  const { signOut } = useClerk();
-  const clerkAuth = useAuth();
-  const { userId } = useAuth();
+export default function Navigation() {
   const { user } = useUser();
-  const [isUserRedirectToSignInActive, setIsUserRedirectToSignInActive, ,] =
+  const { userId } = useAuth();
+  const clerkAuth = useAuth();
+  const { signOut } = useClerk();
+  const [isUserRedirectToSignInActive, setIsUserRedirectToSignInActive] =
     useState(false);
+
   const [searchInput, setSearchInput] = useState("");
   const [locationOrZipInput, setLocationOrZipInput] = useState("");
   const [locationRadiusInput, setLocationRadiusInput] = useState(0);
   const [categories, setCategories] = useState([]);
-  const [subcategories, setSubcategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState();
+  const [subcategories, setSubcategories] = useState([]);
   const [selectedSubcategory, setSelectedSubcategory] = useState();
 
   const resetSearchInputs = () => {
@@ -95,7 +82,7 @@ function Navigation() {
   };
 
   const success = (position) => {
-    console.log(position);
+    console.log("POSITION", position);
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
     const geoAPIURL = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`;
@@ -111,33 +98,35 @@ function Navigation() {
   };
 
   const retrieveSubCategoriesBelongingToCategory = async (category_name) => {
-    fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
-        `/subcategories/categoryname/${category_name}`,
-      {
-        method: "get",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `${await clerkAuth.getToken()}`,
-        },
-      }
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("DATA GET SUBCATEGORIES", data);
-        if (data?.subcategories) {
-          setSubcategories(
-            data?.subcategories.map((element) => ({
-              subcategory_id: element.subcategory_id,
-              name: element.name,
-            }))
-          );
+    if (category_name) {
+      fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+          `/subcategories/categoryname/${category_name}`,
+        {
+          method: "get",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `${await clerkAuth.getToken()}`,
+          },
         }
-      })
-      .catch((error) => {
-        console.log("ERROR GET SUBCATEGORIES", error);
-      });
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA GET SUBCATEGORIES", data);
+          if (data?.subcategories) {
+            setSubcategories(
+              data?.subcategories?.map((element) => ({
+                subcategory_id: element?.subcategory_id,
+                name: element?.name,
+              }))
+            );
+          }
+        })
+        .catch((error) => {
+          console.log("ERROR GET SUBCATEGORIES", error);
+        });
+    }
   };
 
   const retrieveCategories = async () => {
@@ -154,9 +143,9 @@ function Navigation() {
         console.log("DATA GET CATEGORIES", data);
         if (data?.categories) {
           setCategories(
-            data?.categories.map((element) => ({
-              category_id: element.category_id,
-              name: element.name,
+            data?.categories?.map((element) => ({
+              category_id: element?.category_id,
+              name: element?.name,
             }))
           );
         }
@@ -174,6 +163,7 @@ function Navigation() {
   /* if (!isLoaded || !userId || !isSignedIn) {
     return null;
   } */
+  /* TODO: CHECK IF ALL DATA IS THERE AND ELSE REDIRECT TO ONBOARDING OR PROFILE AND MAKE THERE AN EXCEPTION */
 
   /*   if (isSignedIn && user) {
     console.log("CHECKING FOR MINIMUM PROFILE DATA", user);
@@ -397,8 +387,8 @@ function Navigation() {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 d="M12 4v16m8-8H4"
-                              />{" "}
-                            </svg>
+                              />
+                            </svg>{" "}
                             Inserieren
                           </button>
                         </Link>
@@ -407,7 +397,7 @@ function Navigation() {
                   </SignedIn>
 
                   <SignedOut>
-                    {isUserRedirectToSignInActive ? <RedirectToSignIn /> : ""}
+                    {isUserRedirectToSignInActive && <RedirectToSignIn />}
                     <div className="relative hidden lg:flex lg:items-center lg:justify-end xl:col-span-12 ">
                       <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-orange-500 opacity-75 -top-0.5 -right-0.5"></span>
                       <span className="absolute inline-flex rounded-full h-3 w-3 -top-0.5 -right-0.5 bg-orange-500"></span>
@@ -496,7 +486,6 @@ function Navigation() {
                         />
                       </div>
                       <div className="ml-3">
-                        {/* TODO: GRAB DATA FROM USER TO DISPLAY INFO */}
                         <div className="text-base font-medium text-gray-800">
                           Hallo, {user?.firstName} {user?.lastName}
                         </div>
@@ -537,20 +526,14 @@ function Navigation() {
           )}
         </Popover>
       </div>
-      {/* <div className="flex flex-col col-span-3 mx-auto">
-          <div className="h-10 w-96 bg-gray-50">Test</div>
-        </div> */}
-      {/* Searchbox Detail Component */}
-      {/* <div className="sticky top-0 z-20 grid grid-cols-1 p-6 bg-white shadow-sm md:px-10 md:py-8 lg:pl-20">
-         
-        </div> */}
+
       <div className="flex items-center"></div>
       {searchInput && (
         <div className="bg-gray-200 rounded-bl-lg rounded-br-lg select-none md:shadow-sm xs:ml-2">
           <div className="grid md:grid-cols-2 ">
             <div className="grid items-center justify-center grid-flow-col grid-rows-3 gap-4 mt-3">
               <div className="col-span-3 row-span-3 mb-4">
-                <div className="">
+                <div>
                   <div>
                     <Listbox
                       value={selectedCategory}
@@ -583,7 +566,7 @@ function Navigation() {
                           leaveTo="opacity-0"
                         >
                           <Listbox.Options className="absolute w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm !z-50">
-                            {categories.map((category, index) => (
+                            {categories?.map((category, index) => (
                               <Listbox.Option
                                 key={index}
                                 className={({ active }) =>
@@ -645,7 +628,7 @@ function Navigation() {
                           leaveTo="opacity-0"
                         >
                           <Listbox.Options className="absolute w-56 py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm !z-30">
-                            {subcategories.map((subcategory, index) => (
+                            {subcategories?.map((subcategory, index) => (
                               <Listbox.Option
                                 key={index}
                                 className={({ active }) =>
@@ -707,25 +690,6 @@ function Navigation() {
                     />
                   </svg>
                 </div>
-                {/*   <div
-                  className="mt-1 mr-4 cursor-pointer hover:text-orange-500"
-                  title="Ort auf der Karte markieren"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-8 h-8"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
-                    />
-                  </svg>
-                </div> */}
               </div>
               <div className="flex flex-col items-center grid-cols-2 mt-4 md:flex-none md:mt-0 md:grid">
                 <div className="md:mt-6">
@@ -816,5 +780,3 @@ function Navigation() {
     </header>
   );
 }
-
-export default Navigation;

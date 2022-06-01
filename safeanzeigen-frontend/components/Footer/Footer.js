@@ -1,16 +1,14 @@
 import Link from "next/link";
 
-const navigation = {
-  main: [
-    { name: "Über Safeanzeigen", href: "/safeanzeigen" },
-    { name: "FAQ", href: "/faq" },
-    { name: "Kontakt", href: "/kontakt" },
-    { name: "Datenschutz", href: "/datenschutz" },
-    { name: "Impressum", href: "/impressum" },
-  ],
-};
+const navigation = [
+  { name: "Über Safeanzeigen", href: "/safeanzeigen" },
+  { name: "FAQ", href: "/faq" },
+  { name: "Kontakt", href: "/kontakt" },
+  { name: "Datenschutz", href: "/datenschutz" },
+  { name: "Impressum", href: "/impressum" },
+];
 
-const Footer = () => {
+export default function Footer() {
   return (
     <footer className="bg-white">
       <div className="px-4 py-12 mx-auto overflow-hidden max-w-7xl sm:px-6 lg:px-8">
@@ -18,7 +16,7 @@ const Footer = () => {
           className="flex flex-wrap justify-center -mx-5 -my-2"
           aria-label="Footer"
         >
-          {navigation.main.map((item) => (
+          {navigation.map((item) => (
             <div key={item.name} className="px-2 py-1 md:px-5 md:py-2">
               <Link
                 href={item.href}
@@ -44,7 +42,6 @@ const Footer = () => {
                 clipRule="evenodd"
               />
             </svg>
-            {/* <item.icon  aria-hidden="true" /> */}
           </a>
         </div>
         <p className="mt-8 text-base text-center text-gray-400">
@@ -53,6 +50,4 @@ const Footer = () => {
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}

@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-const MessagingComponent = ({ nameOfAd, adURL }) => {
+export default function MessagingComponent({ nameOfAd, adURL }) {
   return (
     <div
       className="flex flex-col flex-1 p-4 mb-8 bg-gray-200 rounded-lg chat-area"
@@ -189,6 +189,4 @@ const MessagingComponent = ({ nameOfAd, adURL }) => {
       </div>
     </div>
   );
-};
-
-export default MessagingComponent;
+}

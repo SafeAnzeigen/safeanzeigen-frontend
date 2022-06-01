@@ -5,7 +5,7 @@ import Router from "next/router";
 import Navigation from "../components/Navigation/Navigation";
 import Footer from "../components/Footer/Footer";
 
-const Kontakt = () => {
+export default function Kontakt() {
   const [contactFirstname, setContactFirstname] = useState("");
   const [contactLastname, setContactLastname] = useState("");
   const [contactEmail, setContactEmail] = useState("");
@@ -111,7 +111,6 @@ const Kontakt = () => {
       <>
         <div className="min-h-screen py-16 bg-white">
           <main className="overflow-hidden">
-            {/* Header */}
             <div className="bg-warm-gray-50">
               <h2 className="py-4 mb-8 text-3xl font-extrabold text-center text-gray-900 select-none sm:text-4xl lg:py-4">
                 Kontakt
@@ -174,7 +173,6 @@ const Kontakt = () => {
               <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <h2 id="contactHeading" className="sr-only"></h2>
                 <div className="mx-4 md:flex md:justify-center md:mx-auto">
-                  {/* Contact form */}
                   <div className="col-span-12 px-6 py-10 bg-gray-100 rounded-lg sm:px-10 lg:col-span-2 xl:p-12">
                     <h3 className="text-lg font-medium text-warm-gray-900">
                       {contactPageFormHeaderText}
@@ -334,7 +332,6 @@ const Kontakt = () => {
                             }
                             className="block w-full px-4 py-3 rounded-md shadow-sm text-warm-gray-900 focus:ring-orange-500/50 focus:border-orange-500/50 border-warm-gray-300"
                             aria-describedby="message-max"
-                            defaultValue={""}
                           />
                         </div>
                         <div className="flex mt-4">
@@ -345,7 +342,7 @@ const Kontakt = () => {
                                 target="_blank"
                                 rel="noreferrer"
                               ></a>
-                            </Link>{" "}
+                            </Link>
                           </div>
                         </div>
                       </div>
@@ -375,6 +372,4 @@ const Kontakt = () => {
       <Footer />
     </div>
   );
-};
-
-export default Kontakt;
+}

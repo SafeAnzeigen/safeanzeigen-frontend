@@ -1,8 +1,9 @@
 import Head from "next/head";
-import Footer from "../components/Footer/Footer";
-import Navigation from "../components/Navigation/Navigation";
 import { Disclosure } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/outline";
+
+import Navigation from "../components/Navigation/Navigation";
+import Footer from "../components/Footer/Footer";
 
 const faqs = [
   {
@@ -28,7 +29,7 @@ function classNames(...classes) {
 
 export default function FAQ() {
   return (
-    <div className="">
+    <div>
       <Head>
         <title>
           Safeanzeigen - Wir bringen Ihre Kleinanzeigen mit Sicherheit groß
@@ -38,10 +39,10 @@ export default function FAQ() {
         <meta name="theme-color" content="#2f70e9" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="manifest" href="/manifest.webmanifest" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png"></link>
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </Head>
-      <Navigation />
 
+      <Navigation />
       <div className="min-h-screen bg-gray-50">
         <div className="px-4 py-12 mx-auto max-w-7xl sm:py-16 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto">
