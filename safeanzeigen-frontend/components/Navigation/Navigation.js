@@ -210,7 +210,7 @@ export default function Navigation() {
   }, [selectedCategory]);
 
   return (
-    <header className="sticky top-0 z-20 grid grid-rows-3 p-6 bg-white shadow-sm md:grid-rows-none md:grid-cols-3 md:px-10 md:py-8 lg:pl-20">
+    <header className="sticky top-0 z-20 grid grid-rows-3 bg-white shadow-sm md:p-6 md:grid-rows-none md:grid-cols-3 md:px-10 md:py-8 lg:pl-20">
       {/* Left Navbar */}
       <div className="relative flex items-center h-16 my-auto select-none md:h-12">
         <Link href="/">
@@ -221,7 +221,7 @@ export default function Navigation() {
               layout="fill"
               objectFit="contain"
               objectPosition="left"
-              className="relative transform cursor-pointer left-1/2 translate-x-[4rem]"
+              className="relative transform cursor-pointer left-1/2 translate-x-[5rem]"
             />
           </a>
         </Link>
