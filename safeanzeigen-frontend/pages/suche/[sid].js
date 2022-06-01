@@ -204,10 +204,18 @@ export default function Suche() {
             </div>
             <div className="container w-64 mx-auto select-none md:w-full lg:w-full">
               <div>
-                {searchedAdvertisements?.length > 0 ? (
+                {searchedAdvertisements?.filter((advertisement) =>
+                  categoryFilter(
+                    advertisement,
+                    search,
+                    category,
+                    subcategory,
+                    locality
+                  )
+                )?.length > 0 ? (
                   <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
                     {searchedAdvertisements
-                      .filter((advertisement) =>
+                      ?.filter((advertisement) =>
                         categoryFilter(
                           advertisement,
                           search,

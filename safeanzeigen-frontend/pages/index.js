@@ -23,6 +23,7 @@ export default function Home() {
   const [selectedAdId, setSelectedAdId] = useState(null);
   const [publicAdvertisements, setPublicAdvertisements] = useState([]);
   const [favoriteAdvertisements, setFavoriteAdvertisements] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   const retrieveUserFavoriteAdvertisements = async (user) => {
     if (user?.id) {
@@ -51,6 +52,28 @@ export default function Home() {
           console.log("ERROR DATA GET FAVORITES", error);
         });
     }
+  };
+
+  const retrieveCategories = async () => {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/categories/`, {
+      method: "get",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `${await clerkAuth.getToken()}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATA GET CATEGORIES", data);
+        if (data?.categories) {
+          setCategories(data?.categories);
+          console.log("CATEGORIES RETRIEVED", data?.categories);
+        }
+      })
+      .catch((error) => {
+        console.log("ERROR GET CATEGORIES", error);
+      });
   };
 
   function transformScroll(event) {
@@ -187,12 +210,6 @@ export default function Home() {
     }
   };
 
-  /* navigator &&
-    navigator.permissions.query({ name: "geolocation" }).then(console.log); */
-
-  const checkIfGeoLocationIsEnabledByUsersBrowser = () =>
-    navigator.permissions.query({ name: "geolocation" }).then(console.log);
-
   useEffect(() => {
     if (user) {
       retrieveUserFavoriteAdvertisements(user);
@@ -205,6 +222,7 @@ export default function Home() {
       console.log("GEO LOCATION PERMISSION", permission);
       setGeoPermission(permission.state === "granted");
     });
+    retrieveCategories();
   }, []);
 
   return (
@@ -245,39 +263,15 @@ export default function Home() {
             onMouseOver={() => preventVerticalScroll()}
             onMouseLeave={() => enableVerticalScroll()}
           >
-            {publicAdvertisements?.length > 0 &&
-              publicAdvertisements
-                ?.sort(function (a, b) {
-                  return a.created_at > b.created_at
-                    ? -1
-                    : a.created_at < b.created_at
-                    ? 1
-                    : 0;
-                })
-                ?.map((element, index) => (
-                  <div key={index}>
-                    <TinyCategoryCard
-                      adId={element?.advertisement_id}
-                      title={element?.title}
-                      price={element?.price}
-                      priceType={element?.price_type}
-                      articleIsVerified={element?.is_verified}
-                      sellerHasManySales={false}
-                      imageUrl={element?.article_image_1}
-                      isLiked={favoriteAdvertisements.includes(
-                        element?.advertisement_id
-                      )}
-                      isReserved={!element?.is_published}
-                      callbackSetLikeStatus={
-                        user
-                          ? handleChangeOfLikeStatus
-                          : () => {
-                              router.push("/sign-in");
-                            }
-                      }
-                    />
-                  </div>
-                ))}
+            {categories?.length > 0 &&
+              categories?.map((element, index) => (
+                <div key={index}>
+                  <TinyCategoryCard
+                    categoryName={element?.name}
+                    imageUrl={element?.category_image}
+                  />
+                </div>
+              ))}
           </div>
         </div>
         <div>
@@ -380,7 +374,7 @@ export default function Home() {
       </section>
       <section className="mx-4 mb-20 md:mx-16">
         <CategoryCard
-          category="Hardware"
+          category="Elektronik"
           imageURL="https://images.unsplash.com/photo-1604754742629-3e5728249d73?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2670"
           subText="Finde die besten Angebote"
           ctaText="Jetzt Entdecken"
