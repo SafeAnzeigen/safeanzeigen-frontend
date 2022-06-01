@@ -87,6 +87,7 @@ export default function Suche() {
   };
 
   useEffect(() => {
+    window.onscroll = function () {};
     retrieveUserOffers(user);
   }, []);
 
@@ -129,8 +130,8 @@ export default function Suche() {
                   </span>
                 )}
               </h2>
-              <div className="flex justify-center">
-                <h2 className="mb-8 mr-4 text-xl font-extrabold text-center text-gray-900 select-none sm:text-2xl">
+              <div className="flex justify-around md:justify-center">
+                <h2 className="mb-8 text-xl font-extrabold text-center text-gray-900 select-none md:mr-4 sm:text-2xl">
                   {router.query?.category && (
                     <span>
                       Kategorie{" "}
