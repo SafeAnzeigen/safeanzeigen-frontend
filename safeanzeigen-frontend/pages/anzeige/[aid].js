@@ -315,7 +315,7 @@ export default function Anzeige() {
                   {/* <div className="aspect-w-16 aspect-h-9"> */}
                   <img
                     src={adImages[carouselIndex]}
-                    alt=""
+                    alt="Bild der Kleinanzeige"
                     layout="fill"
                     style={{
                       objectFit: "cover",
