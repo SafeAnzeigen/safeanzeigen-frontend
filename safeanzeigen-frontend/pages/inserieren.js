@@ -398,7 +398,7 @@ export default function Inserieren() {
                   {/* <div className="aspect-w-16 aspect-h-9"> */}
                   <img
                     src={adImages[carouselIndex]}
-                    alt=""
+                    alt="Hochgeladenes Bild der Kleinanzeige"
                     layout="fill"
                     style={{
                       objectFit: "cover",
@@ -582,6 +582,7 @@ export default function Inserieren() {
                           className="select-none rounded-xl"
                           src={imageURL}
                           layout="fill"
+                          alt="Kleine Thumbnail Übersicht des hochgeladenen Bildes"
                           style={{
                             objectFit: "cover",
                             height: "80px",
@@ -1183,7 +1184,7 @@ export default function Inserieren() {
                   <div className="flex justify-center">
                     <img
                       src="/success-badge.png"
-                      alt=""
+                      alt="Indikator für eine erfolgreiche Verifikation"
                       layout="fill"
                       style={{
                         objectFit: "cover",
@@ -1256,7 +1257,7 @@ export default function Inserieren() {
                     <div className="flex flex-col items-center justify-center md:flex-none">
                       <img
                         src="/scan-verification-example.png"
-                        alt=""
+                        alt="Erklärung für die Verifikation"
                         layout="fill"
                         style={{
                           objectFit: "cover",

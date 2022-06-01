@@ -501,7 +501,7 @@ export default function Navigation() {
                         <img
                           className="w-10 h-10 rounded-full"
                           src={`https://source.boringavatars.com/beam/300/${userId}${userId}${userId}?colors=2f70e9,e76f51,ffc638,f4a261,e97c2f`}
-                          alt="Nutzeridentifizierender Avatar"
+                          alt="Benutzeridentifizierender Avatar"
                         />
                       </div>
                       <div className="ml-3">

@@ -67,7 +67,7 @@ export default function Safeanzeigen() {
                         <img
                           className="w-16 h-16 mx-auto"
                           src="/mobile-phone.png"
-                          alt="Illustration eines Menschen der halb Roboter ist."
+                          alt="Illustration eine Handy das gehalten wird."
                         />
                       </div>
                       <div className="mt-4 sm:mt-0 sm:ml-6 lg:mt-6 lg:ml-0">
@@ -85,7 +85,7 @@ export default function Safeanzeigen() {
                         <img
                           className="w-16 h-16 mx-auto"
                           src="/non-fungible-token.png"
-                          alt="Illustration eines Menschen der halb Roboter ist."
+                          alt="Illustration eines Non Fungible Token."
                         />
                       </div>
                       <div className="mt-4 sm:mt-0 sm:ml-6 lg:mt-6 lg:ml-0">

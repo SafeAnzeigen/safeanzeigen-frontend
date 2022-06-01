@@ -8,51 +8,67 @@ import AlertConfirmationModal from "../../components/GeneralComponents/Modals/Al
 import RegularAdCard from "../../components/Startpage/RegularAdCard";
 import Footer from "../../components/Footer/Footer";
 
+export async function getServerSideProps(context) {
+  return {
+    props: {},
+  };
+}
+
 export default function Suche() {
   const router = useRouter();
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("");
+  const [subcategory, setSubcategory] = useState("");
+  const [locality, setLocality] = useState("");
+  const [radius, setRadius] = useState("");
+
   const { user } = useUser();
   const clerkAuth = useAuth();
 
   const [isfetchingData, setIsfetchingData] = useState(false);
-  const [offeredAdvertisements, setOfferedAdvertisements] = useState([]);
+  const [searchedAdvertisements, setSearchedAdvertisements] = useState([]);
 
-  const retrieveUserOffers = async (user) => {
-    if (user?.id) {
-      setIsfetchingData(true);
-      fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
-          `/advertisements/clerkuserid/${user?.id}`,
-        {
-          method: "get",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: `${await clerkAuth.getToken()}`,
-          },
+  const retrievePublicOffers = async () => {
+    setIsfetchingData(true);
+    fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/advertisements/public/`,
+      {
+        method: "get",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATA GET ALL PUBLIC ADVERTISEMENT", data);
+        if (data?.advertisements) {
+          setSearchedAdvertisements(data?.advertisements);
         }
-      )
-        .then((response) => response.json())
-        .then((data) => {
-          setIsfetchingData(false);
-          console.log("DATA GET OFFERS", data);
-          if (data?.advertisements) {
-            setOfferedAdvertisements([...data?.advertisements]);
-          }
-
-          if (data?.message === "Es konnten keine Anzeigen gefunden werden.") {
-            setOfferedAdvertisements([]);
-          }
-        })
-        .catch((error) => {
-          setIsfetchingData(false);
-          console.log("ERROR DATA GET OFFERS", error);
-        });
-    }
+        setIsfetchingData(false);
+      })
+      .catch((error) => {
+        console.log("ERROR DATA GET ALL PUBLIC ADVERTISEMENT", error);
+        setIsfetchingData(false);
+      });
   };
 
   useEffect(() => {
+    if (router.isReady) {
+      // Code using query const { search, category, subcategory, locality, radius } = router.query;
+      setSearch(router.query.search);
+      setCategory(router.query.category);
+      setSubcategory(router.query.subcategory);
+      setLocality(router.query.locality);
+      setRadius(router.query.radius);
+      console.log(router.query);
+    }
+  }, [router.isReady]);
+
+  useEffect(() => {
     window.onscroll = function () {};
-    retrieveUserOffers(user);
+    retrievePublicOffers();
   }, []);
 
   return (
@@ -76,46 +92,56 @@ export default function Suche() {
             <div className="mx-auto">
               <h2 className="mb-8 text-3xl font-extrabold leading-loose text-center text-gray-900 select-none sm:text-4xl">
                 Ergebnisse{" "}
-                {router.query?.search && (
+                {search && (
                   <span>
                     für{" "}
-                    <span className="p-2 break-words rounded-lg bg-orange-300/75">{`${router.query?.search}`}</span>
+                    <span className="p-2 break-words rounded-lg bg-orange-300/75">
+                      {search}
+                    </span>
                   </span>
                 )}
+                {console.log("this.props.router.query.order", router.query)}
               </h2>
+              {console.log("search", search)}
               <div className="flex justify-around md:justify-center">
                 <h2 className="mb-8 text-xl font-extrabold text-center text-gray-900 select-none md:mr-4 sm:text-2xl">
-                  {router.query?.category && (
+                  {category && (
                     <span>
                       Kategorie{" "}
-                      <span className="p-2 leading-loose break-words rounded-lg bg-blue-200/75">{`${router.query?.category}`}</span>
+                      <span className="p-2 leading-loose break-words rounded-lg bg-blue-200/75">
+                        {category}
+                      </span>
                     </span>
                   )}
                 </h2>
                 <h2 className="mb-8 text-xl font-extrabold text-center text-gray-900 select-none sm:text-2xl">
-                  {router.query?.subcategory && (
+                  {subcategory && (
                     <span>
                       Subkategorie{" "}
-                      <span className="p-2 leading-loose break-words rounded-lg bg-blue-200/75">{`${router.query?.subcategory}`}</span>
+                      <span className="p-2 leading-loose break-words rounded-lg bg-blue-200/75">
+                        {subcategory}
+                      </span>
                     </span>
                   )}
                 </h2>
               </div>
               <div className="flex justify-center">
                 <h2 className="mb-8 mr-4 text-xl font-extrabold text-center text-gray-900 select-none sm:text-2xl">
-                  {router.query?.locality && (
+                  {locality && (
                     <span>
                       in{" "}
-                      <span className="p-2 leading-loose break-words rounded-lg bg-gray-200/75">{`${router.query?.locality}`}</span>
+                      <span className="p-2 leading-loose break-words rounded-lg bg-gray-200/75">
+                        {locality}
+                      </span>
                     </span>
                   )}
                 </h2>
                 <h2 className="mb-8 text-xl font-extrabold text-center text-gray-900 select-none sm:text-2xl">
-                  {router.query?.radius && router.query?.radius !== "0" && (
+                  {radius && radius !== "0" && (
                     <span>
                       Umkreis{" "}
                       <span className="p-2 leading-loose break-words rounded-lg bg-gray-200/75">
-                        {`${router.query?.radius}`} km
+                        {`${radius}`} km
                       </span>
                     </span>
                   )}
@@ -123,56 +149,45 @@ export default function Suche() {
               </div>
             </div>
             <div className="container w-64 mx-auto select-none md:w-full lg:w-full">
-              {offeredAdvertisements && offeredAdvertisements?.length < 1 ? (
-                <div>
-                  <div className="flex justify-center opacity-50">
-                    <img
-                      src="/empty-angebote.png"
-                      className="mb-2 not-draggable"
-                    />
+              <div>
+                {searchedAdvertisements?.filter(
+                  (filterElement) => filterElement?.is_published
+                )?.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+                    {searchedAdvertisements
+                      ?.filter((filterElement) => filterElement?.is_published)
+                      ?.map((advertisement, index) => (
+                        <div
+                          key={index}
+                          className="flex flex-col items-center justify-center p-4 text-6xl rounded-xl"
+                          style={{ maxWidth: "16rem !important" }}
+                        >
+                          <RegularAdCard
+                            adId={advertisement?.advertisement_id}
+                            title={advertisement?.title}
+                            price={advertisement?.price}
+                            priceType={advertisement?.priceType}
+                            imageUrl={advertisement?.article_image_1}
+                            articleIsVerified={advertisement?.is_verified}
+                            sellerHasManySales={false}
+                            isLiked={true}
+                            callbackSetLikeStatus={() => {}}
+                          />
+                        </div>
+                      ))}
                   </div>
-                </div>
-              ) : (
-                <div>
-                  {offeredAdvertisements?.filter(
-                    (filterElement) => filterElement?.is_published
-                  )?.length > 0 ? (
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-                      {offeredAdvertisements
-                        ?.filter((filterElement) => filterElement?.is_published)
-                        ?.map((advertisement, index) => (
-                          <div
-                            key={index}
-                            className="flex flex-col items-center justify-center p-4 text-6xl rounded-xl"
-                            style={{ maxWidth: "16rem !important" }}
-                          >
-                            <RegularAdCard
-                              adId={advertisement?.advertisement_id}
-                              title={advertisement?.title}
-                              price={advertisement?.price}
-                              priceType={advertisement?.priceType}
-                              imageUrl={advertisement?.article_image_1}
-                              articleIsVerified={advertisement?.is_verified}
-                              sellerHasManySales={false}
-                              isLiked={true}
-                              disableFavorite={true}
-                              callbackSetLikeStatus={() => {}}
-                            />
-                          </div>
-                        ))}
+                ) : (
+                  <div>
+                    <div className="flex justify-center opacity-50">
+                      <img
+                        src="/no-result.png"
+                        className="mb-2 not-draggable"
+                        alt="Indikator für fehlende Suchergebnisse"
+                      />
                     </div>
-                  ) : (
-                    <div>
-                      <div className="flex justify-center opacity-50">
-                        <img
-                          src="/no-result.png"
-                          className="mb-2 not-draggable"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
