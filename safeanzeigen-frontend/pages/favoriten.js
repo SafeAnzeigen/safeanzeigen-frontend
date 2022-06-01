@@ -137,35 +137,44 @@ export default function Favoriten() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-                  {favoriteAdvertisements.map((advertisement, index) => (
-                    <div
-                      key={index}
-                      className="flex flex-col items-center justify-center text-6xl border-2 border-gray-300 md:p-4 rounded-xl"
-                      style={{ maxWidth: "16rem !important" }}
-                    >
-                      <RegularAdCard
-                        adId={advertisement.fk_advertisement_id}
-                        title={advertisement.title}
-                        price={advertisement.price}
-                        priceType={advertisement.price_type}
-                        imageUrl={advertisement.article_image_1}
-                        articleIsVerified={advertisement.is_verified}
-                        sellerHasManySales={false}
-                        isLiked={favoriteAdvertisements
-                          .map((elem) => elem.fk_advertisement_id)
-                          .includes(advertisement.fk_advertisement_id)}
-                        isReserved={!advertisement.is_published}
-                        callbackSetLikeStatus={handleChangeOfLikeStatus}
-                      />
-                      <Link
-                        href={`/editieren/${advertisement.advertisement_id}`}
-                      >
-                        <button className="w-64 mt-3 items-center px-4 py-2 text-sm font-medium text-white bg-[#2f70e9] border border-transparent rounded-md shadow-sm hover:bg-[#2962cd] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent">
-                          <span>Anzeige editieren</span>
-                        </button>
-                      </Link>
-                    </div>
-                  ))}
+                  {favoriteAdvertisements.length > 0 &&
+                    favoriteAdvertisements
+                      .sort(function (a, b) {
+                        return a.created_at > b.created_at
+                          ? -1
+                          : a.created_at < b.created_at
+                          ? 1
+                          : 0;
+                      })
+                      .map((advertisement, index) => (
+                        <div
+                          key={index}
+                          className="flex flex-col items-center justify-center text-6xl border-2 border-gray-300 md:border-0 md:p-4 rounded-xl"
+                          style={{ maxWidth: "16rem !important" }}
+                        >
+                          <RegularAdCard
+                            adId={advertisement.fk_advertisement_id}
+                            title={advertisement.title}
+                            price={advertisement.price}
+                            priceType={advertisement.price_type}
+                            imageUrl={advertisement.article_image_1}
+                            articleIsVerified={advertisement.is_verified}
+                            sellerHasManySales={false}
+                            isLiked={favoriteAdvertisements
+                              .map((elem) => elem.fk_advertisement_id)
+                              .includes(advertisement.fk_advertisement_id)}
+                            isReserved={!advertisement.is_published}
+                            callbackSetLikeStatus={handleChangeOfLikeStatus}
+                          />
+                          <Link
+                            href={`/editieren/${advertisement.advertisement_id}`}
+                          >
+                            <button className="w-64 mt-3 items-center px-4 py-2 text-sm font-medium text-white bg-[#2f70e9] border border-transparent rounded-md shadow-sm hover:bg-[#2962cd] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent">
+                              <span>Anzeige editieren</span>
+                            </button>
+                          </Link>
+                        </div>
+                      ))}
                 </div>
               )}
             </div>

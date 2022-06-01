@@ -28,11 +28,7 @@ function RegularAdCard({
           isReserved ? "" : "md:hover:scale-105"
         }`}
       >
-        <div
-          className={`${
-            isReserved ? "blur-sm" : ""
-          } relative w-64 h-64 overflow-x-hidden`}
-        >
+        <div className={`relative w-64 h-64 overflow-x-hidden`}>
           {/* <div className="absolute left-0 z-30 float-left py-1 pl-5 pr-8 text-xl font-bold text-white rounded-tr-md rounded-br-md top-0 bg-[#e97c2f] ">
           <div title="Artikel wurde verifiziert">
             <svg
@@ -158,11 +154,16 @@ function RegularAdCard({
             </div>
           )}
           <img
-            className={`rounded-xl`}
+            className={`${isReserved ? "blur-sm relative" : ""} rounded-xl`}
             src={imageUrl}
             layout="fill"
             style={{ objectFit: "cover", height: "256px", width: "256px" }}
           />
+          {isReserved && (
+            <div className="absolute py-2 text-orange-500 rounded-lg top-16">
+              Reserviert
+            </div>
+          )}
         </div>
         <h3 className="mt-3 text-xl text-center text-gray-600 break-words">
           {/* text-[#2f70e9] */}
