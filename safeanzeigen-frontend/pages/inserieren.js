@@ -596,7 +596,7 @@ export default function Inserieren() {
                 <div>
                   <input
                     type="text"
-                    className="w-4/5 md:w-full !text-3xl font-bold text-center outline-none focus:border-blue-300/50 text-orange-500 bg-white border-blue-300/50 rounded-md shadow-sm placeholder:text-orange-500 placeholder:font-bold placeholder:text-2xl focus:ring-0 mt-16 "
+                    className="w-full !text-3xl font-bold text-center outline-none focus:border-blue-300/50 text-orange-500 bg-white border-blue-300/50 rounded-md shadow-sm placeholder:text-orange-500 placeholder:font-bold placeholder:text-2xl focus:ring-0 mt-16 "
                     placeholder="NAME HINZUFÜGEN"
                     value={titleInput}
                     onChange={(event) => setTitleInput(event.target.value)}
