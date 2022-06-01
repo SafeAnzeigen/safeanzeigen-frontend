@@ -719,7 +719,6 @@ export default function Navigation() {
                   onClick={() => {
                     navigator.geolocation.getCurrentPosition(success, error);
                   }}
-                  onblur=""
                   className="mr-2 text-gray-500 cursor-pointer hover:text-orange-500"
                   title="Meinen Standort nutzen"
                 >
