@@ -594,19 +594,15 @@ export default function Inserieren() {
                 </div>
 
                 <div>
-                  <h2 className="mt-16 text-3xl font-bold text-center text-orange-500 break-words sm:text-4xl">
+                  <div className="mt-16 text-3xl font-bold text-center text-orange-500 break-words sm:text-4xl">
                     <input
                       type="text"
-                      name="titleInput"
-                      id="titleInput"
                       className="w-4/5 md:w-full !text-3xl font-bold text-center outline-none focus:border-blue-300/50 text-orange-500 bg-white border-blue-300/50 rounded-md shadow-sm placeholder:text-orange-500 placeholder:font-bold placeholder:text-2xl focus:ring-0 select-none"
                       placeholder="NAME HINZUFÜGEN"
                       value={titleInput}
-                      onChange={(event) => {
-                        setTitleInput(event.target.value);
-                      }}
+                      onChange={(event) => setTitleInput(event.target.value)}
                     />
-                  </h2>
+                  </div>
                   <div className="text-center md:px-6 bg-gray-50 lg:flex-shrink-0 lg:flex lg:flex-col lg:justify-center">
                     <div className="flex items-center justify-center mt-2 text-5xl font-extrabold text-gray-900">
                       <span className="w-1/5 mt-1 mr-3 text-xl font-medium text-gray-500">
