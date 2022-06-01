@@ -3,53 +3,56 @@ import Head from "next/head";
 import Link from "next/link";
 import { useAuth, useUser } from "@clerk/clerk-react";
 
-import Footer from "../components/Footer/Footer";
 import Navigation from "../components/Navigation/Navigation";
-import RegularAdCard from "../components/Startpage/RegularAdCard";
 import AlertConfirmationModal from "../components/GeneralComponents/Modals/AlertConfirmationModal";
 import InfoConfirmationModal from "../components/GeneralComponents/Modals/InfoConfirmationModal";
+import RegularAdCard from "../components/Startpage/RegularAdCard";
+import Footer from "../components/Footer/Footer";
 
 export default function Angebote() {
-  const [offeredAdvertisements, setOfferedAdvertisements] = useState([]);
-  const [selectedAdId, setSelectedAdId] = useState(null);
+  const { user } = useUser();
+  const clerkAuth = useAuth();
+
   const [showDeleteConfirmationModal, setShowDeleteConfirmationModal] =
     useState(false);
   const [showReserveConfirmationModal, setShowReserveConfirmationModal] =
     useState(false);
   const [isfetchingData, setIsfetchingData] = useState(false);
-  const clerkAuth = useAuth();
-  const { user } = useUser();
+  const [offeredAdvertisements, setOfferedAdvertisements] = useState([]);
+  const [selectedAdId, setSelectedAdId] = useState(null);
 
   const retrieveUserOffers = async (user) => {
-    setIsfetchingData(true);
-    fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
-        `/advertisements/clerkuserid/${user?.id}`,
-      {
-        method: "get",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `${await clerkAuth.getToken()}`,
-        },
-      }
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setIsfetchingData(false);
-        console.log("DATA GET OFFERS", data);
-        if (data?.advertisements) {
-          setOfferedAdvertisements([...data?.advertisements]);
+    if (user?.id) {
+      setIsfetchingData(true);
+      fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+          `/advertisements/clerkuserid/${user?.id}`,
+        {
+          method: "get",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `${await clerkAuth.getToken()}`,
+          },
         }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          setIsfetchingData(false);
+          console.log("DATA GET OFFERS", data);
+          if (data?.advertisements) {
+            setOfferedAdvertisements([...data?.advertisements]);
+          }
 
-        if (data?.message === "Es konnten keine Anzeigen gefunden werden.") {
-          setOfferedAdvertisements([]);
-        }
-      })
-      .catch((error) => {
-        setIsfetchingData(false);
-        console.log("ERROR DATA GET OFFERS", error);
-      });
+          if (data?.message === "Es konnten keine Anzeigen gefunden werden.") {
+            setOfferedAdvertisements([]);
+          }
+        })
+        .catch((error) => {
+          setIsfetchingData(false);
+          console.log("ERROR DATA GET OFFERS", error);
+        });
+    }
   };
 
   const handleCloseModal = () => {
@@ -60,7 +63,6 @@ export default function Angebote() {
 
   const toggleReserveOffer = async (optionalAdid) => {
     if (optionalAdid || selectedAdId) {
-      console.log("I WOULD RESERVE THIS OFFER", selectedAdId);
       fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
           `/advertisements/togglereservation/${
@@ -134,7 +136,7 @@ export default function Angebote() {
         <meta name="theme-color" content="#2f70e9" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="manifest" href="/manifest.webmanifest" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png"></link>
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </Head>
 
       <Navigation />
@@ -159,6 +161,7 @@ export default function Angebote() {
             callbackConfirmAction={toggleReserveOffer}
           />
         )}
+
         {!isfetchingData && (
           <div className="px-4 py-12 mx-auto max-w-7xl sm:py-16 sm:px-6 lg:px-8">
             <div className="max-w-3xl mx-auto divide-y-2 divide-gray-200">
@@ -167,7 +170,7 @@ export default function Angebote() {
               </h2>
             </div>
             <div className="container w-64 mx-auto select-none md:w-full lg:w-full">
-              {offeredAdvertisements && offeredAdvertisements.length < 1 ? (
+              {offeredAdvertisements && offeredAdvertisements?.length < 1 ? (
                 <div>
                   <div className="flex justify-center opacity-50">
                     <img
@@ -178,7 +181,7 @@ export default function Angebote() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-                  {offeredAdvertisements.map((advertisement, index) => (
+                  {offeredAdvertisements?.map((advertisement, index) => (
                     <div
                       key={index}
                       className="flex flex-col items-center justify-center text-6xl border-2 border-gray-300 md:p-4 rounded-xl"

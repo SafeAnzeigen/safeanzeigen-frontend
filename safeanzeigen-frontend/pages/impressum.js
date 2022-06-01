@@ -1,10 +1,11 @@
 import Head from "next/head";
+
 import Footer from "../components/Footer/Footer";
 import Navigation from "../components/Navigation/Navigation";
 
 export default function Impressum() {
   return (
-    <div className="">
+    <div>
       <Head>
         <title>
           Safeanzeigen - Wir bringen Ihre Kleinanzeigen mit Sicherheit groß
@@ -14,9 +15,8 @@ export default function Impressum() {
         <meta name="theme-color" content="#2f70e9" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="manifest" href="/manifest.webmanifest" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png"></link>
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </Head>
-      {/* Navigation */}
       <Navigation />
 
       <div className="min-h-screen py-8 text-3xl font-semibold text-center select-none bg-gray-50">

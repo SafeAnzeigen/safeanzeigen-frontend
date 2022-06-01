@@ -1,48 +1,50 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
-import Link from "next/head";
 import { useAuth, useUser } from "@clerk/clerk-react";
 
-import Footer from "../components/Footer/Footer";
 import Navigation from "../components/Navigation/Navigation";
 import RegularAdCard from "../components/Startpage/RegularAdCard";
 import AlertConfirmationModal from "../components/GeneralComponents/Modals/AlertConfirmationModal";
+import Footer from "../components/Footer/Footer";
 
 export default function Favoriten() {
-  const [favoriteAdvertisements, setFavoriteAdvertisements] = useState([]);
-  const [isfetchingData, setIsfetchingData] = useState(false);
+  const { user } = useUser();
+  const clerkAuth = useAuth();
+
   const [showDislikeConfirmationModal, setShowDislikeConfirmationModal] =
     useState(false);
+  const [isfetchingData, setIsfetchingData] = useState(false);
+  const [favoriteAdvertisements, setFavoriteAdvertisements] = useState([]);
   const [selectedAdId, setSelectedAdId] = useState(null);
-  const clerkAuth = useAuth();
-  const { user } = useUser();
 
   const retrieveUserFavoriteAdvertisements = async (user) => {
-    setIsfetchingData(true);
-    fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
-        `/favorites/clerkuserid/${user?.id}`,
-      {
-        method: "get",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `${await clerkAuth.getToken()}`,
-        },
-      }
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setIsfetchingData(false);
-        console.log("DATA GET FAVORITES", data);
-        if (data?.favorites) {
-          setFavoriteAdvertisements(data?.favorites);
+    if (user?.id) {
+      setIsfetchingData(true);
+      fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+          `/favorites/clerkuserid/${user?.id}`,
+        {
+          method: "get",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `${await clerkAuth.getToken()}`,
+          },
         }
-      })
-      .catch((error) => {
-        setIsfetchingData(false);
-        console.log("ERROR DATA GET FAVORITES", error);
-      });
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          setIsfetchingData(false);
+          console.log("DATA GET FAVORITES", data);
+          if (data?.favorites) {
+            setFavoriteAdvertisements(data?.favorites);
+          }
+        })
+        .catch((error) => {
+          setIsfetchingData(false);
+          console.log("ERROR DATA GET FAVORITES", error);
+        });
+    }
   };
 
   const removeLikeOfAdForUser = async () => {
@@ -73,7 +75,6 @@ export default function Favoriten() {
   };
 
   const handleChangeOfLikeStatus = (adId, currentLikeStatus) => {
-    console.log("RECEIVED", adId, currentLikeStatus);
     if (currentLikeStatus) {
       setSelectedAdId(adId);
       setShowDislikeConfirmationModal(true);
@@ -103,7 +104,7 @@ export default function Favoriten() {
         <meta name="theme-color" content="#2f70e9" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="manifest" href="/manifest.webmanifest" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png"></link>
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </Head>
 
       <Navigation />
@@ -126,7 +127,7 @@ export default function Favoriten() {
               </h2>
             </div>
             <div className="container w-64 mx-auto select-none md:w-full lg:w-full">
-              {favoriteAdvertisements && favoriteAdvertisements.length < 1 ? (
+              {favoriteAdvertisements && favoriteAdvertisements?.length < 1 ? (
                 <div>
                   <div className="flex justify-center opacity-50">
                     <img
@@ -137,16 +138,16 @@ export default function Favoriten() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-                  {favoriteAdvertisements.length > 0 &&
+                  {favoriteAdvertisements?.length > 0 &&
                     favoriteAdvertisements
-                      .sort(function (a, b) {
+                      ?.sort(function (a, b) {
                         return a.created_at > b.created_at
                           ? -1
                           : a.created_at < b.created_at
                           ? 1
                           : 0;
                       })
-                      .map((advertisement, index) => (
+                      ?.map((advertisement, index) => (
                         <div
                           key={index}
                           className="flex flex-col items-center justify-center text-6xl border-2 border-gray-300 md:border-0 md:p-4 rounded-xl"
@@ -161,18 +162,11 @@ export default function Favoriten() {
                             articleIsVerified={advertisement.is_verified}
                             sellerHasManySales={false}
                             isLiked={favoriteAdvertisements
-                              .map((elem) => elem.fk_advertisement_id)
+                              ?.map((elem) => elem.fk_advertisement_id)
                               .includes(advertisement.fk_advertisement_id)}
                             isReserved={!advertisement.is_published}
                             callbackSetLikeStatus={handleChangeOfLikeStatus}
                           />
-                          <Link
-                            href={`/editieren/${advertisement.advertisement_id}`}
-                          >
-                            <button className="w-64 mt-3 items-center px-4 py-2 text-sm font-medium text-white bg-[#2f70e9] border border-transparent rounded-md shadow-sm hover:bg-[#2962cd] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent">
-                              <span>Anzeige editieren</span>
-                            </button>
-                          </Link>
                         </div>
                       ))}
                 </div>

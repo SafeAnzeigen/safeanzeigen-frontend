@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
-import Link from "next/link";
 import Head from "next/head";
+import Link from "next/link";
 import { useUser, useAuth } from "@clerk/clerk-react";
 import { format, parseISO } from "date-fns";
 import { HomeIcon } from "@heroicons/react/solid";
@@ -13,19 +13,18 @@ let sliderCounter = 0;
 
 export default function Anzeige() {
   const router = useRouter();
-  const carouselRef = useRef();
+  const { aid } = router.query;
   const { user } = useUser();
   const clerkAuth = useAuth();
-  const { aid } = router.query;
-  const [carouselIndex, setCarouselIndex] = useState(0);
-  const [advertisementInfoObject, setAdvertisementInfoObject] = useState({});
+  const carouselRef = useRef();
 
+  const [carouselIndex, setCarouselIndex] = useState(0);
   const [adImages, setAdImages] = useState([]);
+  const [advertisementInfoObject, setAdvertisementInfoObject] = useState({});
   const [isLiked, setIsLiked] = useState(false);
 
   const checkIfAdvertisementIsLiked = async (userData, aid) => {
-    console.log("checkIfAdvertisementIsLiked", userData, aid);
-    if (userData && aid) {
+    if (userData?.id && aid) {
       fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
           `/favorites/clerkuserid/${userData?.id}`,
@@ -43,9 +42,9 @@ export default function Anzeige() {
           console.log("DATA IS ADVERTISEMENT LIKED", data);
           if (data?.favorites) {
             setIsLiked(
-              data?.favorites.filter(
-                (element) => element.fk_advertisement_id === aid
-              ).length > 0
+              data?.favorites?.filter(
+                (element) => element?.fk_advertisement_id === aid
+              )?.length > 0
             );
           }
         })
@@ -174,13 +173,13 @@ export default function Anzeige() {
   };
 
   const handleOnPreviousImageClick = () => {
-    sliderCounter = (sliderCounter + 1) % adImages.length;
+    sliderCounter = (sliderCounter + 1) % adImages?.length;
     setCarouselIndex(sliderCounter);
     carouselRef.current.classList.add("carousel-flash-animation");
   };
 
   const handleOnNextImageClick = () => {
-    const adImagesLength = adImages.length;
+    const adImagesLength = adImages?.length;
     sliderCounter = (carouselIndex + adImagesLength - 1) % adImagesLength;
     setCarouselIndex(sliderCounter);
     carouselRef.current.classList.add("carousel-flash-animation");
@@ -196,7 +195,7 @@ export default function Anzeige() {
   }, []);
 
   useEffect(() => {
-    if (Object.keys(advertisementInfoObject).length === 0 && aid) {
+    if (Object.keys(advertisementInfoObject)?.length === 0 && aid) {
       retrieveSpecificAdvertisement(aid);
       increaseViewCount(aid);
     }
@@ -224,9 +223,9 @@ export default function Anzeige() {
         <meta name="theme-color" content="#2f70e9" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="manifest" href="/manifest.webmanifest" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png"></link>
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </Head>
-      {/* Navigation */}
+
       <Navigation />
       <div className="min-h-screen bg-gray-50">
         <div className="px-4 py-12 mx-auto max-w-7xl sm:py-16 sm:px-6 lg:px-8">
@@ -244,7 +243,6 @@ export default function Anzeige() {
                         aria-hidden="true"
                       />
                     </Link>
-                    <span className="sr-only">Home</span>
                   </div>
                 </li>
                 {advertisementInfoObject?.category_name && (
@@ -677,7 +675,6 @@ export default function Anzeige() {
           </div>
         </div>
       </div>
-
       <Footer />
     </div>
   );

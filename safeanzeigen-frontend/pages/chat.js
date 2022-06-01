@@ -1,4 +1,5 @@
 import Head from "next/head";
+
 import Navigation from "../components/Navigation/Navigation";
 import ConversationCard from "../components/Chat/ConversationCard";
 import MessagingComponent from "../components/Chat/MessagingComponent";
@@ -16,9 +17,9 @@ export default function Chat() {
         <meta name="theme-color" content="#2f70e9" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="manifest" href="/manifest.webmanifest" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png"></link>
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </Head>
-      {/* Navigation */}
+
       <Navigation />
       <div className="w-full h-min">
         <div className="flex h-min">

@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import Head from "next/head";
+import Link from "next/link";
 import { UserProfile } from "@clerk/clerk-react";
-import { XCircleIcon, CheckCircleIcon } from "@heroicons/react/solid";
 import { useUser, useAuth } from "@clerk/clerk-react";
+import { XCircleIcon, CheckCircleIcon } from "@heroicons/react/solid";
 
 import Navigation from "../components/Navigation/Navigation";
 import Footer from "../components/Footer/Footer";
-import Link from "next/link";
 
 export default function Profil() {
   const { user } = useUser();
@@ -149,7 +149,7 @@ export default function Profil() {
   }, []);
 
   return (
-    <div className="">
+    <div>
       <Head>
         <title>
           Safeanzeigen - Wir bringen Ihre Kleinanzeigen mit Sicherheit groß
@@ -159,9 +159,9 @@ export default function Profil() {
         <meta name="theme-color" content="#2f70e9" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="manifest" href="/manifest.webmanifest" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png"></link>
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </Head>
-      {/* Navigation */}
+
       <Navigation />
 
       {user &&

@@ -1,50 +1,54 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
+import { useAuth, useUser } from "@clerk/clerk-react";
+
 import Navigation from "../components/Navigation/Navigation";
+import CookieBanner from "../components/GeneralComponents/Cookies/CookieBanner";
+import AlertConfirmationModal from "../components/GeneralComponents/Modals/AlertConfirmationModal";
 import CategoryCard from "../components/Startpage/CategoryCard";
 import RegularAdCard from "../components/Startpage/RegularAdCard";
 import Footer from "../components/Footer/Footer";
-import CookieBanner from "../components/GeneralComponents/Cookies/CookieBanner";
-import { useAuth, useUser } from "@clerk/clerk-react";
-import AlertConfirmationModal from "../components/GeneralComponents/Modals/AlertConfirmationModal";
 
 export default function Home() {
   const router = useRouter();
+  const { user } = useUser();
+  const clerkAuth = useAuth();
   const [verticalScrollIsActive, setVerticalScrollIsActive] = useState(true);
-  const [publicAdvertisements, setPublicAdvertisements] = useState([]);
-  const [favoriteAdvertisements, setFavoriteAdvertisements] = useState([]);
+
   const [showDislikeConfirmationModal, setShowDislikeConfirmationModal] =
     useState(false);
   const [selectedAdId, setSelectedAdId] = useState(null);
-  const clerkAuth = useAuth();
-  const { user } = useUser();
+  const [publicAdvertisements, setPublicAdvertisements] = useState([]);
+  const [favoriteAdvertisements, setFavoriteAdvertisements] = useState([]);
 
   const retrieveUserFavoriteAdvertisements = async (user) => {
-    fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
-        `/favorites/clerkuserid/${user?.id}`,
-      {
-        method: "get",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `${await clerkAuth.getToken()}`,
-        },
-      }
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("DATA GET FAVORITES", data);
-        if (data?.favorites) {
-          setFavoriteAdvertisements(
-            data?.favorites.map((element) => element.fk_advertisement_id)
-          );
+    if (user?.id) {
+      fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+          `/favorites/clerkuserid/${user?.id}`,
+        {
+          method: "get",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `${await clerkAuth.getToken()}`,
+          },
         }
-      })
-      .catch((error) => {
-        console.log("ERROR DATA GET FAVORITES", error);
-      });
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA GET FAVORITES", data);
+          if (data?.favorites) {
+            setFavoriteAdvertisements(
+              data?.favorites?.map((element) => element?.fk_advertisement_id)
+            );
+          }
+        })
+        .catch((error) => {
+          console.log("ERROR DATA GET FAVORITES", error);
+        });
+    }
   };
 
   function transformScroll(event) {
@@ -117,8 +121,8 @@ export default function Home() {
               setFavoriteAdvertisements([]);
             } else if (data?.newFavoriteArray?.length > 0) {
               setFavoriteAdvertisements(
-                data?.newFavoriteArray.map(
-                  (element) => element.fk_advertisement_id
+                data?.newFavoriteArray?.map(
+                  (element) => element?.fk_advertisement_id
                 )
               );
             }
@@ -132,7 +136,6 @@ export default function Home() {
   };
 
   const handleChangeOfLikeStatus = (adId, currentLikeStatus) => {
-    console.log("RECEIVED", adId, currentLikeStatus);
     if (currentLikeStatus) {
       setSelectedAdId(adId);
       setShowDislikeConfirmationModal(true);
@@ -162,21 +165,21 @@ export default function Home() {
       )
         .then((response) => response.json())
         .then((data) => {
-          console.log("DATA DELETE FAVORITES", data);
+          console.log("DATA DELETE FAVORITE", data);
           if (data?.newFavoriteArray) {
             if (data?.newFavoriteArray?.length === 0) {
               setFavoriteAdvertisements([]);
             } else if (data?.newFavoriteArray?.length > 0) {
               setFavoriteAdvertisements(
-                data?.newFavoriteArray.map(
-                  (element) => element.fk_advertisement_id
+                data?.newFavoriteArray?.map(
+                  (element) => element?.fk_advertisement_id
                 )
               );
             }
           }
         })
         .catch((error) => {
-          console.log("ERROR DELETE FAVORITES", error);
+          console.log("ERROR DELETE FAVORITE", error);
         });
       handleCloseModal();
     }
@@ -206,7 +209,7 @@ export default function Home() {
         <meta name="theme-color" content="#2f70e9" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="manifest" href="/manifest.webmanifest" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png"></link>
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </Head>
       <Navigation />
       {/* TODO: CHECK IF VERTICAL SCROLL SHOULD BE TRANSFORMED TO HORIZONTAL SCROLL https://stackoverflow.com/questions/24639103/changing-vertical-scroll-to-horizontal*/}
@@ -233,29 +236,29 @@ export default function Home() {
             onMouseOver={() => preventVerticalScroll()}
             onMouseLeave={() => enableVerticalScroll()}
           >
-            {publicAdvertisements.length > 0 &&
+            {publicAdvertisements?.length > 0 &&
               publicAdvertisements
-                .sort(function (a, b) {
+                ?.sort(function (a, b) {
                   return a.created_at > b.created_at
                     ? -1
                     : a.created_at < b.created_at
                     ? 1
                     : 0;
                 })
-                .map((element, index) => (
+                ?.map((element, index) => (
                   <div key={index}>
                     <RegularAdCard
-                      adId={element.advertisement_id}
-                      title={element.title}
-                      price={element.price}
-                      priceType={element.price_type}
-                      articleIsVerified={element.is_verified}
+                      adId={element?.advertisement_id}
+                      title={element?.title}
+                      price={element?.price}
+                      priceType={element?.price_type}
+                      articleIsVerified={element?.is_verified}
                       sellerHasManySales={false}
-                      imageUrl={element.article_image_1}
+                      imageUrl={element?.article_image_1}
                       isLiked={favoriteAdvertisements.includes(
-                        element.advertisement_id
+                        element?.advertisement_id
                       )}
-                      isReserved={!element.is_published}
+                      isReserved={!element?.is_published}
                       callbackSetLikeStatus={
                         user
                           ? handleChangeOfLikeStatus
@@ -279,29 +282,29 @@ export default function Home() {
               onMouseOver={() => preventVerticalScroll()}
               onMouseLeave={() => enableVerticalScroll()}
             >
-              {publicAdvertisements.length > 0 &&
+              {publicAdvertisements?.length > 0 &&
                 publicAdvertisements
-                  .sort(function (a, b) {
+                  ?.sort(function (a, b) {
                     return a.created_at > b.created_at
                       ? -1
                       : a.created_at < b.created_at
                       ? 1
                       : 0;
                   })
-                  .map((element, index) => (
+                  ?.map((element, index) => (
                     <div key={index}>
                       <RegularAdCard
-                        adId={element.advertisement_id}
-                        title={element.title}
-                        price={element.price}
-                        priceType={element.price_type}
-                        articleIsVerified={element.is_verified}
+                        adId={element?.advertisement_id}
+                        title={element?.title}
+                        price={element?.price}
+                        priceType={element?.price_type}
+                        articleIsVerified={element?.is_verified}
                         sellerHasManySales={false}
-                        imageUrl={element.article_image_1}
+                        imageUrl={element?.article_image_1}
                         isLiked={favoriteAdvertisements.includes(
-                          element.advertisement_id
+                          element?.advertisement_id
                         )}
-                        isReserved={!element.is_published}
+                        isReserved={!element?.is_published}
                         callbackSetLikeStatus={
                           user
                             ? handleChangeOfLikeStatus

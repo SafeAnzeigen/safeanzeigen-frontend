@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-function CategoryCard({ category, imageURL, subText, ctaText }) {
+export default function CategoryCard({ category, imageURL, subText, ctaText }) {
   return (
     <div className="relative py-14">
       <Link
@@ -36,5 +36,3 @@ function CategoryCard({ category, imageURL, subText, ctaText }) {
     </div>
   );
 }
-
-export default CategoryCard;

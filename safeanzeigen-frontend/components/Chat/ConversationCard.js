@@ -1,9 +1,9 @@
-const ConversationCard = ({
+export default function ConversationCard({
   conversationName,
   conversationLastDate,
   publishedNameOfAd,
   unreadMessage,
-}) => {
+}) {
   return (
     <div className="flex p-4 mb-4 transition-transform duration-300 transform bg-white cursor-pointer rounded-xl entry hover:scale-105">
       <div className="flex-2">
@@ -56,6 +56,4 @@ const ConversationCard = ({
       </div>
     </div>
   );
-};
-
-export default ConversationCard;
+}
