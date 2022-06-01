@@ -151,7 +151,7 @@ export default function Favoriten() {
                       ?.map((advertisement, index) => (
                         <div
                           key={index}
-                          className="flex flex-col items-center justify-center text-6xl border-2 border-gray-300 md:border-0 md:p-4 rounded-xl"
+                          className="flex flex-col items-center justify-center text-6xl md:border-0 md:p-4 rounded-xl"
                           style={{ maxWidth: "16rem !important" }}
                         >
                           <RegularAdCard

@@ -6,8 +6,9 @@ import { useAuth, useUser } from "@clerk/clerk-react";
 import Navigation from "../components/Navigation/Navigation";
 import CookieBanner from "../components/GeneralComponents/Cookies/CookieBanner";
 import AlertConfirmationModal from "../components/GeneralComponents/Modals/AlertConfirmationModal";
-import CategoryCard from "../components/Startpage/CategoryCard";
+import TinyCategoryCard from "../components/Startpage/TinyCategoryCard";
 import RegularAdCard from "../components/Startpage/RegularAdCard";
+import CategoryCard from "../components/Startpage/CategoryCard";
 import Footer from "../components/Footer/Footer";
 
 export default function Home() {
@@ -15,12 +16,14 @@ export default function Home() {
   const { user } = useUser();
   const clerkAuth = useAuth();
   const [verticalScrollIsActive, setVerticalScrollIsActive] = useState(true);
+  const [geoPermission, setGeoPermission] = useState(false);
 
   const [showDislikeConfirmationModal, setShowDislikeConfirmationModal] =
     useState(false);
   const [selectedAdId, setSelectedAdId] = useState(null);
   const [publicAdvertisements, setPublicAdvertisements] = useState([]);
   const [favoriteAdvertisements, setFavoriteAdvertisements] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   const retrieveUserFavoriteAdvertisements = async (user) => {
     if (user?.id) {
@@ -49,6 +52,28 @@ export default function Home() {
           console.log("ERROR DATA GET FAVORITES", error);
         });
     }
+  };
+
+  const retrieveCategories = async () => {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/categories/`, {
+      method: "get",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `${await clerkAuth.getToken()}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATA GET CATEGORIES", data);
+        if (data?.categories) {
+          setCategories(data?.categories);
+          console.log("CATEGORIES RETRIEVED", data?.categories);
+        }
+      })
+      .catch((error) => {
+        console.log("ERROR GET CATEGORIES", error);
+      });
   };
 
   function transformScroll(event) {
@@ -185,9 +210,6 @@ export default function Home() {
     }
   };
 
-  const checkIfGeoLocationIsEnabledByUsersBrowser = () =>
-    navigator.geolocation !== null && navigator.geolocation !== undefined;
-
   useEffect(() => {
     if (user) {
       retrieveUserFavoriteAdvertisements(user);
@@ -196,6 +218,11 @@ export default function Home() {
 
   useEffect(() => {
     retrieveNewestPublicAdvertisements();
+    navigator.permissions.query({ name: "geolocation" }).then((permission) => {
+      console.log("GEO LOCATION PERMISSION", permission);
+      setGeoPermission(permission.state === "granted");
+    });
+    retrieveCategories();
   }, []);
 
   return (
@@ -226,6 +253,27 @@ export default function Home() {
             callbackConfirmAction={removeLikeOfAdForUser}
           />
         )}
+        <div>
+          <h2 className="pt-8 pb-4 text-3xl font-semibold text-gray-600 select-none">
+            Kategorien
+          </h2>
+          <div
+            className="flex p-4 -mt-2 -ml-4 space-x-1 overflow-scroll scrollbar-hide"
+            onWheel={(event) => transformScroll(event, "sideScroll")}
+            onMouseOver={() => preventVerticalScroll()}
+            onMouseLeave={() => enableVerticalScroll()}
+          >
+            {categories?.length > 0 &&
+              categories?.map((element, index) => (
+                <div key={index}>
+                  <TinyCategoryCard
+                    categoryName={element?.name}
+                    imageUrl={element?.category_image}
+                  />
+                </div>
+              ))}
+          </div>
+        </div>
         <div>
           <h2 className="pt-8 pb-4 text-3xl font-semibold text-gray-600 select-none">
             Neueste Angebote
@@ -275,7 +323,7 @@ export default function Home() {
           <h2 className="pt-8 pb-4 text-3xl font-semibold text-gray-600 select-none">
             Angebote in deiner Nähe
           </h2>
-          {checkIfGeoLocationIsEnabledByUsersBrowser ? (
+          {geoPermission ? (
             <div
               className="flex p-4 -mt-2 -ml-4 space-x-5 overflow-scroll scrollbar-hide"
               onWheel={(event) => transformScroll(event, "sideScroll")}
@@ -326,7 +374,7 @@ export default function Home() {
       </section>
       <section className="mx-4 mb-20 md:mx-16">
         <CategoryCard
-          category="Hardware"
+          category="Elektronik"
           imageURL="https://images.unsplash.com/photo-1604754742629-3e5728249d73?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2670"
           subText="Finde die besten Angebote"
           ctaText="Jetzt Entdecken"
