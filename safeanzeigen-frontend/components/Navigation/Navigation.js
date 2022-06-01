@@ -1,4 +1,5 @@
 import { Fragment, useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -58,6 +59,8 @@ const createSearchPath = (
 };
 
 export default function Navigation() {
+  const router = useRouter();
+  const { pathname } = useRouter();
   const { user } = useUser();
   const { userId } = useAuth();
   const clerkAuth = useAuth();
@@ -80,6 +83,14 @@ export default function Navigation() {
     setLocationOrZipInput("");
     setSearchInput("");
   };
+
+  const checkUserHasProvidedMinimumProfileData = (userData) =>
+    userData?.firstName &&
+    userData?.lastName &&
+    userData?.phoneNumbers[0]?.phoneNumber &&
+    userData?.phoneNumbers[0]?.verification?.status === "verified" &&
+    userData?.emailAddresses[0]?.emailAddress &&
+    userData?.emailAddresses[0]?.verification?.status === "verified";
 
   const success = (position) => {
     console.log("POSITION", position);
@@ -163,7 +174,6 @@ export default function Navigation() {
   /* if (!isLoaded || !userId || !isSignedIn) {
     return null;
   } */
-  /* TODO: CHECK IF ALL DATA IS THERE AND ELSE REDIRECT TO ONBOARDING OR PROFILE AND MAKE THERE AN EXCEPTION */
 
   /*   if (isSignedIn && user) {
     console.log("CHECKING FOR MINIMUM PROFILE DATA", user);
@@ -181,6 +191,15 @@ export default function Navigation() {
   }, []); */
 
   useEffect(() => {
+    if (user && user?.id) {
+      if (
+        !checkUserHasProvidedMinimumProfileData(user) &&
+        pathname !== "/onboarding" &&
+        pathname !== "/profil"
+      ) {
+        router.push("/onboarding");
+      }
+    }
     retrieveCategories();
   }, []);
 
@@ -482,7 +501,7 @@ export default function Navigation() {
                         <img
                           className="w-10 h-10 rounded-full"
                           src={`https://source.boringavatars.com/beam/300/${userId}${userId}${userId}?colors=2f70e9,e76f51,ffc638,f4a261,e97c2f`}
-                          alt="Nutzeridentifizierender Avatar"
+                          alt="Benutzeridentifizierender Avatar"
                         />
                       </div>
                       <div className="ml-3">
@@ -662,7 +681,7 @@ export default function Navigation() {
             <div className="flex flex-col pt-2 mx-auto mt-8 mb-4 flex-center">
               <div className="flex justify-center md:justify-start">
                 <input
-                  className="ml-5 w-4/6 pl-8 md:pl-6 md:ml-0 font-semibold text-sm text-gray-700 placeholder-gray-400 bg-transparent !bg-white border-transparent rounded-md outline-none xs:pl-4 focus:outline-none focus:border-transparent focus:ring-0 md:w-4/6"
+                  className="ml-5 w-4/6 pl-8 md:pl-6 md:ml-0 font-semibold shadow-md text-sm text-gray-700 placeholder-gray-400 bg-transparent !bg-white border-transparent rounded-md outline-none xs:pl-4 focus:outline-none focus:border-transparent focus:ring-0 md:w-4/6"
                   type="text"
                   value={locationOrZipInput}
                   onChange={(event) =>
@@ -702,7 +721,7 @@ export default function Navigation() {
                     onChange={(event) =>
                       setLocationRadiusInput(event.target.value)
                     }
-                    className="bg-orange-400 range"
+                    className="bg-orange-400 shadow-md range"
                   />
                   <div className="flex justify-between w-full px-2 text-xs">
                     <div className="flex flex-col">

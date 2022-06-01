@@ -176,6 +176,7 @@ export default function Angebote() {
                     <img
                       src="/empty-angebote.png"
                       className="mb-2 not-draggable"
+                      alt="Indikator für keine vorhandenen Angebote"
                     />
                   </div>
                 </div>

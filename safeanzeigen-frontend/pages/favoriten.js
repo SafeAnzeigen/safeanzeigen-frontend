@@ -133,6 +133,7 @@ export default function Favoriten() {
                     <img
                       src="/empty-favoriten.png"
                       className="mb-2 not-draggable"
+                      alt="Indikator für keine vorhandenen Favoriten"
                     />
                   </div>
                 </div>

@@ -113,6 +113,7 @@ export default function RegularAdCard({
             src={imageUrl}
             layout="fill"
             style={{ objectFit: "cover", height: "256px", width: "256px" }}
+            alt="Vorabansicht der Kleinanzeige"
           />
           {isReserved && (
             <div className="absolute py-2 text-orange-500 rounded-lg top-16">

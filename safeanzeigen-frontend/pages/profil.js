@@ -189,17 +189,10 @@ export default function Profil() {
                       {(!user?.emailAddresses[0]?.emailAddress ||
                         !user?.emailAddresses[0]?.verification?.status ===
                           "verified") && (
-                        <li>
-                          Du hast eine E-Mail-Adresse hinterlegt und per Code
-                          verifiziert
-                        </li>
+                        <li>Verifiziere deine E-Mail-Adresse</li>
                       )}
-                      {!user?.firstName && (
-                        <li>Du hast einen Vornamen angegeben</li>
-                      )}
-                      {!user?.lastName && (
-                        <li>Du hast einen Nachnamen angegeben</li>
-                      )}
+                      {!user?.firstName && <li>Gebe deinen Vornamen an</li>}
+                      {!user?.lastName && <li>Gebe deinen Nachnamen an</li>}
                     </ul>
                   </div>
                 </div>
