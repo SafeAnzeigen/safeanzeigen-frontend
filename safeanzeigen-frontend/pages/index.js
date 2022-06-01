@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import Head from "next/head";
 import Navigation from "../components/Navigation/Navigation";
 import CategoryCard from "../components/Startpage/CategoryCard";
@@ -9,6 +10,7 @@ import { useAuth, useUser } from "@clerk/clerk-react";
 import AlertConfirmationModal from "../components/GeneralComponents/Modals/AlertConfirmationModal";
 
 export default function Home() {
+  const router = useRouter();
   const [verticalScrollIsActive, setVerticalScrollIsActive] = useState(true);
   const [publicAdvertisements, setPublicAdvertisements] = useState([]);
   const [favoriteAdvertisements, setFavoriteAdvertisements] = useState([]);
@@ -94,7 +96,7 @@ export default function Home() {
   };
 
   const addFavoriteForUser = async (adId, userData) => {
-    if (adId) {
+    if (adId && userData?.id) {
       fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/favorites/`, {
         method: "post",
         headers: {
@@ -185,13 +187,13 @@ export default function Home() {
 
   useEffect(() => {
     if (user) {
-      /* retrieveUserOffers(user); */
       retrieveUserFavoriteAdvertisements(user);
-      retrieveNewestPublicAdvertisements();
     }
   }, [user]);
 
-  /* TODO: Detect if user scrolled to horizontal end then enable vertical scroll again*/
+  useEffect(() => {
+    retrieveNewestPublicAdvertisements();
+  }, []);
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-gray-50">
@@ -207,8 +209,6 @@ export default function Home() {
         <link rel="apple-touch-icon" href="/apple-touch-icon.png"></link>
       </Head>
       <Navigation />
-      {/* Main Page */}
-      {/* Section 1 */}
       {/* TODO: CHECK IF VERTICAL SCROLL SHOULD BE TRANSFORMED TO HORIZONTAL SCROLL https://stackoverflow.com/questions/24639103/changing-vertical-scroll-to-horizontal*/}
       <CookieBanner />
 
@@ -256,7 +256,13 @@ export default function Home() {
                         element.advertisement_id
                       )}
                       isReserved={!element.is_published}
-                      callbackSetLikeStatus={handleChangeOfLikeStatus}
+                      callbackSetLikeStatus={
+                        user
+                          ? handleChangeOfLikeStatus
+                          : () => {
+                              router.push("/sign-in");
+                            }
+                      }
                     />
                   </div>
                 ))}
@@ -296,7 +302,13 @@ export default function Home() {
                           element.advertisement_id
                         )}
                         isReserved={!element.is_published}
-                        callbackSetLikeStatus={handleChangeOfLikeStatus}
+                        callbackSetLikeStatus={
+                          user
+                            ? handleChangeOfLikeStatus
+                            : () => {
+                                router.push("/sign-in");
+                              }
+                        }
                       />
                     </div>
                   ))}

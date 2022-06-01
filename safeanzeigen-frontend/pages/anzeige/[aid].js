@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Head from "next/head";
-import { useUser } from "@clerk/clerk-react";
+import { useUser, useAuth } from "@clerk/clerk-react";
 import { format, parseISO } from "date-fns";
 import { HomeIcon } from "@heroicons/react/solid";
 
@@ -14,12 +14,46 @@ let sliderCounter = 0;
 export default function Anzeige() {
   const router = useRouter();
   const carouselRef = useRef();
-  const { user } = useUser(); /* TODO: IS SIGNED IN CHECK NEEDED? */
+  const { user } = useUser();
+  const clerkAuth = useAuth();
   const { aid } = router.query;
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [advertisementInfoObject, setAdvertisementInfoObject] = useState({});
 
   const [adImages, setAdImages] = useState([]);
+  const [isLiked, setIsLiked] = useState(false);
+
+  const checkIfAdvertisementIsLiked = async (userData, aid) => {
+    console.log("checkIfAdvertisementIsLiked", userData, aid);
+    if (userData && aid) {
+      fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+          `/favorites/clerkuserid/${userData?.id}`,
+        {
+          method: "get",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `${await clerkAuth.getToken()}`,
+          },
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA IS ADVERTISEMENT LIKED", data);
+          if (data?.favorites) {
+            setIsLiked(
+              data?.favorites.filter(
+                (element) => element.fk_advertisement_id === aid
+              ).length > 0
+            );
+          }
+        })
+        .catch((error) => {
+          console.log("ERROR DATA IS ADVERTISEMENT LIKED", error);
+        });
+    }
+  };
 
   const retrieveSpecificAdvertisement = (aid) => {
     if (aid) {
@@ -60,6 +94,58 @@ export default function Anzeige() {
         })
         .catch((error) => {
           console.log("ERROR DATA GET SPECIFIC ADVERTISEMENT", error);
+        });
+    }
+  };
+
+  const removeLikeOfAdForUser = async (aid) => {
+    if (aid) {
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/favorites/${aid}`, {
+        method: "delete",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `${await clerkAuth.getToken()}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA DELETE FAVORITE", data);
+          if (data?.newFavoriteArray) {
+            checkIfAdvertisementIsLiked(user, aid);
+          }
+        })
+        .catch((error) => {
+          console.log("ERROR DELETE FAVORITE", error);
+        });
+    }
+  };
+
+  const addFavoriteForUser = async (aid, userData) => {
+    if (aid && userData?.id) {
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/favorites/`, {
+        method: "post",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `${await clerkAuth.getToken()}`,
+        },
+        body: JSON.stringify({
+          clerk_user_id: userData?.id,
+          fk_advertisement_id: aid,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA ADD FAVORITE", data);
+          if (data?.newFavoriteArray) {
+            if (data?.newFavoriteArray?.length > 0) {
+              checkIfAdvertisementIsLiked(user, aid);
+            }
+          }
+        })
+        .catch((error) => {
+          console.log("ERROR ADD FAVORITE", error);
         });
     }
   };
@@ -115,6 +201,12 @@ export default function Anzeige() {
       increaseViewCount(aid);
     }
   }, [aid]);
+
+  useEffect(() => {
+    if (user?.id && aid) {
+      checkIfAdvertisementIsLiked(user, aid);
+    }
+  }, [user]);
 
   const copyToClipboard = async (textToCopy) => {
     await navigator.clipboard.writeText(textToCopy);
@@ -385,12 +477,12 @@ export default function Anzeige() {
                         </Link>
                       ) : (
                         <div className="rounded-md shadow">
-                          <a
-                            href="#"
-                            className="flex items-center justify-center px-5 py-3 text-base font-medium text-white bg-[#2f70e9] border border-transparent rounded-md hover:bg-[#2962cd]"
+                          <button
+                            onClick={() => router.push("/sign-in")}
+                            className="w-full flex items-center justify-center px-5 py-3 text-base font-medium text-white bg-[#2f70e9] border border-transparent rounded-md hover:bg-[#2962cd]"
                           >
                             Kontakt aufnehmen
-                          </a>
+                          </button>
                         </div>
                       )}
                       {user &&
@@ -400,26 +492,49 @@ export default function Anzeige() {
                         ""
                       ) : (
                         <div className="mt-4 rounded-md shadow">
-                          <a
-                            href="#"
-                            className="flex items-center justify-center px-5 py-3 text-base font-medium text-gray-700 bg-white border-gray-300 rounded-md hover:bg-gray-200"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="w-6 h-6 mr-2"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              strokeWidth={2}
+                          {user && user?.id && aid && isLiked ? (
+                            <button
+                              onClick={() => removeLikeOfAdForUser(aid)}
+                              className="flex items-center justify-center w-full px-5 py-3 text-base font-medium text-white bg-red-500 border-gray-300 rounded-md hover:bg-red-600"
                             >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                              />
-                            </svg>
-                            Favorisieren / Entfavorisieren
-                          </a>
+                              <svg
+                                className={`w-4 h-4 mr-2`}
+                                height="329pt"
+                                viewBox="0 0 329.26933 329"
+                                fill="white"
+                                width="329pt"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path d="m194.800781 164.769531 128.210938-128.214843c8.34375-8.339844 8.34375-21.824219 0-30.164063-8.339844-8.339844-21.824219-8.339844-30.164063 0l-128.214844 128.214844-128.210937-128.214844c-8.34375-8.339844-21.824219-8.339844-30.164063 0-8.34375 8.339844-8.34375 21.824219 0 30.164063l128.210938 128.214843-128.210938 128.214844c-8.34375 8.339844-8.34375 21.824219 0 30.164063 4.15625 4.160156 9.621094 6.25 15.082032 6.25 5.460937 0 10.921875-2.089844 15.082031-6.25l128.210937-128.214844 128.214844 128.214844c4.160156 4.160156 9.621094 6.25 15.082032 6.25 5.460937 0 10.921874-2.089844 15.082031-6.25 8.34375-8.339844 8.34375-21.824219 0-30.164063zm0 0" />
+                              </svg>
+                              Entfavorisieren
+                            </button>
+                          ) : (
+                            <button
+                              onClick={
+                                user
+                                  ? () => addFavoriteForUser(aid, user)
+                                  : () => router.push("/sign-in")
+                              }
+                              className="flex items-center justify-center w-full px-5 py-3 text-base font-medium text-white bg-red-500 border-gray-300 rounded-md hover:bg-red-600"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className={`w-7 h-7 mr-2 text-gray-800/0 `}
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                                stroke="white"
+                                strokeWidth={1.5}
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                                />
+                              </svg>
+                              Favorisieren
+                            </button>
+                          )}
                         </div>
                       )}
 
@@ -430,7 +545,7 @@ export default function Anzeige() {
                               ? copyToClipboard(window.location)
                               : "";
                           }}
-                          className="flex items-center justify-center px-5 py-3 text-base font-medium text-gray-700 bg-white border-gray-300 rounded-md cursor-pointer select-none hover:bg-gray-200"
+                          className="flex items-center justify-center w-full px-5 py-3 text-base font-medium text-gray-700 bg-white border-gray-300 rounded-md cursor-pointer select-none hover:bg-gray-200"
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -547,7 +662,6 @@ export default function Anzeige() {
                       <div className="grow-wrap">
                         <textarea
                           readOnly
-                          autoresizeenabled={true}
                           spellCheck="false"
                           name="comment"
                           id="comment"

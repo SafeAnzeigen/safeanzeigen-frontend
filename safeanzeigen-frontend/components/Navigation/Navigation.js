@@ -224,7 +224,7 @@ function Navigation() {
         }`}
       >
         <input
-          className="text-lg text-gray-700 placeholder-gray-400 bg-transparent border-transparent outline-none mt-4flex-grow pl- xs:pl-4 focus:outline-none focus:border-transparent focus:ring-0"
+          className="w-full text-lg text-gray-700 placeholder-gray-400 bg-transparent border-transparent outline-none mt-4flex-grow pl- xs:pl-4 focus:outline-none focus:border-transparent focus:ring-0"
           type="text"
           value={searchInput}
           onChange={(event) => setSearchInput(event.target.value)}
