@@ -34,13 +34,11 @@ const publicPages = [
   "/safeanzeigen",
   "/suche/[sid]",
   "/anzeige/[aid]",
-]; /* TODO: ADD MORE PAGES WITHOUT AUTHENTICATION AND DEFINE WHERE AUTH IS NEEDED TO CONTINUE */
+];
 
 function MyApp({ Component, pageProps }) {
   const { pathname } = useRouter(); /* TODO: REFACTOR router.pathname? */
   const isPublicPage = publicPages.includes(pathname);
-  console.log("THIS IS MY PATHNAME", pathname);
-  console.log("THIS IS MY isPublicPage", isPublicPage);
 
   return (
     <ClerkProvider {...pageProps}>
