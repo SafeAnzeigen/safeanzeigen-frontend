@@ -233,15 +233,10 @@ export default function Suche() {
 
     if (subcategory) {
       filterLength++;
-      if (advertisement.subcategory === subcategory) {
+      if (advertisement.subcategory_name === subcategory) {
         passedFiltersCount++;
       }
     }
-
-    console.log("filterLength", filterLength);
-    console.log("passedFiltersCount", passedFiltersCount);
-    console.log("advertisement", advertisement);
-    console.log("search", search);
 
     if (filterLength === passedFiltersCount) {
       return true;
