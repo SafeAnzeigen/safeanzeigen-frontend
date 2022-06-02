@@ -203,7 +203,7 @@ export default function Profil() {
       ) : (
         <div className="bg-white">
           <div className="pt-4">
-            <div className="w-3/4 p-4 mx-auto rounded-md md:w-1/6 bg-green-50">
+            <div className="w-3/4 p-4 mx-auto rounded-md md:w-2/6 bg-green-50">
               <div className="flex">
                 <div className="flex-shrink-0">
                   <CheckCircleIcon

@@ -321,11 +321,11 @@ export default function Home() {
       retrieveNewestPublicAdvertisements();
     }
     if (geoPermission) {
-      navigator.permissions
-        .query({ name: "geolocation" })
+      navigator?.permissions
+        ?.query({ name: "geolocation" })
         .then((permission) => {
           console.log("GEO LOCATION PERMISSION", permission);
-          setGeoPermission(permission.state === "granted");
+          setGeoPermission(permission?.state === "granted");
         });
     }
     if (categories.length === 0) {

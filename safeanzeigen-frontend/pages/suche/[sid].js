@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useAuth, useUser } from "@clerk/clerk-react";
+import Geocode from "react-geocode";
+Geocode.setApiKey(process.env.NEXT_PUBLIC_MAP);
 
 import Navigation from "../../components/Navigation/Navigation";
 import AlertConfirmationModal from "../../components/GeneralComponents/Modals/AlertConfirmationModal";
@@ -32,6 +34,56 @@ export default function Suche() {
   const [selectedAdId, setSelectedAdId] = useState(null);
   const [showDislikeConfirmationModal, setShowDislikeConfirmationModal] =
     useState(false);
+  Geocode.setLanguage("de");
+  Geocode.setLocationType("ROOFTOP");
+  Geocode.enableDebug();
+
+  const getGeoLongAndLatFromLocality = (locality, distanceArray) =>
+    Geocode.fromAddress(locality).then(
+      (response) => {
+        const { lat, lng } = response.results[0].geometry.location;
+        /* console.log(`I HAVE THE LAT AND LONG ${locality}`, lat, lng); */
+        return [lat, lng, distanceArray];
+      },
+      (error) => {
+        console.error(`ERROR GETTING LONG LAT ${locality}`, error);
+        return [];
+      }
+    );
+
+  function distance(
+    lat1,
+    lon1,
+    lat2,
+    lon2,
+    unit,
+    locality,
+    advertisementLocality
+  ) {
+    var radlat1 = (Math.PI * lat1) / 180;
+    var radlat2 = (Math.PI * lat2) / 180;
+    var theta = lon1 - lon2;
+    var radtheta = (Math.PI * theta) / 180;
+    var dist =
+      Math.sin(radlat1) * Math.sin(radlat2) +
+      Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+    if (dist > 1) {
+      dist = 1;
+    }
+    dist = Math.acos(dist);
+    dist = (dist * 180) / Math.PI;
+    dist = dist * 60 * 1.1515;
+    if (unit == "K") {
+      dist = dist * 1.609344;
+    }
+    if (unit == "N") {
+      dist = dist * 0.8684;
+    }
+    console.log("DISTANCE: ", dist);
+    console.log("DISTANCE FOR LOCALITY", locality);
+    console.log("DISTANCE FOR advertisementLocality ", advertisementLocality);
+    return dist;
+  }
 
   const retrieveUserFavoriteAdvertisements = async (user) => {
     if (user?.id) {
@@ -279,12 +331,13 @@ export default function Suche() {
     retrievePublicOffers();
   }, []);
 
-  const categoryFilter = (
+  const categoryFilter = async (
     advertisement,
     search,
     category,
     subcategory,
-    locality
+    locality,
+    radius
   ) => {
     let filterLength = 0;
     let passedFiltersCount = 0;
@@ -305,12 +358,14 @@ export default function Suche() {
       }
     }
     if (locality) {
-      filterLength++;
-      if (
-        advertisement.locality.toLowerCase() === locality.toLowerCase() ||
-        advertisement.locality.toLowerCase().includes(locality.toLowerCase())
-      ) {
-        passedFiltersCount++;
+      if (!radius) {
+        filterLength++;
+        if (
+          advertisement.locality.toLowerCase() === locality.toLowerCase() ||
+          advertisement.locality.toLowerCase().includes(locality.toLowerCase())
+        ) {
+          passedFiltersCount++;
+        }
       }
     }
 
@@ -321,10 +376,106 @@ export default function Suche() {
       }
     }
 
-    if (filterLength === passedFiltersCount) {
-      return true;
+    if (radius) {
+      filterLength++;
+      if (locality) {
+        let distanceArray = [];
+        console.log("I AM GOING IN");
+
+        /*  return getGeoLongAndLatFromLocality(locality, distanceArray).then(
+          (latLongArray) => {
+             console.log("LATLONGARRAY", latLongArray); 
+            console.log("GEO ONE");
+            if (latLongArray.length > 0) {
+              distanceArray.push(latLongArray[0]); 
+              distanceArray.push(latLongArray[1]); 
+              console.log("GEO ONE SUCCESS", latLongArray);
+
+              if (advertisement?.locality) {
+                console.log("GEO TWO");
+                return getGeoLongAndLatFromLocality(
+                  advertisement?.locality,
+                  distanceArray
+                ).then((latLongArray) => {
+                  console.log("GEO TWO SUCCESS", latLongArray);
+                   console.log("LATLONGARRAY", latLongArray);
+                  if (latLongArray.length > 0) {
+                    distanceArray.push(latLongArray[0]); 
+                    distanceArray.push(latLongArray[1]); 
+                    console.log("THIS IS MY DISTANCE ARRAY", distanceArray);
+                    console.log("CALCULATE NOW IF DISTANCE IS WITHIN RANGE");
+                    console.log("CALCULATE NOW IF DISTANCE IS WITHIN RANGE");
+
+                    if (distanceArray.length === 4) {
+                      if (
+                        distance(
+                          distanceArray[0],
+                          distanceArray[1],
+                          distanceArray[2],
+                          distanceArray[3],
+                          "K",
+                          locality,
+                          advertisement?.locality
+                        ) < radius
+                      ) {
+                        passedFiltersCount++;
+                        console.log(
+                          "DISTANCE WAS WITHIN RANGE",
+                          locality,
+                          advertisement?.locality
+                        );
+                        console.log(
+                          "DISTANCE WAS WITHIN RANGE passedFiltersCount",
+                          passedFiltersCount
+                        );
+                        console.log(
+                          "DISTANCE WAS WITHIN RANGE filterLength",
+                          filterLength
+                        );
+
+                        if (filterLength === passedFiltersCount) {
+                          console.log(
+                            "I AM RETURNING NOW BECAUSE I PASSED ALL FILTERS"
+                          );
+                          return true;
+                        }
+                      }
+                    }
+                  }
+                });
+              }
+            }
+          }
+        ); */
+      }
     } else {
-      return false;
+      if (filterLength === passedFiltersCount) {
+        console.log(
+          "THIS ADVERTISEMENT HAS PASSED filterLength passedFiltersCount",
+          filterLength,
+          passedFiltersCount
+        );
+        console.log("THIS ADVERTISEMENT HAS PASSED search", search);
+        console.log("THIS ADVERTISEMENT HAS PASSED category", category);
+        console.log("THIS ADVERTISEMENT HAS PASSED subcategory", subcategory);
+        console.log("THIS ADVERTISEMENT HAS PASSED locality", locality);
+        console.log("THIS ADVERTISEMENT HAS PASSED radius", radius);
+        console.log("THIS ADVERTISEMENT IS PASSED radius", advertisement);
+        return true;
+      } else {
+        console.log(
+          "THIS ADVERTISEMENT HAS FAILED filterLength passedFiltersCount",
+          filterLength,
+          passedFiltersCount
+        );
+        console.log("THIS ADVERTISEMENT HAS FAILED search", search);
+        console.log("THIS ADVERTISEMENT HAS FAILED category", category);
+        console.log("THIS ADVERTISEMENT HAS FAILED subcategory", subcategory);
+        console.log("THIS ADVERTISEMENT HAS FAILED locality", locality);
+        console.log("THIS ADVERTISEMENT HAS FAILED radius", radius);
+        console.log("THIS ADVERTISEMENT IS FAILED radius", advertisement);
+        return false;
+      }
     }
   };
 
@@ -423,7 +574,8 @@ export default function Suche() {
                     search,
                     category,
                     subcategory,
-                    locality
+                    locality,
+                    radius
                   )
                 )?.length > 0 ? (
                   <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -434,7 +586,8 @@ export default function Suche() {
                           search,
                           category,
                           subcategory,
-                          locality
+                          locality,
+                          radius
                         )
                       )
                       ?.sort(function (a, b) {
