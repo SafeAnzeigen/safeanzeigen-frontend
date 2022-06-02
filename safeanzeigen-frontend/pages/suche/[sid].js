@@ -16,6 +16,8 @@ export async function getServerSideProps(context) {
   };
 }
 
+let foundRadiusAdvertisementsArray = [];
+
 export default function Suche() {
   const router = useRouter();
   const ISSERVER = typeof window === "undefined";
@@ -32,6 +34,9 @@ export default function Suche() {
 
   const [isfetchingData, setIsfetchingData] = useState(false);
   const [searchedAdvertisements, setSearchedAdvertisements] = useState([]);
+  const [foundRadiusAdvertisements, setFoundRadiusAdvertisements] =
+    useState(false);
+
   const [favoriteAdvertisements, setFavoriteAdvertisements] = useState([]);
   const [selectedAdId, setSelectedAdId] = useState(null);
   const [showDislikeConfirmationModal, setShowDislikeConfirmationModal] =
@@ -157,67 +162,84 @@ export default function Suche() {
     }
   };
 
-  const retrievePublicOffers = async () => {
-    setIsfetchingData(true);
-    fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/advertisements/public/`,
-      {
-        method: "get",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      }
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("DATA GET ALL PUBLIC ADVERTISEMENT", data);
-        if (data?.advertisements) {
-          let geoAddedPublicAdvertisements = data?.advertisements?.map(
-            (element) => {
-              if (element.locality) {
-                let tempCopyElement = element;
-                /*  console.log("tempCopyElement BEFORE", tempCopyElement); */
-                getGeoLongAndLatFromLocality(element.locality).then(
-                  (latLongArray) => {
-                    /* console.log("LATLONGARRAY", latLongArray); */
-                    if (latLongArray.length > 0) {
-                      tempCopyElement.latitude = latLongArray[0];
-                      tempCopyElement.longitude = latLongArray[1];
-                      /* console.log("tempCopyElement AFTER", tempCopyElement); */
-                      return tempCopyElement;
-                    }
+  const retrievePublicOffers = async (localityData) => {
+    if (!foundRadiusAdvertisements) {
+      setIsfetchingData(true);
+      fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/advertisements/public/`,
+        {
+          method: "get",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA GET ALL PUBLIC ADVERTISEMENT", data);
+          if (data?.advertisements) {
+            let geoAddedPublicAdvertisements = data?.advertisements?.map(
+              (element) => {
+                if (element.locality) {
+                  let tempCopyElement = element;
+                  /*  console.log("tempCopyElement BEFORE", tempCopyElement); */
+                  console.log("I HAVE CONTROL ABOUT RADIUS", radius);
+
+                  if (radius) {
+                    getGeoLongAndLatFromLocality(element.locality).then(
+                      (latLongArray) => {
+                        /* console.log("LATLONGARRAY", latLongArray); */
+                        if (latLongArray.length > 0) {
+                          tempCopyElement.latitude = latLongArray[0];
+                          tempCopyElement.longitude = latLongArray[1];
+                          /* console.log("tempCopyElement AFTER", tempCopyElement); */
+                          return tempCopyElement;
+                        }
+                        return element;
+                      }
+                    );
+                  } else {
                     return element;
                   }
-                );
+                }
+                return element;
               }
-              return element;
-            }
-          );
-          /* console.log(
-            "geoAddedPublicAdvertisements",
-            geoAddedPublicAdvertisements
-          ); */
-          setSearchedAdvertisements(geoAddedPublicAdvertisements);
-
-          getGeoLongAndLatFromLocality(locality).then((latLongArray) => {
-            console.log(
-              "LATLONGARRAY OF LOCALITY DURING RETRIEVING",
-              latLongArray
             );
-            if (latLongArray.length > 0) {
-              setLocalityCalculatedLat(latLongArray[0]);
-              setLocalityCalculatedLong(latLongArray[1]);
-              /* console.log("tempCopyElement AFTER", tempCopyElement); */
+            /* console.log(
+              "geoAddedPublicAdvertisements",
+              geoAddedPublicAdvertisements
+            ); */
+
+            if (localityData) {
+              console.log("I HAD LOCALITY DURING RETRIEVAL", localityData);
+              getGeoLongAndLatFromLocality(localityData).then(
+                (latLongArray) => {
+                  console.log(
+                    "LATLONGARRAY OF LOCALITY DURING RETRIEVING",
+                    latLongArray
+                  );
+                  if (latLongArray.length > 0) {
+                    setLocalityCalculatedLat(latLongArray[0]);
+                    setLocalityCalculatedLong(latLongArray[1]);
+                    setSearchedAdvertisements(geoAddedPublicAdvertisements);
+                    /* console.log("tempCopyElement AFTER", tempCopyElement); */
+                  }
+                }
+              );
+            } else {
+              console.log("I DO NOT HAVE LOCALITY DURING RETRIEVAL");
+
+              setSearchedAdvertisements(geoAddedPublicAdvertisements);
             }
-          });
-        }
-        setIsfetchingData(false);
-      })
-      .catch((error) => {
-        console.log("ERROR DATA GET ALL PUBLIC ADVERTISEMENT", error);
-        setIsfetchingData(false);
-      });
+          }
+          setIsfetchingData(false);
+        })
+        .catch((error) => {
+          console.log("ERROR DATA GET ALL PUBLIC ADVERTISEMENT", error);
+          setIsfetchingData(false);
+        });
+    }
   };
 
   const handleChangeOfLikeStatus = (adId, currentLikeStatus) => {
@@ -265,9 +287,9 @@ export default function Suche() {
     }
   };
 
-  const helpFunction = (locality) => {
+  const calculateLocalityGeo = (locality) => {
     getGeoLongAndLatFromLocality(locality).then((latLongArray) => {
-      console.log("LATLONGARRAY OF LOCALITY DURING RETRIEVING", latLongArray);
+      console.log("LATLONGARRAY OF LOCALITY DURING RETRIEVING ", latLongArray);
       if (latLongArray.length > 0) {
         setLocalityCalculatedLat(latLongArray[0]);
         setLocalityCalculatedLong(latLongArray[1]);
@@ -278,6 +300,8 @@ export default function Suche() {
 
   useEffect(() => {
     if (router.isReady) {
+      foundRadiusAdvertisementsArray = [];
+
       // Code using query const { search, category, subcategory, locality, radius } = router.query;
       if (!ISSERVER && localStorage.getItem("suche") === null) {
         console.log("LOCALSTORAGE NOT THERE WRITING NOW", router.query);
@@ -297,6 +321,12 @@ export default function Suche() {
             radius: router.query.radius,
           })
         );
+
+        if (router.query.locality) {
+          retrievePublicOffers(router.query.locality);
+        } else {
+          retrievePublicOffers();
+        }
       } else if (
         localStorage.getItem("suche") !== null &&
         !router.query.search &&
@@ -335,6 +365,14 @@ export default function Suche() {
         if (JSON.parse(localStorage.getItem("suche"))?.radius) {
           setRadius(JSON.parse(localStorage.getItem("suche"))?.radius);
         }
+
+        if (JSON.parse(localStorage.getItem("suche"))?.locality) {
+          retrievePublicOffers(
+            JSON.parse(localStorage.getItem("suche"))?.locality
+          );
+        } else {
+          retrievePublicOffers();
+        }
       } else {
         console.log(
           "LOCALSTORAGE WAS THERE BUT DID NOT MATCH SEARCH SO I AM OVERWRITING",
@@ -345,6 +383,12 @@ export default function Suche() {
         setSubcategory(router.query.subcategory);
         setLocality(router.query.locality);
         setRadius(router.query.radius);
+
+        if (router.query.locality) {
+          retrievePublicOffers(router.query.locality);
+        } else {
+          retrievePublicOffers();
+        }
 
         localStorage.setItem(
           "suche",
@@ -357,6 +401,17 @@ export default function Suche() {
           })
         );
       }
+
+      /* setSearch(router.query.search);
+      setCategory(router.query.category);
+      setSubcategory(router.query.subcategory);
+      setLocality(router.query.locality);
+      setRadius(router.query.radius);
+      if (router.query.locality) {
+        retrievePublicOffers(router.query.locality);
+      } else {
+        retrievePublicOffers();
+      } */
 
       /* console.log("QUERY TRIGGERED", router.query);
       console.log("LOCALSTORAGE"); */
@@ -381,6 +436,12 @@ export default function Suche() {
     retrievePublicOffers();
   }, []);
 
+  /*  useEffect(() => {
+    if (locality) {
+      retrievePublicOffers(locality);
+    }
+  }, [locality]); */
+
   const categoryFilter = (
     advertisement,
     search,
@@ -391,6 +452,10 @@ export default function Suche() {
   ) => {
     let filterLength = 0;
     let passedFiltersCount = 0;
+
+    if (foundRadiusAdvertisements) {
+      return true;
+    }
 
     if (search) {
       filterLength++;
@@ -606,164 +671,434 @@ export default function Suche() {
                 </h2>
               </div>
             </div>
-            {console.log("MY HEALTH DATA IS ISSERVER", ISSERVER)}
-            {console.log("MY HEALTH DATA IS search", search)}
-            {console.log("MY HEALTH DATA IS category", category)}
-            {console.log("MY HEALTH DATA IS subcategory", subcategory)}
-            {console.log("MY HEALTH DATA IS locality", locality)}
-            {console.log("MY HEALTH DATA IS radius", radius)}
-            {console.log("MY HEALTH DATA IS locality", locality)}
-            {console.log(
-              "MY HEALTH DATA IS localityCalculatedLat ",
-              localityCalculatedLat
-            )}
-            {console.log(
-              "MY HEALTH DATA IS localityCalculatedLong",
-              localityCalculatedLong
-            )}
-            {console.log(
-              "MY HEALTH DATA IS searchedAdvertisements",
-              searchedAdvertisements
-            )}
 
             <div className="container w-64 mx-auto select-none md:w-full lg:w-full ">
               <div>
-                {radius && locality ? (
-                  localityCalculatedLat && localityCalculatedLong ? (
-                    searchedAdvertisements.filter((advertisement) =>
+                {!foundRadiusAdvertisements ? (
+                  radius && locality ? (
+                    searchedAdvertisements.length > 0 ? (
+                      localityCalculatedLat && localityCalculatedLong ? (
+                        searchedAdvertisements.filter((advertisement) =>
+                          categoryFilter(
+                            advertisement,
+                            search,
+                            category,
+                            subcategory,
+                            locality,
+                            radius
+                          )
+                        ).length > 0 ? (
+                          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+                            {searchedAdvertisements
+                              .filter((advertisement) =>
+                                categoryFilter(
+                                  advertisement,
+                                  search,
+                                  category,
+                                  subcategory,
+                                  locality,
+                                  radius
+                                )
+                              )
+                              ?.sort(function (a, b) {
+                                return a.created_at > b.created_at
+                                  ? -1
+                                  : a.created_at < b.created_at
+                                  ? 1
+                                  : 0;
+                              })
+                              ?.map((advertisement, index) => {
+                                /*  setFoundRadiusAdvertisementsArray(
+                                  advertisement?.advertisement_id
+                                ); */
+                                foundRadiusAdvertisementsArray.push({
+                                  advertisement_id:
+                                    advertisement?.advertisement_id,
+                                  title: advertisement?.title,
+                                  price: advertisement?.price,
+                                  priceType: advertisement?.priceType,
+                                  article_image_1:
+                                    advertisement?.article_image_1,
+                                  is_verified: advertisement?.is_verified,
+                                });
+                                console.log(
+                                  "STATE 6 RETRIEVED advertisement?.advertisement_id",
+                                  advertisement?.advertisement_id
+                                );
+                                return (
+                                  <div
+                                    key={index}
+                                    className="flex flex-col items-center justify-center p-4 text-6xl rounded-xl"
+                                    style={{ maxWidth: "16rem !important" }}
+                                  >
+                                    <RegularAdCard
+                                      adId={advertisement?.advertisement_id}
+                                      title={advertisement?.title}
+                                      price={advertisement?.price}
+                                      priceType={advertisement?.priceType}
+                                      imageUrl={advertisement?.article_image_1}
+                                      isLiked={favoriteAdvertisements.includes(
+                                        advertisement?.advertisement_id
+                                      )}
+                                      articleIsVerified={
+                                        advertisement?.is_verified
+                                      }
+                                      sellerHasManySales={false}
+                                      callbackSetLikeStatus={
+                                        user
+                                          ? handleChangeOfLikeStatus
+                                          : () => {
+                                              router.push("/sign-in");
+                                            }
+                                      }
+                                    />
+                                  </div>
+                                );
+                              })}
+                            {console.log(
+                              "STATE 6: WITH RADIUS & LOCALITY FOUND AD -  DATA IS ISSERVER",
+                              ISSERVER
+                            )}
+                            {console.log(
+                              "STATE 6: WITH RADIUS & LOCALITY FOUND AD -  DATA IS search",
+                              search
+                            )}
+                            {console.log(
+                              "STATE 6: WITH RADIUS & LOCALITY FOUND AD -  DATA IS category",
+                              category
+                            )}
+                            {console.log(
+                              "STATE 6: WITH RADIUS & LOCALITY FOUND AD -  DATA IS subcategory",
+                              subcategory
+                            )}
+                            {console.log(
+                              "STATE 6: WITH RADIUS & LOCALITY FOUND AD -  DATA IS locality",
+                              locality
+                            )}
+                            {console.log(
+                              "STATE 6: WITH RADIUS & LOCALITY FOUND AD -  DATA IS radius",
+                              radius
+                            )}
+                            {console.log(
+                              "STATE 6: WITH RADIUS & LOCALITY FOUND AD -  DATA IS localityCalculatedLat ",
+                              localityCalculatedLat
+                            )}
+                            {console.log(
+                              "STATE 6: WITH RADIUS & LOCALITY FOUND AD -  DATA IS localityCalculatedLong",
+                              localityCalculatedLong
+                            )}
+                            {console.log(
+                              "STATE 6: WITH RADIUS & LOCALITY FOUND AD -  DATA IS searchedAdvertisements",
+                              searchedAdvertisements
+                            )}
+                            {setFoundRadiusAdvertisements(true)}
+                          </div>
+                        ) : (
+                          <div>
+                            <div className="flex justify-center opacity-50">
+                              {console.log(
+                                "STATE 5: WITH RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS ISSERVER",
+                                ISSERVER
+                              )}
+                              {console.log(
+                                "STATE 5: WITH RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS search",
+                                search
+                              )}
+                              {console.log(
+                                "STATE 5: WITH RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS category",
+                                category
+                              )}
+                              {console.log(
+                                "STATE 5: WITH RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS subcategory",
+                                subcategory
+                              )}
+                              {console.log(
+                                "STATE 5: WITH RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS locality",
+                                locality
+                              )}
+                              {console.log(
+                                "STATE 5: WITH RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS radius",
+                                radius
+                              )}
+                              {console.log(
+                                "STATE 5: WITH RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS localityCalculatedLat ",
+                                localityCalculatedLat
+                              )}
+                              {console.log(
+                                "STATE 5: WITH RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS localityCalculatedLong",
+                                localityCalculatedLong
+                              )}
+                              {console.log(
+                                "STATE 5: WITH RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS searchedAdvertisements",
+                                searchedAdvertisements
+                              )}
+                              <img
+                                src="/no-result.png"
+                                className="mb-2 not-draggable"
+                                alt="Indikator für fehlende Suchergebnisse"
+                              />
+                            </div>
+                          </div>
+                        )
+                      ) : (
+                        <div>
+                          {console.log(
+                            "STATE 1: MISSING CALCULATED LONGLAT -  DATA IS ISSERVER",
+                            ISSERVER
+                          )}
+                          {console.log(
+                            "STATE 1: MISSING CALCULATED LONGLAT -  DATA IS search",
+                            search
+                          )}
+                          {console.log(
+                            "STATE 1: MISSING CALCULATED LONGLAT -  DATA IS category",
+                            category
+                          )}
+                          {console.log(
+                            "STATE 1: MISSING CALCULATED LONGLAT -  DATA IS subcategory",
+                            subcategory
+                          )}
+                          {console.log(
+                            "STATE 1: MISSING CALCULATED LONGLAT -  DATA IS locality",
+                            locality
+                          )}
+                          {console.log(
+                            "STATE 1: MISSING CALCULATED LONGLAT -  DATA IS radius",
+                            radius
+                          )}
+                          {console.log(
+                            "STATE 1: MISSING CALCULATED LONGLAT -  DATA IS localityCalculatedLat ",
+                            localityCalculatedLat
+                          )}
+                          {console.log(
+                            "STATE 1: MISSING CALCULATED LONGLAT -  DATA IS localityCalculatedLong",
+                            localityCalculatedLong
+                          )}
+                          {console.log(
+                            "STATE 1: MISSING CALCULATED LONGLAT -  DATA IS searchedAdvertisements",
+                            searchedAdvertisements
+                          )}
+                          {calculateLocalityGeo(locality)}
+                        </div>
+                      )
+                    ) : (
+                      <div>
+                        {console.log(
+                          "STATE 2: MISSING ADVERTISEMENTS -  DATA IS ISSERVER",
+                          ISSERVER
+                        )}
+                        {console.log(
+                          "STATE 2: MISSING ADVERTISEMENTS -  DATA IS search",
+                          search
+                        )}
+                        {console.log(
+                          "STATE 2: MISSING ADVERTISEMENTS -  DATA IS category",
+                          category
+                        )}
+                        {console.log(
+                          "STATE 2: MISSING ADVERTISEMENTS -  DATA IS subcategory",
+                          subcategory
+                        )}
+                        {console.log(
+                          "STATE 2: MISSING ADVERTISEMENTS -  DATA IS locality",
+                          locality
+                        )}
+                        {console.log(
+                          "STATE 2: MISSING ADVERTISEMENTS -  DATA IS radius",
+                          radius
+                        )}
+                        {console.log(
+                          "STATE 2: MISSING ADVERTISEMENTS -  DATA IS localityCalculatedLat ",
+                          localityCalculatedLat
+                        )}
+                        {console.log(
+                          "STATE 2: MISSING ADVERTISEMENTS -  DATA IS localityCalculatedLong",
+                          localityCalculatedLong
+                        )}
+                        {console.log(
+                          "STATE 2: MISSING ADVERTISEMENTS -  DATA IS searchedAdvertisements",
+                          searchedAdvertisements
+                        )}
+
+                        {retrievePublicOffers(locality)}
+                      </div>
+                    )
+                  ) : searchedAdvertisements?.filter((advertisement) =>
                       categoryFilter(
                         advertisement,
                         search,
                         category,
                         subcategory,
-                        locality,
-                        radius
+                        locality
                       )
-                    ).length > 0 ? (
-                      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-                        {searchedAdvertisements
-                          .filter((advertisement) =>
-                            categoryFilter(
-                              advertisement,
-                              search,
-                              category,
-                              subcategory,
-                              locality,
-                              radius
-                            )
+                    )?.length > 0 ? (
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+                      {searchedAdvertisements
+                        ?.filter((advertisement) =>
+                          categoryFilter(
+                            advertisement,
+                            search,
+                            category,
+                            subcategory,
+                            locality
                           )
-                          ?.sort(function (a, b) {
-                            return a.created_at > b.created_at
-                              ? -1
-                              : a.created_at < b.created_at
-                              ? 1
-                              : 0;
-                          })
-                          ?.map((advertisement, index) => (
-                            <div
-                              key={index}
-                              className="flex flex-col items-center justify-center p-4 text-6xl rounded-xl"
-                              style={{ maxWidth: "16rem !important" }}
-                            >
-                              <RegularAdCard
-                                adId={advertisement?.advertisement_id}
-                                title={advertisement?.title}
-                                price={advertisement?.price}
-                                priceType={advertisement?.priceType}
-                                imageUrl={advertisement?.article_image_1}
-                                isLiked={favoriteAdvertisements.includes(
-                                  advertisement?.advertisement_id
-                                )}
-                                articleIsVerified={advertisement?.is_verified}
-                                sellerHasManySales={false}
-                                callbackSetLikeStatus={
-                                  user
-                                    ? handleChangeOfLikeStatus
-                                    : () => {
-                                        router.push("/sign-in");
-                                      }
-                                }
-                              />
-                            </div>
-                          ))}
-                      </div>
-                    ) : (
-                      <div>
-                        <div className="flex justify-center opacity-50">
-                          <img
-                            src="/no-result.png"
-                            className="mb-2 not-draggable"
-                            alt="Indikator für fehlende Suchergebnisse"
-                          />
-                        </div>
-                      </div>
-                    )
-                  ) : (
-                    helpFunction(locality)
-                  )
-                ) : searchedAdvertisements?.filter((advertisement) =>
-                    categoryFilter(
-                      advertisement,
-                      search,
-                      category,
-                      subcategory,
-                      locality
-                    )
-                  )?.length > 0 ? (
-                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-                    {searchedAdvertisements
-                      ?.filter((advertisement) =>
-                        categoryFilter(
-                          advertisement,
-                          search,
-                          category,
-                          subcategory,
-                          locality
                         )
-                      )
-                      ?.sort(function (a, b) {
-                        return a.created_at > b.created_at
-                          ? -1
-                          : a.created_at < b.created_at
-                          ? 1
-                          : 0;
-                      })
-                      ?.map((advertisement, index) => (
-                        <div
-                          key={index}
-                          className="flex flex-col items-center justify-center p-4 text-6xl rounded-xl"
-                          style={{ maxWidth: "16rem !important" }}
-                        >
-                          <RegularAdCard
-                            adId={advertisement?.advertisement_id}
-                            title={advertisement?.title}
-                            price={advertisement?.price}
-                            priceType={advertisement?.priceType}
-                            imageUrl={advertisement?.article_image_1}
-                            isLiked={favoriteAdvertisements.includes(
-                              advertisement?.advertisement_id
+                        ?.sort(function (a, b) {
+                          return a.created_at > b.created_at
+                            ? -1
+                            : a.created_at < b.created_at
+                            ? 1
+                            : 0;
+                        })
+                        ?.map((advertisement, index) => (
+                          <div
+                            key={index}
+                            className="flex flex-col items-center justify-center p-4 text-6xl rounded-xl"
+                            style={{ maxWidth: "16rem !important" }}
+                          >
+                            <RegularAdCard
+                              adId={advertisement?.advertisement_id}
+                              title={advertisement?.title}
+                              price={advertisement?.price}
+                              priceType={advertisement?.priceType}
+                              imageUrl={advertisement?.article_image_1}
+                              isLiked={favoriteAdvertisements.includes(
+                                advertisement?.advertisement_id
+                              )}
+                              articleIsVerified={advertisement?.is_verified}
+                              sellerHasManySales={false}
+                              callbackSetLikeStatus={
+                                user
+                                  ? handleChangeOfLikeStatus
+                                  : () => {
+                                      router.push("/sign-in");
+                                    }
+                              }
+                            />
+                            {console.log(
+                              "STATE 3: SEARCH WITHOUT RADIUS & LOCALITY -  DATA IS ISSERVER",
+                              ISSERVER
                             )}
-                            articleIsVerified={advertisement?.is_verified}
-                            sellerHasManySales={false}
-                            callbackSetLikeStatus={
-                              user
-                                ? handleChangeOfLikeStatus
-                                : () => {
-                                    router.push("/sign-in");
-                                  }
-                            }
-                          />
-                        </div>
-                      ))}
-                  </div>
+                            {console.log(
+                              "STATE 3: SEARCH WITHOUT RADIUS & LOCALITY -  DATA IS search",
+                              search
+                            )}
+                            {console.log(
+                              "STATE 3: SEARCH WITHOUT RADIUS & LOCALITY -  DATA IS category",
+                              category
+                            )}
+                            {console.log(
+                              "STATE 3: SEARCH WITHOUT RADIUS & LOCALITY -  DATA IS subcategory",
+                              subcategory
+                            )}
+                            {console.log(
+                              "STATE 3: SEARCH WITHOUT RADIUS & LOCALITY -  DATA IS locality",
+                              locality
+                            )}
+                            {console.log(
+                              "STATE 3: SEARCH WITHOUT RADIUS & LOCALITY -  DATA IS radius",
+                              radius
+                            )}
+                            {console.log(
+                              "STATE 3: SEARCH WITHOUT RADIUS & LOCALITY -  DATA IS localityCalculatedLat ",
+                              localityCalculatedLat
+                            )}
+                            {console.log(
+                              "STATE 3: SEARCH WITHOUT RADIUS & LOCALITY -  DATA IS localityCalculatedLong",
+                              localityCalculatedLong
+                            )}
+                            {console.log(
+                              "STATE 3: SEARCH WITHOUT RADIUS & LOCALITY -  DATA IS searchedAdvertisements",
+                              searchedAdvertisements
+                            )}
+                          </div>
+                        ))}
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="flex justify-center opacity-50">
+                        {console.log(
+                          "STATE 4: NO RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS ISSERVER",
+                          ISSERVER
+                        )}
+                        {console.log(
+                          "STATE 4: NO RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS search",
+                          search
+                        )}
+                        {console.log(
+                          "STATE 4: NO RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS category",
+                          category
+                        )}
+                        {console.log(
+                          "STATE 4: NO RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS subcategory",
+                          subcategory
+                        )}
+                        {console.log(
+                          "STATE 4: NO RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS locality",
+                          locality
+                        )}
+                        {console.log(
+                          "STATE 4: NO RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS radius",
+                          radius
+                        )}
+                        {console.log(
+                          "STATE 4: NO RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS localityCalculatedLat ",
+                          localityCalculatedLat
+                        )}
+                        {console.log(
+                          "STATE 4: NO RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS localityCalculatedLong",
+                          localityCalculatedLong
+                        )}
+                        {console.log(
+                          "STATE 4: NO RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS searchedAdvertisements",
+                          searchedAdvertisements
+                        )}
+                        <img
+                          src="/no-result.png"
+                          className="mb-2 not-draggable"
+                          alt="Indikator für fehlende Suchergebnisse"
+                        />
+                      </div>
+                    </div>
+                  )
                 ) : (
                   <div>
-                    <div className="flex justify-center opacity-50">
-                      <img
-                        src="/no-result.png"
-                        className="mb-2 not-draggable"
-                        alt="Indikator für fehlende Suchergebnisse"
-                      />
+                    {/*  STOP RERENDERING {foundRadiusAdvertisementsArray.length} */}
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+                      {foundRadiusAdvertisementsArray
+                        .filter(
+                          (value, index, self) =>
+                            self
+                              .map((x) => x.advertisement_id)
+                              .indexOf(value.advertisement_id) == index
+                        )
+                        .map((advertisement, index) => (
+                          <div
+                            key={index}
+                            className="flex flex-col items-center justify-center p-4 text-6xl rounded-xl"
+                            style={{ maxWidth: "16rem !important" }}
+                          >
+                            <RegularAdCard
+                              adId={advertisement?.advertisement_id}
+                              title={advertisement?.title}
+                              price={advertisement?.price}
+                              priceType={advertisement?.priceType}
+                              imageUrl={advertisement?.article_image_1}
+                              isLiked={favoriteAdvertisements.includes(
+                                advertisement?.advertisement_id
+                              )}
+                              articleIsVerified={advertisement?.is_verified}
+                              sellerHasManySales={false}
+                              callbackSetLikeStatus={
+                                user
+                                  ? handleChangeOfLikeStatus
+                                  : () => {
+                                      router.push("/sign-in");
+                                    }
+                              }
+                            />
+                          </div>
+                        ))}
                     </div>
                   </div>
                 )}

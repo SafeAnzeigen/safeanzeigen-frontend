@@ -25,7 +25,7 @@ export default function Chat() {
         <div className="flex h-min">
           <div className="flex-1 w-full h-screen bg-gray-100">
             <div className="container flex flex-col w-11/12 m-auto h-min main-body">
-              <div className="flex flex-row py-4 flex-2">
+              <div className="flex flex-row py-4 flex-2 lg:invisible">
                 <span className="inline-block text-gray-700 align-bottom xl:hidden hover:text-gray-900">
                   <span className="block w-6 h-6 p-1 rounded-full hover:bg-gray-400">
                     <svg
