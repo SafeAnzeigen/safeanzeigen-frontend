@@ -19,14 +19,16 @@ export async function getServerSideProps(context) {
 export default function Suche() {
   const router = useRouter();
   const ISSERVER = typeof window === "undefined";
+  const { user } = useUser();
+  const clerkAuth = useAuth();
+
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [subcategory, setSubcategory] = useState("");
   const [locality, setLocality] = useState("");
   const [radius, setRadius] = useState("");
-
-  const { user } = useUser();
-  const clerkAuth = useAuth();
+  const [localityCalculatedLat, setLocalityCalculatedLat] = useState("");
+  const [localityCalculatedLong, setLocalityCalculatedLong] = useState("");
 
   const [isfetchingData, setIsfetchingData] = useState(false);
   const [searchedAdvertisements, setSearchedAdvertisements] = useState([]);
@@ -38,12 +40,12 @@ export default function Suche() {
   Geocode.setLocationType("ROOFTOP");
   Geocode.enableDebug();
 
-  const getGeoLongAndLatFromLocality = (locality, distanceArray) =>
+  const getGeoLongAndLatFromLocality = (locality) =>
     Geocode.fromAddress(locality).then(
       (response) => {
         const { lat, lng } = response.results[0].geometry.location;
         /* console.log(`I HAVE THE LAT AND LONG ${locality}`, lat, lng); */
-        return [lat, lng, distanceArray];
+        return [lat, lng];
       },
       (error) => {
         console.error(`ERROR GETTING LONG LAT ${locality}`, error);
@@ -171,7 +173,44 @@ export default function Suche() {
       .then((data) => {
         console.log("DATA GET ALL PUBLIC ADVERTISEMENT", data);
         if (data?.advertisements) {
-          setSearchedAdvertisements(data?.advertisements);
+          let geoAddedPublicAdvertisements = data?.advertisements?.map(
+            (element) => {
+              if (element.locality) {
+                let tempCopyElement = element;
+                /*  console.log("tempCopyElement BEFORE", tempCopyElement); */
+                getGeoLongAndLatFromLocality(element.locality).then(
+                  (latLongArray) => {
+                    /* console.log("LATLONGARRAY", latLongArray); */
+                    if (latLongArray.length > 0) {
+                      tempCopyElement.latitude = latLongArray[0];
+                      tempCopyElement.longitude = latLongArray[1];
+                      /* console.log("tempCopyElement AFTER", tempCopyElement); */
+                      return tempCopyElement;
+                    }
+                    return element;
+                  }
+                );
+              }
+              return element;
+            }
+          );
+          /* console.log(
+            "geoAddedPublicAdvertisements",
+            geoAddedPublicAdvertisements
+          ); */
+          setSearchedAdvertisements(geoAddedPublicAdvertisements);
+
+          getGeoLongAndLatFromLocality(locality).then((latLongArray) => {
+            console.log(
+              "LATLONGARRAY OF LOCALITY DURING RETRIEVING",
+              latLongArray
+            );
+            if (latLongArray.length > 0) {
+              setLocalityCalculatedLat(latLongArray[0]);
+              setLocalityCalculatedLong(latLongArray[1]);
+              /* console.log("tempCopyElement AFTER", tempCopyElement); */
+            }
+          });
         }
         setIsfetchingData(false);
       })
@@ -224,6 +263,17 @@ export default function Suche() {
         });
       handleCloseModal();
     }
+  };
+
+  const helpFunction = (locality) => {
+    getGeoLongAndLatFromLocality(locality).then((latLongArray) => {
+      console.log("LATLONGARRAY OF LOCALITY DURING RETRIEVING", latLongArray);
+      if (latLongArray.length > 0) {
+        setLocalityCalculatedLat(latLongArray[0]);
+        setLocalityCalculatedLong(latLongArray[1]);
+        /* console.log("tempCopyElement AFTER", tempCopyElement); */
+      }
+    });
   };
 
   useEffect(() => {
@@ -331,7 +381,7 @@ export default function Suche() {
     retrievePublicOffers();
   }, []);
 
-  const categoryFilter = async (
+  const categoryFilter = (
     advertisement,
     search,
     category,
@@ -351,12 +401,14 @@ export default function Suche() {
         passedFiltersCount++;
       }
     }
+
     if (category) {
       filterLength++;
       if (advertisement.category_name === category) {
         passedFiltersCount++;
       }
     }
+
     if (locality) {
       if (!radius) {
         filterLength++;
@@ -376,106 +428,94 @@ export default function Suche() {
       }
     }
 
+    console.log("I AM BEFORE RADIUS CHECK", advertisement?.locality);
+
     if (radius) {
       filterLength++;
       if (locality) {
         let distanceArray = [];
-        console.log("I AM GOING IN");
+        console.log(
+          "I AM GOING IN advertisement?.locality",
+          advertisement?.locality
+        );
 
-        /*  return getGeoLongAndLatFromLocality(locality, distanceArray).then(
-          (latLongArray) => {
-             console.log("LATLONGARRAY", latLongArray); 
-            console.log("GEO ONE");
-            if (latLongArray.length > 0) {
-              distanceArray.push(latLongArray[0]); 
-              distanceArray.push(latLongArray[1]); 
-              console.log("GEO ONE SUCCESS", latLongArray);
+        if (localityCalculatedLat && localityCalculatedLong) {
+          console.log("GEO ONE", localityCalculatedLat, localityCalculatedLong);
+          distanceArray.push(localityCalculatedLat);
+          distanceArray.push(localityCalculatedLong);
+          console.log("GEO ONE SUCCESS", distanceArray);
 
-              if (advertisement?.locality) {
-                console.log("GEO TWO");
-                return getGeoLongAndLatFromLocality(
-                  advertisement?.locality,
-                  distanceArray
-                ).then((latLongArray) => {
-                  console.log("GEO TWO SUCCESS", latLongArray);
-                   console.log("LATLONGARRAY", latLongArray);
-                  if (latLongArray.length > 0) {
-                    distanceArray.push(latLongArray[0]); 
-                    distanceArray.push(latLongArray[1]); 
-                    console.log("THIS IS MY DISTANCE ARRAY", distanceArray);
-                    console.log("CALCULATE NOW IF DISTANCE IS WITHIN RANGE");
-                    console.log("CALCULATE NOW IF DISTANCE IS WITHIN RANGE");
+          if (advertisement?.latitude && advertisement?.longitude) {
+            console.log(
+              "GEO TWO",
+              advertisement?.latitude,
+              advertisement?.longitude
+            );
+            distanceArray.push(advertisement?.latitude);
+            distanceArray.push(advertisement?.longitude);
+            console.log("GEO TWO SUCCESS", distanceArray);
 
-                    if (distanceArray.length === 4) {
-                      if (
-                        distance(
-                          distanceArray[0],
-                          distanceArray[1],
-                          distanceArray[2],
-                          distanceArray[3],
-                          "K",
-                          locality,
-                          advertisement?.locality
-                        ) < radius
-                      ) {
-                        passedFiltersCount++;
-                        console.log(
-                          "DISTANCE WAS WITHIN RANGE",
-                          locality,
-                          advertisement?.locality
-                        );
-                        console.log(
-                          "DISTANCE WAS WITHIN RANGE passedFiltersCount",
-                          passedFiltersCount
-                        );
-                        console.log(
-                          "DISTANCE WAS WITHIN RANGE filterLength",
-                          filterLength
-                        );
+            if (distanceArray.length === 4) {
+              console.log("CALCULATE NOW IF DISTANCE IS WITHIN RANGE");
+              let distanceResult = distance(
+                distanceArray[0],
+                distanceArray[1],
+                distanceArray[2],
+                distanceArray[3],
+                "K",
+                locality,
+                advertisement?.locality
+              );
+              console.log("GEO TWO CALCULATED DISTANCE", distanceResult);
 
-                        if (filterLength === passedFiltersCount) {
-                          console.log(
-                            "I AM RETURNING NOW BECAUSE I PASSED ALL FILTERS"
-                          );
-                          return true;
-                        }
-                      }
-                    }
-                  }
-                });
+              if (distanceResult <= radius) {
+                passedFiltersCount++;
+                console.log(
+                  "DISTANCE WAS WITHIN RANGE",
+                  locality,
+                  advertisement?.locality
+                );
+                console.log(
+                  "DISTANCE WAS WITHIN RANGE passedFiltersCount",
+                  passedFiltersCount
+                );
+                console.log(
+                  "DISTANCE WAS WITHIN RANGE filterLength",
+                  filterLength
+                );
               }
             }
           }
-        ); */
+        }
       }
+    }
+
+    if (filterLength === passedFiltersCount) {
+      /*  console.log(
+        "THIS ADVERTISEMENT HAS PASSED filterLength passedFiltersCount",
+        filterLength,
+        passedFiltersCount
+      );
+      console.log("THIS ADVERTISEMENT HAS PASSED search", search);
+      console.log("THIS ADVERTISEMENT HAS PASSED category", category);
+      console.log("THIS ADVERTISEMENT HAS PASSED subcategory", subcategory);
+      console.log("THIS ADVERTISEMENT HAS PASSED locality", locality);
+      console.log("THIS ADVERTISEMENT HAS PASSED radius", radius);
+      console.log("THIS ADVERTISEMENT IS PASSED radius", advertisement); */
+      return true;
     } else {
-      if (filterLength === passedFiltersCount) {
-        console.log(
-          "THIS ADVERTISEMENT HAS PASSED filterLength passedFiltersCount",
-          filterLength,
-          passedFiltersCount
-        );
-        console.log("THIS ADVERTISEMENT HAS PASSED search", search);
-        console.log("THIS ADVERTISEMENT HAS PASSED category", category);
-        console.log("THIS ADVERTISEMENT HAS PASSED subcategory", subcategory);
-        console.log("THIS ADVERTISEMENT HAS PASSED locality", locality);
-        console.log("THIS ADVERTISEMENT HAS PASSED radius", radius);
-        console.log("THIS ADVERTISEMENT IS PASSED radius", advertisement);
-        return true;
-      } else {
-        console.log(
-          "THIS ADVERTISEMENT HAS FAILED filterLength passedFiltersCount",
-          filterLength,
-          passedFiltersCount
-        );
-        console.log("THIS ADVERTISEMENT HAS FAILED search", search);
-        console.log("THIS ADVERTISEMENT HAS FAILED category", category);
-        console.log("THIS ADVERTISEMENT HAS FAILED subcategory", subcategory);
-        console.log("THIS ADVERTISEMENT HAS FAILED locality", locality);
-        console.log("THIS ADVERTISEMENT HAS FAILED radius", radius);
-        console.log("THIS ADVERTISEMENT IS FAILED radius", advertisement);
-        return false;
-      }
+      /*  console.log(
+        "THIS ADVERTISEMENT HAS FAILED filterLength passedFiltersCount",
+        filterLength,
+        passedFiltersCount
+      );
+      console.log("THIS ADVERTISEMENT HAS FAILED search", search);
+      console.log("THIS ADVERTISEMENT HAS FAILED category", category);
+      console.log("THIS ADVERTISEMENT HAS FAILED subcategory", subcategory);
+      console.log("THIS ADVERTISEMENT HAS FAILED locality", locality);
+      console.log("THIS ADVERTISEMENT HAS FAILED radius", radius);
+      console.log("THIS ADVERTISEMENT IS FAILED radius", advertisement); */
+      return false;
     }
   };
 
@@ -566,18 +606,110 @@ export default function Suche() {
                 </h2>
               </div>
             </div>
-            <div className="container w-64 mx-auto select-none md:w-full lg:w-full">
+            {console.log("MY HEALTH DATA IS ISSERVER", ISSERVER)}
+            {console.log("MY HEALTH DATA IS search", search)}
+            {console.log("MY HEALTH DATA IS category", category)}
+            {console.log("MY HEALTH DATA IS subcategory", subcategory)}
+            {console.log("MY HEALTH DATA IS locality", locality)}
+            {console.log("MY HEALTH DATA IS radius", radius)}
+            {console.log("MY HEALTH DATA IS locality", locality)}
+            {console.log(
+              "MY HEALTH DATA IS localityCalculatedLat ",
+              localityCalculatedLat
+            )}
+            {console.log(
+              "MY HEALTH DATA IS localityCalculatedLong",
+              localityCalculatedLong
+            )}
+            {console.log(
+              "MY HEALTH DATA IS searchedAdvertisements",
+              searchedAdvertisements
+            )}
+
+            <div className="container w-64 mx-auto select-none md:w-full lg:w-full ">
               <div>
-                {searchedAdvertisements?.filter((advertisement) =>
-                  categoryFilter(
-                    advertisement,
-                    search,
-                    category,
-                    subcategory,
-                    locality,
-                    radius
+                {radius && locality ? (
+                  localityCalculatedLat && localityCalculatedLong ? (
+                    searchedAdvertisements.filter((advertisement) =>
+                      categoryFilter(
+                        advertisement,
+                        search,
+                        category,
+                        subcategory,
+                        locality,
+                        radius
+                      )
+                    ).length > 0 ? (
+                      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+                        {searchedAdvertisements
+                          .filter((advertisement) =>
+                            categoryFilter(
+                              advertisement,
+                              search,
+                              category,
+                              subcategory,
+                              locality,
+                              radius
+                            )
+                          )
+                          ?.sort(function (a, b) {
+                            return a.created_at > b.created_at
+                              ? -1
+                              : a.created_at < b.created_at
+                              ? 1
+                              : 0;
+                          })
+                          ?.map((advertisement, index) => (
+                            <div
+                              key={index}
+                              className="flex flex-col items-center justify-center p-4 text-6xl rounded-xl"
+                              style={{ maxWidth: "16rem !important" }}
+                            >
+                              <RegularAdCard
+                                adId={advertisement?.advertisement_id}
+                                title={advertisement?.title}
+                                price={advertisement?.price}
+                                priceType={advertisement?.priceType}
+                                imageUrl={advertisement?.article_image_1}
+                                isLiked={favoriteAdvertisements.includes(
+                                  advertisement?.advertisement_id
+                                )}
+                                articleIsVerified={advertisement?.is_verified}
+                                sellerHasManySales={false}
+                                callbackSetLikeStatus={
+                                  user
+                                    ? handleChangeOfLikeStatus
+                                    : () => {
+                                        router.push("/sign-in");
+                                      }
+                                }
+                              />
+                            </div>
+                          ))}
+                      </div>
+                    ) : (
+                      <div>
+                        <div className="flex justify-center opacity-50">
+                          <img
+                            src="/no-result.png"
+                            className="mb-2 not-draggable"
+                            alt="Indikator für fehlende Suchergebnisse"
+                          />
+                        </div>
+                      </div>
+                    )
+                  ) : (
+                    helpFunction(locality)
                   )
-                )?.length > 0 ? (
+                ) : searchedAdvertisements?.filter((advertisement) =>
+                    categoryFilter(
+                      advertisement,
+                      search,
+                      category,
+                      subcategory,
+                      locality
+                    )
+                  )?.length > 0 ? (
                   <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
                     {searchedAdvertisements
                       ?.filter((advertisement) =>
@@ -586,8 +718,7 @@ export default function Suche() {
                           search,
                           category,
                           subcategory,
-                          locality,
-                          radius
+                          locality
                         )
                       )
                       ?.sort(function (a, b) {
