@@ -16,7 +16,6 @@ export default function TinyCategoryCard({ categoryName, imageUrl }) {
         title={categoryName}
         className={`w-36 transition duration-300 ease-out transform cursor-pointer select-none md:hover:scale-105`}
       >
-        {console.log("I HAVE RECEIVED IMAGE", imageUrl)}
         <div className={`relative w-28 h-36 overflow-x-hidden`}>
           <img
             className={`rounded-xl`}
