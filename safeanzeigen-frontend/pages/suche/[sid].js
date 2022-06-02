@@ -16,6 +16,7 @@ export async function getServerSideProps(context) {
 
 export default function Suche() {
   const router = useRouter();
+  const ISSERVER = typeof window === "undefined";
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [subcategory, setSubcategory] = useState("");
@@ -176,14 +177,96 @@ export default function Suche() {
   useEffect(() => {
     if (router.isReady) {
       // Code using query const { search, category, subcategory, locality, radius } = router.query;
-      setSearch(router.query.search);
-      setCategory(router.query.category);
-      setSubcategory(router.query.subcategory);
-      setLocality(router.query.locality);
-      setRadius(router.query.radius);
-      console.log(router.query);
+      if (!ISSERVER && localStorage.getItem("suche") === null) {
+        console.log("LOCALSTORAGE NOT THERE WRITING NOW", router.query);
+        setSearch(router.query.search);
+        setCategory(router.query.category);
+        setSubcategory(router.query.subcategory);
+        setLocality(router.query.locality);
+        setRadius(router.query.radius);
+
+        localStorage.setItem(
+          "suche",
+          JSON.stringify({
+            search: router.query.search,
+            category: router.query.category,
+            subcategory: router.query.subcategory,
+            locality: router.query.locality,
+            radius: router.query.radius,
+          })
+        );
+      } else if (
+        localStorage.getItem("suche") !== null &&
+        !router.query.search &&
+        !router.query.category &&
+        !router.query.subcategory &&
+        !router.query.locality &&
+        !router.query.radius
+      ) {
+        console.log(
+          "LOCALSTORAGE THERE I AM READING FROM IT TO SET THE QUERY",
+          router.query
+        );
+        console.log(
+          "xx localStorage.getItem null",
+          localStorage.getItem("suche") !== null
+        );
+
+        if (JSON.parse(localStorage.getItem("suche"))?.search) {
+          setSearch(JSON.parse(localStorage.getItem("suche"))?.search);
+        }
+
+        if (JSON.parse(localStorage.getItem("suche"))?.category) {
+          setCategory(JSON.parse(localStorage.getItem("suche"))?.category);
+        }
+
+        if (JSON.parse(localStorage.getItem("suche"))?.subcategory) {
+          setSubcategory(
+            JSON.parse(localStorage.getItem("suche"))?.subcategory
+          );
+        }
+
+        if (JSON.parse(localStorage.getItem("suche"))?.locality) {
+          setLocality(JSON.parse(localStorage.getItem("suche"))?.locality);
+        }
+
+        if (JSON.parse(localStorage.getItem("suche"))?.radius) {
+          setRadius(JSON.parse(localStorage.getItem("suche"))?.radius);
+        }
+      } else {
+        console.log(
+          "LOCALSTORAGE WAS THERE BUT DID NOT MATCH SEARCH SO I AM OVERWRITING",
+          router.query
+        );
+        setSearch(router.query.search);
+        setCategory(router.query.category);
+        setSubcategory(router.query.subcategory);
+        setLocality(router.query.locality);
+        setRadius(router.query.radius);
+
+        localStorage.setItem(
+          "suche",
+          JSON.stringify({
+            search: router.query.search,
+            category: router.query.category,
+            subcategory: router.query.subcategory,
+            locality: router.query.locality,
+            radius: router.query.radius,
+          })
+        );
+      }
+
+      /* console.log("QUERY TRIGGERED", router.query);
+      console.log("LOCALSTORAGE"); */
     }
   }, [router.isReady]);
+  /* 
+  useEffect(() => {
+    if (!ISSERVER) {
+      console.log("LOCALSTORAGE");
+      
+    }
+  }, [ISSERVER]); */
 
   useEffect(() => {
     if (user) {

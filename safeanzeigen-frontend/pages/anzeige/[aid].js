@@ -266,7 +266,7 @@ export default function Anzeige() {
                             category: advertisementInfoObject?.category_name,
                           },
                         }}
-                        as={advertisementInfoObject?.category_name}
+                        as={"/suche/" + advertisementInfoObject?.category_name}
                       >
                         <div className="ml-4 text-sm font-medium text-gray-500 cursor-pointer hover:text-orange-500">
                           {advertisementInfoObject?.category_name}
@@ -298,7 +298,10 @@ export default function Anzeige() {
                               advertisementInfoObject?.subcategory_name,
                           },
                         }}
-                        as={`${advertisementInfoObject?.category_name}-${advertisementInfoObject?.subcategory_name}`}
+                        as={
+                          "/suche/" +
+                          `${advertisementInfoObject?.category_name}-${advertisementInfoObject?.subcategory_name}`
+                        }
                       >
                         <div className="ml-4 text-sm font-medium text-gray-500 cursor-pointer hover:text-orange-500">
                           {advertisementInfoObject?.subcategory_name}
