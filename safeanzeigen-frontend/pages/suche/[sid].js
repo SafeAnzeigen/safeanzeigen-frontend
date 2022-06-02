@@ -688,7 +688,7 @@ export default function Suche() {
                             radius
                           )
                         ).length > 0 ? (
-                          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+                          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                             {searchedAdvertisements
                               .filter((advertisement) =>
                                 categoryFilter(
@@ -932,7 +932,7 @@ export default function Suche() {
                         locality
                       )
                     )?.length > 0 ? (
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                       {searchedAdvertisements
                         ?.filter((advertisement) =>
                           categoryFilter(
@@ -1064,7 +1064,7 @@ export default function Suche() {
                 ) : (
                   <div>
                     {/*  STOP RERENDERING {foundRadiusAdvertisementsArray.length} */}
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                       {foundRadiusAdvertisementsArray
                         .filter(
                           (value, index, self) =>
