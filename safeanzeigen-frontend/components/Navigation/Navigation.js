@@ -589,8 +589,8 @@ export default function Navigation() {
                           </div>
                         </Listbox.Label>
                         <Listbox.Button
-                          className="relative w-full py-2 pl-3 pr-10 text-left rounded-lg shadow-md cursor-default focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm !text-sm font-medium text-gray-600 bg-white"
-                          style={{ height: "2.5rem", width: "14rem" }}
+                          className="w-56 lg:w-24 relative py-2 pl-3 pr-10 text-left rounded-lg shadow-md cursor-default focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm !text-sm font-medium text-gray-600 bg-white xl:w-56"
+                          style={{ height: "2.5rem" }}
                         >
                           <span className="block truncate">
                             {selectedCategory}
@@ -608,7 +608,7 @@ export default function Navigation() {
                           leaveFrom="opacity-100"
                           leaveTo="opacity-0"
                         >
-                          <Listbox.Options className="absolute w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm !z-40">
+                          <Listbox.Options className="absolute w-56 py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm !z-40">
                             {categories?.map((category, index) => (
                               <Listbox.Option
                                 key={index}
