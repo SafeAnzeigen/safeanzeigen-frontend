@@ -400,14 +400,12 @@ export default function Navigation() {
                               </Link>
                             </Menu.Item>
                             <Menu.Item>
-                              <Link href="/">
-                                <p
-                                  onClick={() => signOut()}
-                                  className="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100"
-                                >
-                                  Ausloggen
-                                </p>
-                              </Link>
+                              <p
+                                onClick={() => signOut()}
+                                className="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100"
+                              >
+                                Ausloggen
+                              </p>
                             </Menu.Item>
                           </Menu.Items>
                         </Transition>

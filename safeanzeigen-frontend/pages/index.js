@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { useAuth, useUser } from "@clerk/clerk-react";
+import Geocode from "react-geocode";
+Geocode.setApiKey(process.env.NEXT_PUBLIC_MAP);
 
 import Navigation from "../components/Navigation/Navigation";
 import CookieBanner from "../components/GeneralComponents/Cookies/CookieBanner";
@@ -17,6 +19,12 @@ export default function Home() {
   const clerkAuth = useAuth();
   const [verticalScrollIsActive, setVerticalScrollIsActive] = useState(true);
   const [geoPermission, setGeoPermission] = useState(false);
+  const [currentUserLocality, setCurrentUserLocality] = useState(null);
+  const [currentUserLatitude, setCurrentUserLatitude] = useState(null);
+  const [currentUserLongitude, setCurrentUserLongitude] = useState(null);
+  Geocode.setLanguage("de");
+  Geocode.setLocationType("ROOFTOP");
+  Geocode.enableDebug();
 
   const [showDislikeConfirmationModal, setShowDislikeConfirmationModal] =
     useState(false);
@@ -24,6 +32,31 @@ export default function Home() {
   const [publicAdvertisements, setPublicAdvertisements] = useState([]);
   const [favoriteAdvertisements, setFavoriteAdvertisements] = useState([]);
   const [categories, setCategories] = useState([]);
+
+  function distance(lat1, lon1, lat2, lon2, unit, locality) {
+    var radlat1 = (Math.PI * lat1) / 180;
+    var radlat2 = (Math.PI * lat2) / 180;
+    var theta = lon1 - lon2;
+    var radtheta = (Math.PI * theta) / 180;
+    var dist =
+      Math.sin(radlat1) * Math.sin(radlat2) +
+      Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+    if (dist > 1) {
+      dist = 1;
+    }
+    dist = Math.acos(dist);
+    dist = (dist * 180) / Math.PI;
+    dist = dist * 60 * 1.1515;
+    if (unit == "K") {
+      dist = dist * 1.609344;
+    }
+    if (unit == "N") {
+      dist = dist * 0.8684;
+    }
+    /*  console.log("DISTANCE: ", dist);
+    console.log("LOCALITY FOR DISTANCE ", locality); */
+    return dist;
+  }
 
   const retrieveUserFavoriteAdvertisements = async (user) => {
     if (user?.id) {
@@ -116,7 +149,32 @@ export default function Home() {
       .then((data) => {
         console.log("DATA GET ALL PUBLIC ADVERTISEMENT", data);
         if (data?.advertisements) {
-          setPublicAdvertisements(data?.advertisements);
+          let geoAddedPublicAdvertisements = data?.advertisements?.map(
+            (element) => {
+              if (element.locality) {
+                let tempCopyElement = element;
+                /*  console.log("tempCopyElement BEFORE", tempCopyElement); */
+                getGeoLongAndLatFromLocality(element.locality).then(
+                  (latLongArray) => {
+                    /* console.log("LATLONGARRAY", latLongArray); */
+                    if (latLongArray.length > 0) {
+                      tempCopyElement.latitude = latLongArray[0];
+                      tempCopyElement.longitude = latLongArray[1];
+                      /* console.log("tempCopyElement AFTER", tempCopyElement); */
+                      return tempCopyElement;
+                    }
+                    return element;
+                  }
+                );
+              }
+              return element;
+            }
+          );
+          /* console.log(
+            "geoAddedPublicAdvertisements",
+            geoAddedPublicAdvertisements
+          ); */
+          setPublicAdvertisements(geoAddedPublicAdvertisements);
         }
       })
       .catch((error) => {
@@ -210,6 +268,42 @@ export default function Home() {
     }
   };
 
+  const success = (position) => {
+    console.log("POSITION", position);
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+    const geoAPIURL = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`;
+
+    fetch(geoAPIURL)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("GEO DATA", data);
+        const locality = data?.locality;
+        const postcode = data?.postcode;
+        setCurrentUserLocality(data?.locality);
+        setCurrentUserLatitude(latitude);
+        setCurrentUserLongitude(longitude);
+      });
+  };
+
+  const error = (position) => {
+    console.log(position);
+    alert("Bitte gebe das Recht frei deinen Standort zu nutzen");
+  };
+
+  const getGeoLongAndLatFromLocality = (locality) =>
+    Geocode.fromAddress(locality).then(
+      (response) => {
+        const { lat, lng } = response.results[0].geometry.location;
+        /* console.log(`I HAVE THE LAT AND LONG ${locality}`, lat, lng); */
+        return [lat, lng];
+      },
+      (error) => {
+        console.error(`ERROR GETTING LONG LAT ${locality}`, error);
+        return [];
+      }
+    );
+
   useEffect(() => {
     if (user) {
       retrieveUserFavoriteAdvertisements(user);
@@ -217,7 +311,16 @@ export default function Home() {
   }, [user]);
 
   useEffect(() => {
-    retrieveNewestPublicAdvertisements();
+    if (geoPermission) {
+      navigator.geolocation.getCurrentPosition(success, error);
+    }
+  }, [geoPermission]);
+
+  useEffect(() => {
+    if (publicAdvertisements.length === 0) {
+      retrieveNewestPublicAdvertisements();
+    }
+
     navigator.permissions.query({ name: "geolocation" }).then((permission) => {
       console.log("GEO LOCATION PERMISSION", permission);
       setGeoPermission(permission.state === "granted");
@@ -323,7 +426,17 @@ export default function Home() {
           <h2 className="pt-8 pb-4 text-3xl font-semibold text-gray-600 select-none">
             Angebote in deiner Nähe
           </h2>
-          {geoPermission ? (
+          {/* {geoPermission &&
+            } */}
+          {/* {console.log("CURRENT USER LOCALITY", currentUserLocality)}
+          {console.log("CURRENT USER LATITUDE", currentUserLatitude)}
+          {console.log("CURRENT USER LONGITUDE", currentUserLongitude)} */}
+
+          {/*  {console.log("publicAdvertisements FOR GEO", publicAdvertisements)} */}
+          {geoPermission &&
+          currentUserLocality &&
+          currentUserLatitude &&
+          currentUserLongitude ? (
             <div
               className="flex p-4 -mt-2 -ml-4 space-x-5 overflow-scroll scrollbar-hide"
               onWheel={(event) => transformScroll(event, "sideScroll")}
@@ -332,12 +445,29 @@ export default function Home() {
             >
               {publicAdvertisements?.length > 0 &&
                 publicAdvertisements
+                  ?.filter(
+                    (element) =>
+                      element.locality && element.latitude && element.longitude
+                  )
                   ?.sort(function (a, b) {
-                    return a.created_at > b.created_at
-                      ? -1
-                      : a.created_at < b.created_at
-                      ? 1
-                      : 0;
+                    return (
+                      distance(
+                        a.latitude,
+                        a.longitude,
+                        currentUserLatitude,
+                        currentUserLongitude,
+                        "K",
+                        a.locality
+                      ) -
+                      distance(
+                        b.latitude,
+                        b.longitude,
+                        currentUserLatitude,
+                        currentUserLongitude,
+                        "K",
+                        b.locality
+                      )
+                    );
                   })
                   ?.map((element, index) => (
                     <div key={index}>
