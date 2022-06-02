@@ -10,7 +10,7 @@ export default function TinyCategoryCard({ categoryName, imageUrl }) {
           category: categoryName,
         },
       }}
-      as={categoryName}
+      as={"/suche/" + categoryName}
     >
       <div
         title={categoryName}
