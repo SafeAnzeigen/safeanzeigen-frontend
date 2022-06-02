@@ -320,14 +320,14 @@ export default function Home() {
     if (publicAdvertisements.length === 0) {
       retrieveNewestPublicAdvertisements();
     }
-    if (geoPermission) {
-      navigator?.permissions
-        ?.query({ name: "geolocation" })
-        .then((permission) => {
-          console.log("GEO LOCATION PERMISSION", permission);
-          setGeoPermission(permission?.state === "granted");
-        });
-    }
+
+    navigator?.permissions
+      ?.query({ name: "geolocation" })
+      .then((permission) => {
+        console.log("GEO LOCATION PERMISSION", permission);
+        setGeoPermission(permission?.state === "granted");
+      });
+
     if (categories.length === 0) {
       retrieveCategories();
     }
