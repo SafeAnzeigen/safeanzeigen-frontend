@@ -114,14 +114,6 @@ export default function MessagingComponent({
                 );
               } */
             })}
-        {console.log(
-          "DIFFERENCE",
-          differenceInSeconds(
-            new Date(),
-            fromUnixTime(isTypingObject?.unix_timestamp)
-          )
-        )}
-        {console.log("MESSAGECOMPONENT isTypingObject", isTypingObject)}
         {Object.keys(isTypingObject)?.length > 0 &&
           differenceInSeconds(
             new Date(),
