@@ -829,29 +829,33 @@ export default function Inserieren() {
                               leaveTo="opacity-0"
                             >
                               <Listbox.Options className="absolute w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm !z-50">
-                                {categories?.map((category, index) => (
-                                  <Listbox.Option
-                                    key={index}
-                                    className={({ active }) =>
-                                      `relative select-none py-2 cursor-pointer pl-10 pr-4 font-bold ${
-                                        active
-                                          ? "bg-[#2f70e9] text-white"
-                                          : "text-gray-900"
-                                      }`
-                                    }
-                                    value={category?.name}
-                                  >
-                                    {({ selected }) => (
-                                      <>
-                                        <span
-                                          className={`block truncate font-bold`}
-                                        >
-                                          {category?.name}
-                                        </span>
-                                      </>
-                                    )}
-                                  </Listbox.Option>
-                                ))}
+                                {categories
+                                  ?.sort((a, b) =>
+                                    a?.name.localeCompare(b?.name)
+                                  )
+                                  ?.map((category, index) => (
+                                    <Listbox.Option
+                                      key={index}
+                                      className={({ active }) =>
+                                        `relative select-none py-2 cursor-pointer pl-10 pr-4 font-bold ${
+                                          active
+                                            ? "bg-[#2f70e9] text-white"
+                                            : "text-gray-900"
+                                        }`
+                                      }
+                                      value={category?.name}
+                                    >
+                                      {({ selected }) => (
+                                        <>
+                                          <span
+                                            className={`block truncate font-bold`}
+                                          >
+                                            {category?.name}
+                                          </span>
+                                        </>
+                                      )}
+                                    </Listbox.Option>
+                                  ))}
                               </Listbox.Options>
                             </Transition>
                           </div>
@@ -886,29 +890,33 @@ export default function Inserieren() {
                               leaveTo="opacity-0"
                             >
                               <Listbox.Options className="absolute w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm !z-50">
-                                {subcategories?.map((subcategory, index) => (
-                                  <Listbox.Option
-                                    key={index}
-                                    className={({ active }) =>
-                                      `relative select-none py-2 cursor-pointer pl-10 pr-4 font-bold ${
-                                        active
-                                          ? "bg-[#2f70e9] text-white"
-                                          : "text-gray-900"
-                                      }`
-                                    }
-                                    value={subcategory?.name}
-                                  >
-                                    {({ selected }) => (
-                                      <>
-                                        <span
-                                          className={`block truncate font-bold`}
-                                        >
-                                          {subcategory?.name}
-                                        </span>
-                                      </>
-                                    )}
-                                  </Listbox.Option>
-                                ))}
+                                {subcategories
+                                  ?.sort((a, b) =>
+                                    a?.name.localeCompare(b?.name)
+                                  )
+                                  ?.map((subcategory, index) => (
+                                    <Listbox.Option
+                                      key={index}
+                                      className={({ active }) =>
+                                        `relative select-none py-2 cursor-pointer pl-10 pr-4 font-bold ${
+                                          active
+                                            ? "bg-[#2f70e9] text-white"
+                                            : "text-gray-900"
+                                        }`
+                                      }
+                                      value={subcategory?.name}
+                                    >
+                                      {({ selected }) => (
+                                        <>
+                                          <span
+                                            className={`block truncate font-bold`}
+                                          >
+                                            {subcategory?.name}
+                                          </span>
+                                        </>
+                                      )}
+                                    </Listbox.Option>
+                                  ))}
                               </Listbox.Options>
                             </Transition>
                           </div>
@@ -1329,7 +1337,7 @@ export default function Inserieren() {
                 <ul className="w-full p-4 mt-8 text-white list-disc rounded-lg md:w-3/5 bg-red-700/75">
                   Es fehlen noch folgende Dinge, um die Anzeige zu
                   veröffentlichen:
-                  {adImages.length < 3 && (
+                  {adImages?.length < 3 && (
                     <li className="ml-4">
                       Mindestens 3 hochwertige Fotos deines Artikels
                     </li>

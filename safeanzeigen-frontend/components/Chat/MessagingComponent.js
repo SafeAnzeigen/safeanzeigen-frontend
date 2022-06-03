@@ -1,101 +1,106 @@
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
-export default function MessagingComponent({ nameOfAd, adURL }) {
+import YourMessageComponent from "./YourMessageComponent";
+import OtherContactMessageComponent from "./OtherContactMessageComponent";
+
+export default function MessagingComponent({
+  user,
+  activeAdConversationRoomObject,
+  messages,
+  callbackSendMessage,
+  callbackSendIsTyping,
+}) {
+  const [messageTextInput, setMessageTextInput] = useState("");
+
+  useEffect(() => {
+    console.log(
+      "MESSAGECOMPONENT RECEIVED activeAdConversationRoomObject",
+      activeAdConversationRoomObject
+    );
+    console.log("MESSAGECOMPONENT RECEIVED messages", messages);
+  }, [messages]);
+
+  /* TODO: RECEIVE ALL MESSAGEOBJECTS(FROM_USER_ID, TEXT, TIMESTAMP) IN ONE MESSAGE ARRAY THEN CONDITIONALLY RENDER THEM FLEX JUSTIFY_START OR END AND IN DIFFERENT COLOR AND IN ORDER BY TIMESTAMP THUS IT WILL APPEAR LEFT RIGHT AND FROM/TO LIKE IN A CHAT APP */
+
+  /* TODO: window.scrollTo(0, document.body.scrollHeight);  WHEN? */
+
+  {
+    /* /* unreadMessage={true} */
+    /* conversationLastDate="25. Mai" */
+  }
+
   return (
     <div
-      className="flex flex-col flex-1 p-4 mb-8 bg-gray-200 rounded-lg chat-area"
+      className="flex flex-col flex-1 p-4 mb-8 bg-gray-200 rounded-lg"
       style={{ height: "75vh" }}
     >
       <div className="pl-2 flex-3 ">
-        <h2 className="py-1 mb-8 text-xl text-orange-500 border-b-2 border-gray-200">
-          <Link href={adURL}>
-            <b className="cursor-pointer">{nameOfAd}</b>
+        <div className="flex items-center justify-between p-2 mt-2 mb-2 text-sm font-light text-gray-500 border-b-2 border-gray-200 rounded-lg opacity-80 bg-red-300/50 ">
+          <div className="">
+            <b className="select-none md:mr-4 text-[13px] md:text-sm">
+              Wechsel nicht auf andere Chat-Dienst wie WhatsApp. Bevorzuge
+              Barzahlung. Verschicke nie ins Ausland. PayPal nicht als Freunde
+              benutzen.
+            </b>
+          </div>
+        </div>
+        <div className="flex items-center justify-between p-2 mb-2 text-sm text-orange-500 bg-gray-100 border-b-2 border-gray-200 rounded-lg md:text-xl md:p-4 ">
+          <div>
+            <b className="mr-4 select-none">
+              {activeAdConversationRoomObject?.ad_title}
+            </b>
+            <b className="mr-1 text-gray-400 select-none">
+              {activeAdConversationRoomObject?.ad_price_type}
+            </b>
+            <b className="text-gray-400">
+              {activeAdConversationRoomObject?.ad_price},00
+            </b>
+          </div>
+
+          <Link href={`/anzeige/${activeAdConversationRoomObject?.ad_id}`}>
+            <button className="p-1 inline-flex items-center md:px-4 md:py-2 md:ml-6 md:text-sm font-medium text-white bg-[#2f70e9] border border-transparent rounded-md shadow-sm hover:bg-[#2962cd] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent cursor-pointer text-[13px]">
+              Zur Anzeige
+            </button>
           </Link>
-        </h2>
+        </div>
       </div>
-      <div className="flex-1 pl-2 overflow-auto messages">
-        <div className="flex mb-4 message">
-          <div className="flex-2">
-            <div className="relative w-12 h-12">
-              <img
-                className="w-12 h-12 mx-auto rounded-full"
-                src="https://source.boringavatars.com/beam/300/user_29RqPdIoafnCM7Cjpgia8nW8Ul3user_29RqPdIoafnCM7Cjpgia8nW8Ul3user_29RqPdIoafnCM7Cjpgia8nW8Ul3?colors=2f70e9,e76f51,ffc638,f4a261,e97c2f"
-                alt="chat-user"
-              />
-            </div>
-          </div>
-          <div className="flex-1 px-2">
-            <div className="inline-block p-2 px-6 text-gray-700 bg-[#2f70e932] rounded-full">
-              <span>Hallo</span>
-            </div>
-            <div className="pl-4">
-              <small className="text-gray-500">15 April</small>
-            </div>
-          </div>
-        </div>
-        <div className="flex mb-4 message">
-          <div className="flex-2">
-            <div className="relative w-12 h-12">
-              <img
-                className="w-12 h-12 mx-auto rounded-full"
-                src="https://source.boringavatars.com/beam/300/user_29RqPdIoafnCM7Cjpgia8nW8Ul3user_29RqPdIoafnCM7Cjpgia8nW8Ul3user_29RqPdIoafnCM7Cjpgia8nW8Ul3?colors=2f70e9,e76f51,ffc638,f4a261,e97c2f"
-                alt="chat-user"
-              />
-            </div>
-          </div>
-          <div className="flex-1 px-2">
-            <div className="inline-block p-2 px-6 text-gray-700 bg-[#2f70e932] rounded-full">
-              <span>Ich habe eine Frage bzgl. deiner Anzeige</span>
-            </div>
-            <div className="pl-4">
-              <small className="text-gray-500">15 April</small>
-            </div>
-          </div>
-        </div>
-        <div className="flex mb-4 text-right message me">
-          <div className="flex-1 px-2">
-            <div className="inline-block p-2 px-6 text-white bg-orange-400 rounded-full">
-              <span>Moin</span>
-            </div>
-            <div className="pr-4">
-              <small className="text-gray-500">15 April</small>
-            </div>
-          </div>
-        </div>
-        <div className="flex mb-4 text-right message me">
-          <div className="flex-1 px-2">
-            <div className="inline-block p-2 px-6 text-white bg-orange-400 rounded-full">
-              <span>Klar, was interessiert dich denn?</span>
-            </div>
-            <div className="pr-4">
-              <small className="text-gray-500">15 April</small>
-            </div>
-          </div>
-        </div>
-        <div className="flex mb-4 message">
-          <div className="flex-2">
-            <div className="relative w-12 h-12">
-              <img
-                className="w-12 h-12 mx-auto rounded-full"
-                src="https://source.boringavatars.com/beam/300/user_29RqPdIoafnCM7Cjpgia8nW8Ul3user_29RqPdIoafnCM7Cjpgia8nW8Ul3user_29RqPdIoafnCM7Cjpgia8nW8Ul3?colors=2f70e9,e76f51,ffc638,f4a261,e97c2f"
-                alt="chat-user"
-              />
-            </div>
-          </div>
-          <div className="flex-1 px-2">
-            <div className="inline-block p-2 px-6 text-gray-700 bg-[#2f70e932] rounded-full">
-              <span>
-                Ich wollte fragen wie lange du die Kamera schon besitzt.
-              </span>
-            </div>
-            <div className="pl-4">
-              <small className="text-gray-500">15 April</small>
-            </div>
-          </div>
-        </div>
+      <div className="flex-1 pl-2 overflow-auto">
+        {messages?.length > 0 &&
+          messages
+            /* ?.filter(
+              (filteredMessage) =>
+                filteredMessage?.ad_conversation_room_id ===
+                activeAdConversationRoomObject?.ad_conversation_room_id
+            ) */
+            ?.sort(
+              (a, b) => a?.message_sent_timestamp - b?.message_sent_timestamp
+            )
+            ?.map((message, index) => {
+              if (message?.from_clerk_user_id === user?.id) {
+                return (
+                  <div key={index}>
+                    <YourMessageComponent
+                      text={message?.text}
+                      timestamp={message?.message_sent_timestamp}
+                    />
+                  </div>
+                );
+              } else {
+                return (
+                  <div key={index}>
+                    <OtherContactMessageComponent
+                      clerk_user_id={message?.from_clerk_user_id}
+                      text={message?.text}
+                      timestamp={message?.message_sent_timestamp}
+                    />
+                  </div>
+                );
+              }
+            })}
       </div>
       <div className="pt-4 pb-4 flex-2">
-        <div className="flex bg-white rounded-lg shadow write">
+        <div className="flex bg-white rounded-lg shadow">
           <div className="flex items-center content-center p-4 pr-0 text-center cursor-pointer flex-3">
             <span className="block text-center text-gray-400 hover:text-gray-800">
               <svg
@@ -118,7 +123,8 @@ export default function MessagingComponent({ nameOfAd, adURL }) {
               rows={1}
               placeholder="Schreibe eine Nachricht"
               autoFocus=""
-              defaultValue={""}
+              value={messageTextInput}
+              onChange={(event) => setMessageTextInput(event.target.value)}
             />
           </div>
           <div className="flex items-center content-center w-32 p-2 flex-2">
@@ -147,7 +153,7 @@ export default function MessagingComponent({ nameOfAd, adURL }) {
                 </span>
               </span>
             </div>
-            <div className="flex-1 text-center">
+            {/* <div className="flex-1 text-center">
               <span className="text-gray-400 cursor-pointer hover:text-gray-800">
                 <span className="inline-block align-text-bottom">
                   <svg
@@ -163,9 +169,20 @@ export default function MessagingComponent({ nameOfAd, adURL }) {
                   </svg>
                 </span>
               </span>
-            </div>
+            </div> */}
             <div className="flex-1">
-              <button className="inline-block w-10 h-10 text-white bg-orange-400 rounded-full hover:bg-orange-500">
+              <button
+                onClick={() => {
+                  if (messageTextInput) {
+                    callbackSendMessage(
+                      activeAdConversationRoomObject?.ad_conversation_room_id,
+                      messageTextInput
+                    );
+                    setMessageTextInput("");
+                  }
+                }}
+                className="inline-block w-10 h-10 text-white bg-orange-400 rounded-full hover:bg-orange-500"
+              >
                 <span className="inline-block align-text-bottom">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
