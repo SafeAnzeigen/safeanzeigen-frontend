@@ -159,6 +159,7 @@ export default function MessagingComponent({
               className="block w-full px-4 py-4 bg-transparent border-0 outline-none resize-none focus:outline-none focus:ring-0 focus:ring-offset-0 focus:ring-transparent"
               placeholder="Schreibe eine Nachricht"
               autoFocus=""
+              maxLength="1500"
               value={messageTextInput}
               onChange={(event) => setMessageTextInput(event.target.value)}
             />

@@ -71,6 +71,9 @@ export default function Anzeige() {
         .then((data) => {
           console.log("DATA GET SPECIFIC ADVERTISEMENT", data);
           if (data?.advertisement) {
+            if (!data?.advertisement?.is_active) {
+              router.push("/");
+            }
             setAdvertisementInfoObject(data?.advertisement);
             let tempAdImagesArray = [];
             if (data?.advertisement?.article_image_1) {
