@@ -24,6 +24,7 @@ export default function Suche() {
   const { user } = useUser();
   const clerkAuth = useAuth();
 
+  const [routerSID, setRouterSID] = useState("");
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [subcategory, setSubcategory] = useState("");
@@ -305,6 +306,7 @@ export default function Suche() {
       // Code using query const { search, category, subcategory, locality, radius } = router.query;
       if (!ISSERVER && localStorage.getItem("suche") === null) {
         console.log("LOCALSTORAGE NOT THERE WRITING NOW", router.query);
+        setRouterSID(router.query.sid);
         setSearch(router.query.search);
         setCategory(router.query.category);
         setSubcategory(router.query.subcategory);
@@ -314,6 +316,7 @@ export default function Suche() {
         localStorage.setItem(
           "suche",
           JSON.stringify({
+            sid: router.query.sid,
             search: router.query.search,
             category: router.query.category,
             subcategory: router.query.subcategory,
@@ -343,6 +346,10 @@ export default function Suche() {
           "xx localStorage.getItem null",
           localStorage.getItem("suche") !== null
         );
+
+        if (JSON.parse(localStorage.getItem("suche"))?.sid) {
+          setRouterSID(JSON.parse(localStorage.getItem("suche"))?.sid);
+        }
 
         if (JSON.parse(localStorage.getItem("suche"))?.search) {
           setSearch(JSON.parse(localStorage.getItem("suche"))?.search);
@@ -378,6 +385,7 @@ export default function Suche() {
           "LOCALSTORAGE WAS THERE BUT DID NOT MATCH SEARCH SO I AM OVERWRITING",
           router.query
         );
+        setRouterSID(router.query.sid);
         setSearch(router.query.search);
         setCategory(router.query.category);
         setSubcategory(router.query.subcategory);
@@ -393,6 +401,7 @@ export default function Suche() {
         localStorage.setItem(
           "suche",
           JSON.stringify({
+            sid: router.query.sid,
             search: router.query.search,
             category: router.query.category,
             subcategory: router.query.subcategory,
@@ -436,7 +445,50 @@ export default function Suche() {
   useEffect(() => {
     window.onscroll = function () {};
     retrievePublicOffers();
+    console.log("REFRESH TRIGGERED");
   }, []);
+
+  useEffect(() => {
+    /* if(router?.query.sid) */
+    console.log("USEFFECT router.query", router.query);
+    console.log("USEFFECT search", search);
+    console.log("USEFFECT category", category);
+    console.log("USEFFECT subcategory", subcategory);
+    console.log("USEFFECT locality", locality);
+    /*  if (search) {
+      if (router.query.search !== search) {
+        router.reload(window.location.pathname);
+      }
+    }
+    if (category) {
+      if (router.query.category !== category) {
+        router.reload(window.location.pathname);
+      }
+    }
+    if (subcategory) {
+      if (router.query.subcategory !== subcategory) {
+        router.reload(window.location.pathname);
+      }
+    }
+    if (locality) {
+      if (router.query.locality !== locality) {
+        router.reload(window.location.pathname);
+      }
+    } */
+  }, []);
+
+  useEffect(() => {
+    /* if (routerSID !== router.query.sid) {
+      router.reload(window.location.pathname);
+    } */
+    /* router.reload(window.location.pathname); */
+    console.log("USEFFECT routerSID", routerSID);
+    console.log("USEFFECT router.query", router.query);
+    console.log("USEFFECT search", search);
+    console.log("USEFFECT category", category);
+    console.log("USEFFECT subcategory", subcategory);
+    console.log("USEFFECT locality", locality);
+  }, [router.query.sid]);
 
   /*  useEffect(() => {
     if (locality) {
@@ -477,7 +529,7 @@ export default function Suche() {
     }
 
     if (locality) {
-      if (parseInt(radius) < 1) {
+      if (parseInt(radius) === 0) {
         filterLength++;
         if (
           advertisement.locality.toLowerCase() === locality.toLowerCase() ||

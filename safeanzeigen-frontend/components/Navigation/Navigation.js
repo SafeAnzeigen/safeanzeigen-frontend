@@ -59,6 +59,20 @@ const createSearchPath = (
   return searchPath;
 };
 
+function umlautConverter(word) {
+  word = word.toLowerCase();
+  word = word.replace(/ä/g, "ae");
+  word = word.replace(/ö/g, "oe");
+  word = word.replace(/ü/g, "ue");
+  word = word.replace(/ß/g, "ss");
+  word = word.replace(/ /g, "-");
+  word = word.replace(/\./g, "");
+  word = word.replace(/,/g, "");
+  word = word.replace(/\(/g, "");
+  word = word.replace(/\)/g, "");
+  return word;
+}
+
 export default function Navigation() {
   const router = useRouter();
   const { pathname } = useRouter();
@@ -88,7 +102,7 @@ export default function Navigation() {
     setLocationOrZipInput("");
     setSearchInput("");
     if (!ISSERVER && localStorage.getItem("suche") !== null) {
-      console.log("DELETED LOCALSTORAGE");
+      /*  console.log("DELETED LOCALSTORAGE"); */
       localStorage.removeItem("suche");
     }
   };
@@ -101,7 +115,7 @@ export default function Navigation() {
     userData?.emailAddresses[0]?.emailAddress;
 
   const success = (position) => {
-    console.log("POSITION", position);
+    /* console.log("POSITION", position); */
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
     const geoAPIURL = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`;
@@ -109,7 +123,7 @@ export default function Navigation() {
     fetch(geoAPIURL)
       .then((res) => res.json())
       .then((data) => {
-        console.log("GEO DATA", data);
+        /* console.log("GEO DATA", data); */
         const locality = data?.locality;
         const postcode = data?.postcode;
         setLocationOrZipInput(data?.locality);
@@ -175,7 +189,7 @@ export default function Navigation() {
   };
 
   const error = (position) => {
-    console.log(position);
+    /* console.log(position); */
     alert("Bitte gebe das Recht frei deinen Standort zu nutzen");
   };
 
@@ -216,6 +230,16 @@ export default function Navigation() {
       retrieveSubCategoriesBelongingToCategory(selectedCategory);
     }
   }, [selectedCategory]);
+
+  useEffect(() => {
+    if (
+      !pathname.includes("/suche") &&
+      !ISSERVER &&
+      localStorage.getItem("suche") !== null
+    ) {
+      localStorage.removeItem("suche");
+    }
+  });
 
   return (
     <header
@@ -263,6 +287,11 @@ export default function Navigation() {
           </div>
         )}
         <input
+          onClick={() => {
+            if (pathname.includes("/suche/")) {
+              router.push("/");
+            }
+          }}
           className="w-full text-lg text-gray-700 placeholder-gray-400 bg-transparent border-transparent outline-none mt-4flex-grow pl- xs:pl-4 focus:outline-none focus:border-transparent focus:ring-0"
           type="text"
           value={searchInput}
@@ -738,7 +767,7 @@ export default function Navigation() {
                   type="text"
                   value={locationOrZipInput}
                   onChange={(event) =>
-                    setLocationOrZipInput(event.target.value)
+                    setLocationOrZipInput(umlautConverter(event.target.value))
                   }
                   placeholder="Stadt"
                 />

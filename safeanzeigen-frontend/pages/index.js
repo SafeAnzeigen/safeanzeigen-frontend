@@ -268,7 +268,7 @@ export default function Home() {
   };
 
   const success = (position) => {
-    console.log("POSITION", position);
+    /* console.log("POSITION", position); */
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
     const geoAPIURL = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`;
@@ -276,7 +276,7 @@ export default function Home() {
     fetch(geoAPIURL)
       .then((res) => res.json())
       .then((data) => {
-        console.log("GEO DATA", data);
+        /* console.log("GEO DATA", data); */
         const locality = data?.locality;
         const postcode = data?.postcode;
         setCurrentUserLocality(data?.locality);
@@ -286,7 +286,7 @@ export default function Home() {
   };
 
   const error = (position) => {
-    console.log(position);
+    /* console.log(position); */
     alert(
       "Manche Anzeigen würden wir gern anzeigen, wenn Sie sich in Ihrer Nähe befinden. Falls du das möchtest gib gern deinen Standort frei."
     );
@@ -326,7 +326,7 @@ export default function Home() {
       navigator?.permissions
         .query({ name: "geolocation" })
         .then((permission) => {
-          console.log("GEO LOCATION PERMISSION", permission);
+          /* console.log("GEO LOCATION PERMISSION", permission); */
           if (permission?.state === "granted") {
             setGeoPermission(permission?.state === "granted");
           } else if (permission?.state === "prompt") {
