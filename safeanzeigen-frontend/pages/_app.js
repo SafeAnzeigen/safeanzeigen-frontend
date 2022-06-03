@@ -9,8 +9,6 @@ import {
 } from "@clerk/nextjs";
 import ProgressBar from "@badrap/bar-of-progress";
 
-import { ConversationsProvider } from "../context/ConversationsProvider";
-import { MessagesProvider } from "../context/MessagesProvider";
 import "../styles/globals.css";
 import "react-input-range/lib/css/index.css";
 
@@ -47,11 +45,7 @@ function MyApp({ Component, pageProps }) {
       ) : (
         <>
           <SignedIn>
-            <ConversationsProvider>
-              <MessagesProvider>
-                <Component {...pageProps} />
-              </MessagesProvider>
-            </ConversationsProvider>
+            <Component {...pageProps} />
           </SignedIn>
           <SignedOut>
             <RedirectToSignIn />

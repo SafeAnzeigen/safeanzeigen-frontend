@@ -190,7 +190,7 @@ export default function Suche() {
                     getGeoLongAndLatFromLocality(element.locality).then(
                       (latLongArray) => {
                         /* console.log("LATLONGARRAY", latLongArray); */
-                        if (latLongArray.length > 0) {
+                        if (latLongArray?.length > 0) {
                           tempCopyElement.latitude = latLongArray[0];
                           tempCopyElement.longitude = latLongArray[1];
                           /* console.log("tempCopyElement AFTER", tempCopyElement); */
@@ -219,7 +219,7 @@ export default function Suche() {
                     "LATLONGARRAY OF LOCALITY DURING RETRIEVING",
                     latLongArray
                   );
-                  if (latLongArray.length > 0) {
+                  if (latLongArray?.length > 0) {
                     setLocalityCalculatedLat(latLongArray[0]);
                     setLocalityCalculatedLong(latLongArray[1]);
                     setSearchedAdvertisements(geoAddedPublicAdvertisements);
@@ -290,7 +290,7 @@ export default function Suche() {
   const calculateLocalityGeo = (locality) => {
     getGeoLongAndLatFromLocality(locality).then((latLongArray) => {
       console.log("LATLONGARRAY OF LOCALITY DURING RETRIEVING ", latLongArray);
-      if (latLongArray.length > 0) {
+      if (latLongArray?.length > 0) {
         setLocalityCalculatedLat(latLongArray[0]);
         setLocalityCalculatedLong(latLongArray[1]);
         /* console.log("tempCopyElement AFTER", tempCopyElement); */
@@ -520,7 +520,7 @@ export default function Suche() {
             distanceArray.push(advertisement?.longitude);
             console.log("GEO TWO SUCCESS", distanceArray);
 
-            if (distanceArray.length === 4) {
+            if (distanceArray?.length === 4) {
               console.log("CALCULATE NOW IF DISTANCE IS WITHIN RANGE");
               let distanceResult = distance(
                 distanceArray[0],
@@ -676,7 +676,7 @@ export default function Suche() {
               <div>
                 {!foundRadiusAdvertisements ? (
                   radius && locality ? (
-                    searchedAdvertisements.length > 0 ? (
+                    searchedAdvertisements?.length > 0 ? (
                       localityCalculatedLat && localityCalculatedLong ? (
                         searchedAdvertisements.filter((advertisement) =>
                           categoryFilter(
@@ -687,7 +687,7 @@ export default function Suche() {
                             locality,
                             radius
                           )
-                        ).length > 0 ? (
+                        )?.length > 0 ? (
                           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                             {searchedAdvertisements
                               .filter((advertisement) =>
