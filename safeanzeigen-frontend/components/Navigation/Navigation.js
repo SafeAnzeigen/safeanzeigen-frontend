@@ -244,6 +244,24 @@ export default function Navigation() {
           searchInput ? "rounded-tl-lg rounded-tr-lg" : "rounded-lg"
         }`}
       >
+        {searchInput && (
+          <div onClick={() => setSearchInput("")}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-6 h-6 ml-4 cursor-pointer hover:text-red-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+        )}
         <input
           className="w-full text-lg text-gray-700 placeholder-gray-400 bg-transparent border-transparent outline-none mt-4flex-grow pl- xs:pl-4 focus:outline-none focus:border-transparent focus:ring-0"
           type="text"
