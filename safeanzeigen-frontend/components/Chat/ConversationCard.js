@@ -1,16 +1,37 @@
 export default function ConversationCard({
-  conversationName,
-  conversationLastDate,
-  publishedNameOfAd,
-  unreadMessage,
+  adConversationRoomId,
+  adId,
+  adTitle,
+  adPriceType,
+  adPrice,
+  roomCreatorClerkUserId,
+  roomCreatorFullName,
+  createdAtTimestamp,
+  callbackJoinAdConversationRoom,
+  /* conversationLastDate,
+  unreadMessage, */
 }) {
   return (
-    <div className="flex p-4 mb-4 transition-transform duration-300 transform bg-white cursor-pointer rounded-xl entry hover:scale-105">
+    <div
+      onClick={() =>
+        callbackJoinAdConversationRoom(
+          adConversationRoomId,
+          adId,
+          adTitle,
+          adPriceType,
+          adPrice,
+          roomCreatorClerkUserId,
+          roomCreatorFullName,
+          createdAtTimestamp
+        )
+      }
+      className="flex p-4 mb-4 transition-transform duration-300 transform bg-white cursor-pointer rounded-xl entry hover:scale-105"
+    >
       <div className="flex-2">
         <div className="relative w-12 h-12">
           <img
             className="w-12 h-12 mx-auto rounded-full"
-            src="https://source.boringavatars.com/beam/300/user_29RqPdIoafnCM7Cjpgia8nW8Ul3user_29RqPdIoafnCM7Cjpgia8nW8Ul3user_29RqPdIoafnCM7Cjpgia8nW8Ul3?colors=2f70e9,e76f51,ffc638,f4a261,e97c2f"
+            src={`https://source.boringavatars.com/beam/300/${roomCreatorClerkUserId}${roomCreatorClerkUserId}${roomCreatorClerkUserId}?colors=2f70e9,e76f51,ffc638,f4a261,e97c2f`}
             alt="chat-user"
           />
           {/* <span className="absolute bottom-0 right-0 w-4 h-4 bg-green-400 border-2 border-white rounded-full" /> */}{" "}
@@ -20,16 +41,16 @@ export default function ConversationCard({
       <div className="flex-1 px-2">
         <div>
           <span className="w-32 font-bold text-orange-400 break-words">
-            {conversationName}
+            {adTitle}
           </span>
         </div>
         <div>
           <span className="w-32 text-gray-400 font-base ">
-            {publishedNameOfAd}
+            {roomCreatorFullName}
           </span>
         </div>
       </div>
-      <div className="text-right flex-2">
+      {/* <div className="text-right flex-2">
         <div>
           <small className="text-gray-500">{conversationLastDate}</small>
         </div>
@@ -53,7 +74,7 @@ export default function ConversationCard({
             </div>
           )}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

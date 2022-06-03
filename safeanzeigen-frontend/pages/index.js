@@ -317,7 +317,7 @@ export default function Home() {
   }, [geoPermission]);
 
   useEffect(() => {
-    if (publicAdvertisements.length === 0) {
+    if (publicAdvertisements?.length === 0) {
       retrieveNewestPublicAdvertisements();
     }
 
@@ -328,7 +328,7 @@ export default function Home() {
         setGeoPermission(permission?.state === "granted");
       });
 
-    if (categories.length === 0) {
+    if (categories?.length === 0) {
       retrieveCategories();
     }
   }, []);

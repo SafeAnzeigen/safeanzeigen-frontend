@@ -612,7 +612,7 @@ export default function Anzeige() {
                           )}
                       </dd>
                     </div>
-                    <div className="px-4 py-5 sm:px-6">
+                    <div className="py-5 md:px-6 sm:px-0">
                       <h3 className="text-lg font-medium leading-6 text-orange-500">
                         Anzeige
                       </h3>
