@@ -148,7 +148,7 @@ export default function Chat() {
       socket.on("receive-message", (messageObject) => {
         addIncomingMessage(messageObject);
       });
-    } /* Close socket to prevent duplicate messages  test*/
+    } /* Close socket to prevent duplicate messages  test2*/
 
     /* return () =>
       newSocket.close(); */
