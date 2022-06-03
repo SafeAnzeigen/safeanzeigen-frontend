@@ -97,34 +97,25 @@ export default function Chat() {
     });
   const [messagesObjectArray, setMessagesObjectArray] =
     useState(mockedMessages);
+  const [isTypingObject, setIsTypingObject] = useState({});
 
-  /* const joinAdConversationRoom = (
-    adConversationRoomId,
-    adId,
-    adTitle,
-    priceType,
-    price,
-    roomCreatorClerkUserId,
-    roomCreatorFullName,
-    createdAtTimestamp
-  ) => {
-    console.log("JOINING ROOM", adConversationRoomId);
-    socket.emit("join", {
-      ad_conversation_room_id: adConversationRoomId,
-      from_clerk_user_id: user?.id,
-      join_timestamp: getUnixTime(new Date()),
-    });
-    setActiveAdConversationRoomObject({
-      adConversationRoomId,
-      adId,
-      adTitle,
-      priceType,
-      price,
-      roomCreatorClerkUserId,
-      roomCreatorFullName,
-      createdAtTimestamp,
-    });
-  }; */
+  const addIncomingMessage = (messageObject) => {
+    setMessagesObjectArray((prevArray) => [...prevArray, messageObject]);
+  };
+
+  const addIncomingIsTyping = (isTypingObject) => {
+    console.log("isTypingObject ADD", isTypingObject);
+    if (isTypingObject.clerk_user_id !== user?.id) {
+      setIsTypingObject(isTypingObject);
+    }
+  };
+
+  const addIncomingStoppedTyping = (stoppedTypingObject) => {
+    console.log("stoppedTypingObject ADD", stoppedTypingObject);
+    if (isTypingObject.clerk_user_id !== user?.id) {
+      setIsTypingObject({});
+    }
+  };
 
   const sendMessage = (adConversationRoomId, text) => {
     socket.emit("message", {
@@ -135,8 +126,18 @@ export default function Chat() {
     });
   };
 
-  const addIncomingMessage = (messageObject) => {
-    setMessagesObjectArray((prevArray) => [...prevArray, messageObject]);
+  const sendIsTyping = (clerk_user_id, unix_timestamp) => {
+    socket.emit("is-typing", {
+      clerk_user_id: clerk_user_id,
+      unix_timestamp: unix_timestamp,
+    });
+  };
+
+  const sendStoppedTyping = (clerk_user_id, unix_timestamp) => {
+    socket.emit("stopped-typing", {
+      clerk_user_id: clerk_user_id,
+      unix_timestamp: unix_timestamp,
+    });
   };
 
   useEffect(() => {
@@ -151,6 +152,13 @@ export default function Chat() {
       /*  */
       socket.on("receive-message", (messageObject) => {
         addIncomingMessage(messageObject);
+      });
+      socket.on("receive-is-typing", (isTypingObject) => {
+        addIncomingIsTyping(isTypingObject);
+      });
+
+      socket.on("receive-stopped-typing", (stoppedTypingObject) => {
+        addIncomingStoppedTyping(stoppedTypingObject);
       });
     } /* Close socket to prevent duplicate messages  test2*/
 
@@ -245,8 +253,10 @@ export default function Chat() {
                         activeAdConversationRoomObject
                       }
                       messages={messagesObjectArray}
+                      isTypingObject={isTypingObject}
                       callbackSendMessage={sendMessage}
-                      callbackSendIsTyping={() => {}}
+                      callbackSendIsTyping={sendIsTyping}
+                      callbackStoppedTyping={sendStoppedTyping}
                     />
                   ) : (
                     <EmptyMessagingComponent />
