@@ -62,6 +62,20 @@ export default function Inserieren() {
     content: () => componentRef.current,
   });
 
+  function umlautConverter(word) {
+    word = word.toLowerCase();
+    word = word.replace(/ä/g, "ae");
+    word = word.replace(/ö/g, "oe");
+    word = word.replace(/ü/g, "ue");
+    word = word.replace(/ß/g, "ss");
+    word = word.replace(/ /g, "-");
+    word = word.replace(/\./g, "");
+    word = word.replace(/,/g, "");
+    word = word.replace(/\(/g, "");
+    word = word.replace(/\)/g, "");
+    return word;
+  }
+
   const addAdvertisement = async (
     userData,
     titleInputData,
@@ -256,7 +270,7 @@ export default function Inserieren() {
   };
 
   const success = (position) => {
-    console.log("POSITION SUCCESS", position);
+    /* console.log("POSITION SUCCESS", position); */
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
     const geoAPIURL = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`;
@@ -264,7 +278,7 @@ export default function Inserieren() {
     fetch(geoAPIURL)
       .then((res) => res.json())
       .then((data) => {
-        console.log("GEO DATA", data);
+        /* console.log("GEO DATA", data); */
         const locality = data?.locality;
         const postcode = data?.postcode;
         setLocationInput(data?.locality);
@@ -1030,7 +1044,9 @@ export default function Inserieren() {
                               placeholder="Stadt"
                               value={locationInput}
                               onChange={(event) =>
-                                setLocationInput(event.target.value)
+                                setLocationInput(
+                                  umlautConverter(event.target.value)
+                                )
                               }
                             />
                             {!addressPublic && (

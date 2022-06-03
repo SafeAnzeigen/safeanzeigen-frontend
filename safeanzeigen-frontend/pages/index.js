@@ -268,7 +268,7 @@ export default function Home() {
   };
 
   const success = (position) => {
-    console.log("POSITION", position);
+    /* console.log("POSITION", position); */
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
     const geoAPIURL = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`;
@@ -276,7 +276,7 @@ export default function Home() {
     fetch(geoAPIURL)
       .then((res) => res.json())
       .then((data) => {
-        console.log("GEO DATA", data);
+        /* console.log("GEO DATA", data); */
         const locality = data?.locality;
         const postcode = data?.postcode;
         setCurrentUserLocality(data?.locality);
@@ -286,8 +286,10 @@ export default function Home() {
   };
 
   const error = (position) => {
-    console.log(position);
-    alert("Bitte gebe das Recht frei deinen Standort zu nutzen");
+    /* console.log(position); */
+    alert(
+      "Manche Anzeigen würden wir gern anzeigen, wenn Sie sich in Ihrer Nähe befinden. Falls du das möchtest gib gern deinen Standort frei."
+    );
   };
 
   const getGeoLongAndLatFromLocality = (locality) =>
@@ -320,12 +322,22 @@ export default function Home() {
       retrieveNewestPublicAdvertisements();
     }
 
-    navigator?.permissions
-      ?.query({ name: "geolocation" })
-      .then((permission) => {
-        console.log("GEO LOCATION PERMISSION", permission);
-        setGeoPermission(permission?.state === "granted");
-      });
+    if (navigator.geolocation) {
+      navigator?.permissions
+        .query({ name: "geolocation" })
+        .then((permission) => {
+          /* console.log("GEO LOCATION PERMISSION", permission); */
+          if (permission?.state === "granted") {
+            setGeoPermission(permission?.state === "granted");
+          } else if (permission?.state === "prompt") {
+            navigator.geolocation.getCurrentPosition(success, error, {
+              enableHighAccuracy: true,
+              timeout: 5000,
+              maximumAge: 0,
+            });
+          }
+        });
+    }
 
     if (categories?.length === 0) {
       retrieveCategories();
