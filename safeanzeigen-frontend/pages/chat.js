@@ -145,10 +145,10 @@ export default function Chat() {
         "SOCKET START ON ROOM activeAdConversationRoomObject?.ad_conversation_room_id ",
         activeAdConversationRoomObject?.ad_conversation_room_id
       );
-      socket = io(process.env.NEXT_PUBLIC_BACKEND_SOCKET_URL);
-      /* , {
+      socket = io(process.env.NEXT_PUBLIC_BACKEND_SOCKET_URL, {
         query: { id: activeAdConversationRoomObject?.ad_conversation_room_id },
-      } */
+      });
+      /*  */
       socket.on("receive-message", (messageObject) => {
         addIncomingMessage(messageObject);
       });
