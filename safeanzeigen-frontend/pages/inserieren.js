@@ -1140,6 +1140,7 @@ export default function Inserieren() {
                           className="block w-full mt-1 font-semibold text-gray-700 rounded-md cursor-default resize-none sm:text-sm focus:border-gray-700 focus:ring-0 h-96"
                           placeholder="Erkläre den deinem zukünftigen Käufer genau, was deinen Artikel ausmacht."
                           value={descriptionInput}
+                          maxlength="1500"
                           onChange={(event) =>
                             setDescriptionInput(event.target.value)
                           }
