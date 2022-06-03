@@ -141,8 +141,12 @@ export default function Chat() {
 
   useEffect(() => {
     if (socket == null) {
+      console.log(
+        "SOCKET START ON ROOM activeAdConversationRoomObject?.ad_conversation_room_id ",
+        activeAdConversationRoomObject?.ad_conversation_room_id
+      );
       socket = io(process.env.NEXT_PUBLIC_BACKEND_SOCKET_URL, {
-        query: { id: user?.id },
+        query: { id: activeAdConversationRoomObject?.ad_conversation_room_id },
       });
 
       socket.on("receive-message", (messageObject) => {
