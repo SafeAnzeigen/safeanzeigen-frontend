@@ -808,7 +808,10 @@ export default function Inserieren() {
                       <div className="mt-1 text-lg font-medium text-gray-900 sm:mt-0 sm:col-span-2">
                         <Listbox
                           value={selectedCategory}
-                          onChange={setSelectedCategory}
+                          onChange={(category) => {
+                            setSelectedCategory(category);
+                            setSelectedSubcategory();
+                          }}
                         >
                           <div className="relative mt-1">
                             <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left rounded-lg shadow-md cursor-default focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm !text-lg font-bold text-white !bg-[#2f70e9] min-h-12">

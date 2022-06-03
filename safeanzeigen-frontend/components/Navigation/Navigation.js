@@ -13,6 +13,7 @@ import {
 import { Menu, Popover, Transition, Listbox } from "@headlessui/react";
 import { SearchIcon, SelectorIcon } from "@heroicons/react/solid";
 import { MenuIcon, XIcon } from "@heroicons/react/outline";
+import CookieBanner from "../GeneralComponents/Cookies/CookieBanner";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -61,6 +62,8 @@ const createSearchPath = (
 export default function Navigation() {
   const router = useRouter();
   const { pathname } = useRouter();
+  const ISSERVER = typeof window === "undefined";
+
   const { user } = useUser();
   const { userId } = useAuth();
   const clerkAuth = useAuth();
@@ -84,6 +87,10 @@ export default function Navigation() {
     setLocationRadiusInput(0);
     setLocationOrZipInput("");
     setSearchInput("");
+    if (!ISSERVER && localStorage.getItem("suche") !== null) {
+      console.log("DELETED LOCALSTORAGE");
+      localStorage.removeItem("suche");
+    }
   };
 
   const checkUserHasProvidedMinimumProfileData = (userData) =>
@@ -577,7 +584,10 @@ export default function Navigation() {
                   <div>
                     <Listbox
                       value={selectedCategory}
-                      onChange={setSelectedCategory}
+                      onChange={(category) => {
+                        setSelectedCategory(category);
+                        setSelectedSubcategory();
+                      }}
                     >
                       <div className="relative mb-2">
                         <Listbox.Label>
@@ -822,6 +832,7 @@ export default function Navigation() {
           </div>
         </div>
       )}
+      <CookieBanner />
     </header>
   );
 }
