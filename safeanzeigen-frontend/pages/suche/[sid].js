@@ -186,7 +186,7 @@ export default function Suche() {
                   /*  console.log("tempCopyElement BEFORE", tempCopyElement); */
                   console.log("I HAVE CONTROL ABOUT RADIUS", radius);
 
-                  if (radius) {
+                  if (parseInt(radius) > 0) {
                     getGeoLongAndLatFromLocality(element.locality).then(
                       (latLongArray) => {
                         /* console.log("LATLONGARRAY", latLongArray); */
@@ -402,6 +402,8 @@ export default function Suche() {
         );
       }
 
+      console.log("OTHER STATE?");
+
       /* setSearch(router.query.search);
       setCategory(router.query.category);
       setSubcategory(router.query.subcategory);
@@ -475,7 +477,7 @@ export default function Suche() {
     }
 
     if (locality) {
-      if (!radius) {
+      if (parseInt(radius) < 1) {
         filterLength++;
         if (
           advertisement.locality.toLowerCase() === locality.toLowerCase() ||
@@ -495,7 +497,7 @@ export default function Suche() {
 
     console.log("I AM BEFORE RADIUS CHECK", advertisement?.locality);
 
-    if (radius) {
+    if (parseInt(radius) > 0) {
       filterLength++;
       if (locality) {
         let distanceArray = [];
@@ -675,7 +677,7 @@ export default function Suche() {
             <div className="container w-64 mx-auto select-none md:w-full lg:w-full ">
               <div>
                 {!foundRadiusAdvertisements ? (
-                  radius && locality ? (
+                  parseInt(radius) > 0 && locality ? (
                     searchedAdvertisements?.length > 0 ? (
                       localityCalculatedLat && localityCalculatedLong ? (
                         searchedAdvertisements.filter((advertisement) =>

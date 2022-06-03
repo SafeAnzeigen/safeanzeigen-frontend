@@ -6,7 +6,6 @@ import Geocode from "react-geocode";
 Geocode.setApiKey(process.env.NEXT_PUBLIC_MAP);
 
 import Navigation from "../components/Navigation/Navigation";
-import CookieBanner from "../components/GeneralComponents/Cookies/CookieBanner";
 import AlertConfirmationModal from "../components/GeneralComponents/Modals/AlertConfirmationModal";
 import TinyCategoryCard from "../components/Startpage/TinyCategoryCard";
 import RegularAdCard from "../components/Startpage/RegularAdCard";
@@ -348,7 +347,6 @@ export default function Home() {
       </Head>
       <Navigation />
       {/* TODO: CHECK IF VERTICAL SCROLL SHOULD BE TRANSFORMED TO HORIZONTAL SCROLL https://stackoverflow.com/questions/24639103/changing-vertical-scroll-to-horizontal*/}
-      <CookieBanner />
 
       <section className="mx-4 md:mx-20">
         {showDislikeConfirmationModal && (
