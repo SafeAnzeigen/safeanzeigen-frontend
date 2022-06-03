@@ -77,8 +77,6 @@ export default function Navigation() {
   const [selectedSubcategory, setSelectedSubcategory] = useState();
 
   const [showSearchBar, setShowSearchBar] = useState(false);
-  const handleFocus = () => setShowSearchBar(true);
-  const handleBlur = () => setShowSearchBar(false);
 
   const resetSearchInputs = () => {
     setSelectedCategory("");
@@ -93,8 +91,7 @@ export default function Navigation() {
     userData?.lastName &&
     userData?.phoneNumbers[0]?.phoneNumber &&
     userData?.phoneNumbers[0]?.verification?.status === "verified" &&
-    userData?.emailAddresses[0]?.emailAddress &&
-    userData?.emailAddresses[0]?.verification?.status === "verified";
+    userData?.emailAddresses[0]?.emailAddress;
 
   const success = (position) => {
     console.log("POSITION", position);
