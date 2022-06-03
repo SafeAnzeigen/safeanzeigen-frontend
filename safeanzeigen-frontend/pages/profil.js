@@ -148,6 +148,12 @@ export default function Profil() {
     }
   }, []);
 
+  useEffect(() => {
+    if (user && checkUserHasProvidedMinimumProfileData(user)) {
+      checkIfClerkUserExistsInCustomBackend(user);
+    }
+  });
+
   return (
     <div>
       <Head>
