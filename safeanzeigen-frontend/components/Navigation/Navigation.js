@@ -232,6 +232,8 @@ export default function Navigation() {
           console.log("DATA GET CHAT NOTIFICATIONS", data);
           if (data?.message === "Es gibt neue Chatnachrichten.") {
             setChatHasNotifications(true);
+          } else {
+            setChatHasNotifications(false);
           }
         })
         .catch((error) => {
