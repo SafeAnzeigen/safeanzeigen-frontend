@@ -240,7 +240,35 @@ export default function Chat() {
     }
   };
 
+  const setUserVisitedChatPage = async (userData) => {
+    if (userData?.id) {
+      fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+          `/users/visitedchat/${userData?.id}`,
+        {
+          method: "get",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `${await clerkAuth.getToken()}`,
+          },
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA SET VISIT CHAT TIMESTAMP", data);
+        })
+        .catch((error) => {
+          console.log("ERROR DATA SET VISIT CHAT TIMESTAMP", error);
+        });
+    }
+  };
+
   useEffect(() => {
+    if (user?.id) {
+      setUserVisitedChatPage(user);
+    }
+
     if (socket == null) {
       console.log(
         "SOCKET START ON ROOM activeAdConversationRoomObject?.ad_conversation_room_id ",
