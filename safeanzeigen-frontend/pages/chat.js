@@ -192,16 +192,10 @@ export default function Chat() {
                   tempRetrievedConversationsArray
                 );
                 /*  */
-                setConversationsRoomsArray(
-                  tempRetrievedConversationsArray,
-                  () => {
-                    setActiveAdConversationRoomObject(
-                      tempRetrievedConversationsArray[0],
-                      () => {
-                        /* startSocket(data?.chats[0]); */
-                      }
-                    );
-                  }
+
+                setConversationsRoomsArray(tempRetrievedConversationsArray);
+                setActiveAdConversationRoomObject(
+                  tempRetrievedConversationsArray[0]
                 );
               }
             })
@@ -400,6 +394,11 @@ export default function Chat() {
                               }
                               callbackSetActiveConversationRoomObject={
                                 handleSetActiveAdConversationRoomObject
+                              }
+                              isActive={
+                                activeAdConversationRoomObject &&
+                                activeAdConversationRoomObject?.ad_conversation_room_id ===
+                                  conversationRoom.ad_conversation_room_id
                               }
                             />
                           </div>

@@ -14,6 +14,7 @@ export default function ConversationCard({
   roomCreatorFullName,
   createdAtTimestamp,
   callbackSetActiveConversationRoomObject,
+  isActive,
 }) {
   const router = useRouter();
   const clerkAuth = useAuth();
@@ -56,7 +57,11 @@ export default function ConversationCard({
   };
 
   return (
-    <div className="flex justify-between p-4 mb-4 transition-transform duration-300 transform cursor-pointer bg-gray-200/75 rounded-xl entry hover:scale-105">
+    <div
+      className={`${
+        isActive ? "bg-gray-300" : "bg-gray-200/75"
+      } flex justify-between p-4 mb-4 transition-transform duration-300 transform cursor-pointer rounded-xl entry hover:scale-105`}
+    >
       <div
         onClick={(event) => {
           event.stopPropagation();
