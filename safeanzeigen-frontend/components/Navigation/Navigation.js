@@ -253,6 +253,16 @@ export default function Navigation() {
       }
     }
     retrieveCategories();
+
+    const interval = setInterval(() => {
+      if (pathname !== "/chat") {
+        checkUserHasChatNotifications(user);
+      }
+      if (pathname === "/chat") {
+        setChatHasNotifications(false);
+      }
+    }, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -268,13 +278,6 @@ export default function Navigation() {
       localStorage.getItem("suche") !== null
     ) {
       localStorage.removeItem("suche");
-    }
-
-    if (pathname !== "/chat") {
-      checkUserHasChatNotifications(user);
-    }
-    if (pathname === "/chat") {
-      setChatHasNotifications(false);
     }
   });
 
