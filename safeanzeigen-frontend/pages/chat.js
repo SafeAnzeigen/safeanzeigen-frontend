@@ -446,6 +446,7 @@ export default function Chat() {
                       callbackSendMessage={sendMessage}
                       callbackSendIsTyping={sendIsTyping}
                       callbackStoppedTyping={sendStoppedTyping}
+                      callbackSetChatVisited={setUserVisitedChatPage}
                     />
                   ) : (
                     <EmptyMessagingComponent />
