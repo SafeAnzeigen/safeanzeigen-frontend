@@ -105,9 +105,8 @@ export default function Chat() {
     });
   };
 
-  const retrieveConversationsAndCreateSocket = async (userData) => {
-    if (userData?.id) {
-      /* FETCHING CHATS AS AD BUYER */
+  const retrieveChatsAsBuyer = (userData) =>
+    new Promise(async (resolve, reject) => {
       fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/chats/${userData?.id}`,
         {
@@ -120,88 +119,98 @@ export default function Chat() {
         }
       )
         .then((response) => response.json())
-        .then(async (data) => {
+        .then((data) => {
           console.log("DATA RETRIEVING USERS AD BUYER CHATS", data);
           if (data?.chats?.length) {
             console.log("TRIGGERED I AM OWNER OF AT LEAST ONE BUYER CHAT");
-            setConversationsRoomsArray(data?.chats, async () => {
-              setActiveAdConversationRoomObject(data?.chats[0]);
-              /* FETCHING CHATS AS AD OWNER */
-              console.log(
-                "AFTER SETTING CONVERSATIONS ROOMS ARRAY",
-                conversationsRoomsArray
-              );
-              fetch(
-                `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
-                  `/chats/ownerofad/${userData?.id}`,
-                {
-                  method: "get",
-                  headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                    Authorization: `${await clerkAuth.getToken()}`,
-                  },
-                }
-              )
-                .then((response) => response.json())
-                .then((data) => {
-                  console.log("DATA RETRIEVING USERS AD OWNER CHATS", data);
-                  if (data?.chats?.length) {
-                    console.log(
-                      "TRIGGERED I AM OWNER OF AT LEAST ONE OWNER CHAT"
-                    );
-                    let newConversationsRoomsArray =
-                      conversationsRoomsArray.concat(data?.chats);
-                    console.log(
-                      "DATA RETRIEVING USERS AD OWNER CHATS newConversationsRoomsArray",
-                      newConversationsRoomsArray
-                    );
-                    setConversationsRoomsArray(
-                      newConversationsRoomsArray,
-                      () => {
-                        setActiveAdConversationRoomObject(
-                          data?.chats[0],
-                          () => {
-                            /* startSocket(data?.chats[0]); */
-                          }
-                        );
-                      }
-                    );
-                  } else {
-                    /* startSocket(activeAdConversationRoomObject); */
-                  }
-                });
-            });
+            resolve(data?.chats);
           } else {
-            async () => {
-              fetch(
-                `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
-                  `/chats/ownerofad/${userData?.id}`,
-                {
-                  method: "get",
-                  headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                    Authorization: `${await clerkAuth.getToken()}`,
-                  },
-                }
-              )
-                .then((response) => response.json())
-                .then((data) => {
-                  console.log("DATA RETRIEVING USERS AD OWNER CHATS", data);
-                  if (data?.chats?.length) {
-                    setConversationsRoomsArray(data?.chats, () => {
-                      setActiveAdConversationRoomObject(data?.chats[0], () => {
-                        /*  startSocket(data?.chats[0]); */
-                      });
-                    });
-                  }
-                });
-            };
+            console.log("TRIGGERED I DO NOT OWN BUYER CHATS");
+            resolve([]);
           }
         })
         .catch((error) => {
-          console.log("ERROR RETRIEVING USERS AD BUYER CHATS", error);
+          console.log("ERROR DURING RETRIEVING USERS AD BUYER CHATS", error);
+          reject(error);
+        });
+    });
+
+  const retrieveChatsAsOwner = (userData) =>
+    new Promise(async (resolve, reject) => {
+      fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+          `/chats/ownerofad/${userData?.id}`,
+        {
+          method: "get",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `${await clerkAuth.getToken()}`,
+          },
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA RETRIEVING USERS AD OWNER CHATS", data);
+          if (data?.chats?.length) {
+            console.log("TRIGGERED I AM OWNER OF AT LEAST ONE OWNER CHAT");
+            resolve(data?.chats);
+          } else {
+            console.log("TRIGGERED I DO NOT OWN OWNER CHATS");
+            resolve([]);
+          }
+        })
+        .catch((error) => {
+          console.log("ERROR DURING RETRIEVING USERS AD OWNER CHATS", error);
+          reject(error);
+        });
+    });
+
+  const retrieveConversationsAndCreateSocket = (userData) => {
+    if (userData?.id) {
+      let tempRetrievedConversationsArray = [];
+      retrieveChatsAsBuyer(userData)
+        .then((retrievedChatsAsBuyer) => {
+          if (retrievedChatsAsBuyer?.length) {
+            tempRetrievedConversationsArray =
+              tempRetrievedConversationsArray.concat(retrievedChatsAsBuyer);
+          }
+
+          retrieveChatsAsOwner(userData)
+            .then((retrievedChatsAsOwner) => {
+              if (retrievedChatsAsOwner?.length) {
+                tempRetrievedConversationsArray =
+                  tempRetrievedConversationsArray.concat(retrievedChatsAsOwner);
+              }
+              console.log(
+                "BEFORE EVALUTION tempRetrievedConversationsArray",
+                tempRetrievedConversationsArray
+              );
+              if (tempRetrievedConversationsArray.length) {
+                console.log(
+                  "I HAVE FOUND CONVERSATIONS",
+                  tempRetrievedConversationsArray
+                );
+                /*  */
+                setConversationsRoomsArray(
+                  tempRetrievedConversationsArray,
+                  () => {
+                    setActiveAdConversationRoomObject(
+                      tempRetrievedConversationsArray[0],
+                      () => {
+                        /* startSocket(data?.chats[0]); */
+                      }
+                    );
+                  }
+                );
+              }
+            })
+            .catch((error) => {
+              console.log("ERROR FETCH ADS AS OWNER", error);
+            });
+        })
+        .catch((error) => {
+          console.log("ERROR FETCH ADS AS BUYER", error);
         });
     }
   };
