@@ -236,7 +236,7 @@ export default function Chat() {
   const tryRetrieveConversationRooMessages = async (
     activeAdConversationRoomObject
   ) => {
-    if (activeAdConversationRoomObject) {
+    if (activeAdConversationRoomObject?.ad_conversation_room_id) {
       fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
           `/messages/${activeAdConversationRoomObject?.ad_conversation_room_id}`,
@@ -285,7 +285,9 @@ export default function Chat() {
     if (socket) {
       console.log("CASE SOCKET EXISTS");
       if (
-        socketRoomID !== activeAdConversationRoomObject?.ad_conversation_room_id
+        socketRoomID !==
+          activeAdConversationRoomObject?.ad_conversation_room_id &&
+        activeAdConversationRoomObject?.ad_conversation_room_id
       ) {
         console.log(
           "CASE SOCKET ROOM DIFFERENT activeAdConversationRoomObject?.ad_conversation_room_id",
