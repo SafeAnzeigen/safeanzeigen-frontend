@@ -805,7 +805,7 @@ export default function Navigation() {
                     }
                     className="bg-orange-400 shadow-md range"
                   />
-                  <div className="flex justify-between w-full px-2 text-xs">
+                  <div className="flex justify-between w-full px-2 text-xs lg:invisible xl:visible">
                     <div className="flex flex-col">
                       <span>|</span>
                     </div>
@@ -822,7 +822,7 @@ export default function Navigation() {
                       <span>|</span>
                     </div>
                   </div>
-                  <div className="flex justify-between w-full px-2 text-xs">
+                  <div className="flex justify-between w-full px-2 text-xs lg:invisible xl:visible">
                     <div className="flex flex-col">
                       <span className="text-orange-600">0km</span>
                     </div>
@@ -871,7 +871,7 @@ export default function Navigation() {
             >
               <button
                 onClick={() => resetSearchInputs()}
-                className="w-7/12 h-10 mx-8 mb-4 font-semibold text-white bg-orange-400 rounded-md md:w-full md:mx-0 lg:mx-20 lg:mr-24"
+                className="w-7/12 h-10 mx-8 mb-4 font-semibold text-white bg-orange-400 rounded-md lg:w-full lg:mx-10 md:w-full md:mx-0 xl:mx-20 xl:mr-24"
               >
                 Jetzt Entdecken
               </button>

@@ -8,42 +8,8 @@ import Navigation from "../components/Navigation/Navigation";
 import ConversationCard from "../components/Chat/ConversationCard";
 import MessagingComponent from "../components/Chat/MessagingComponent";
 import EmptyMessagingComponent from "../components/Chat/EmptyMessagingComponent";
-import Footer from "../components/Footer/Footer";
 
 /* TODO: FETCH ALL CONVERSATIONS FROM DB WHERE ROOM_CREATOR_IS_YOUR CLERK ID */
-
-const mockedMessages = [
-  {
-    ad_conversation_room_id: "ad7884e7-e256-4671-8018-260feaef37ce+firstchat",
-    from_clerk_user_id: "user_29ttE7esltvcikdx85jn1uBth96",
-    text: "Moin",
-    message_sent_timestamp: "1654214582",
-  },
-  {
-    ad_conversation_room_id: "ad7884e7-e256-4671-8018-260feaef37ce+firstchat",
-    from_clerk_user_id: "user_29ttE7esltvcikdx85jn1uBth96",
-    text: "Ich habe eine Frage bzgl. deiner Anzeige",
-    message_sent_timestamp: "1654214583",
-  },
-  {
-    ad_conversation_room_id: "ad7884e7-e256-4671-8018-260feaef37ce+firstchat",
-    from_clerk_user_id: "user_29RqPdIoafnCM7Cjpgia8nW8Ul3",
-    text: "Moin",
-    message_sent_timestamp: "1654214584",
-  },
-  {
-    ad_conversation_room_id: "ad7884e7-e256-4671-8018-260feaef37ce+firstchat",
-    from_clerk_user_id: "user_29RqPdIoafnCM7Cjpgia8nW8Ul3",
-    text: "Klar, was interessiert dich denn?",
-    message_sent_timestamp: "1654214585",
-  },
-  {
-    ad_conversation_room_id: "ad7884e7-e256-4671-8018-260feaef37ce+firstchat",
-    from_clerk_user_id: "user_29ttE7esltvcikdx85jn1uBth96",
-    text: "Ich wollte fragen wie lange du die Stoff Eule schon besitzt.",
-    message_sent_timestamp: "1654214586",
-  },
-];
 
 /* TODO: WHAT ABOUT THE ONES WHERE ANOTHER USER CONTACTS YOU FOR YOUR AD? */
 let socket = null;
@@ -333,12 +299,12 @@ export default function Chat() {
                 onClick={() =>
                   setShowMobileConversationCards(!showMobileConversationCards)
                 }
-                className="flex items-center justify-around w-3/4 h-8 mx-auto mt-2 mb-2 bg-orange-100 rounded-lg md:hidden"
+                className="flex items-center justify-around w-3/4 h-8 mx-auto mt-2 mb-2 bg-gray-100 rounded-lg md:hidden"
               >
-                <div className="flex text-orange-400 hover:text-orange-500">
+                <div className="flex text-blue-400 hover:text-blue-500">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className={`w-5 h-5 mt-1 ${
+                    className={`transition transform ease-in-out w-5 h-5 mt-1 ${
                       showMobileConversationCards ? "rotate-0" : "-rotate-90"
                     }`}
                     fill="none"
@@ -381,26 +347,9 @@ export default function Chat() {
                     </div>
                   ))}
               </div>
-              {/* <div className="flex flex-row py-2 flex-2 lg:invisible">
-                <span className="inline-block text-gray-700 align-bottom xl:hidden hover:text-gray-900">
-                  <span className="flex items-center justify-center w-6 h-6 p-1 border-2 border-gray-400 rounded-md hover:bg-gray-400">
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                  </span>
-                </span>
-              </div> */}
               <div className="flex flex-col flex-1 ">
                 <div className="hidden lg:block heading flex-2">
-                  <h1 className="mb-4 text-3xl text-gray-700">
+                  <h1 className="mb-4 text-3xl text-gray-700 select-none">
                     Konversationen
                   </h1>
                 </div>
@@ -465,70 +414,3 @@ export default function Chat() {
     </div>
   );
 }
-
-/*  const createAdConversationRoom = (
-    advertisementId,
-    advertisementTitle,
-    priceType,
-    price,
-    user,
-    fullName
-  ) => {
-    socket.emit("create-ad-conversation-room", {
-      ad_conversation_room_id:
-        advertisementId + "+" + (Math.random() + 1).toString(36).substring(7),
-      ad_id: advertisementId,
-      ad_title: advertisementTitle,
-      price_type: priceType,
-      price: price,
-      room_creator_clerk_user_id: user?.id,
-      room_creator_full_name: fullName,
-      created_at_timestamp: getUnixTime(new Date()),
-    });
-  };
-
-   */
-
-/* {
-      ad_conversation_room_id: "ad7884e7-e256-4671-8018-260feaef37ce+firstchat",
-      ad_id: "ad7884e7-e256-4671-8018-260feaef37ce",
-      ad_title: "Stoff Eule",
-      ad_price_type: "VB",
-      ad_price: 5,
-      room_creator_clerk_user_id: "user_29RqPdIoafnCM7Cjpgia8nW8Ul3",
-      room_creator_full_name: "Sascha Majewsky",
-      created_at_timestamp: "1654214580",
-    } */
-
-/*   const mockedAdConversationRoomArray = [
-      {
-        ad_conversation_room_id: "ad7884e7-e256-4671-8018-260feaef37ce+firstchat",
-        ad_id: "ad7884e7-e256-4671-8018-260feaef37ce",
-        ad_title: "Stoff Eule",
-        ad_price_type: "VB",
-        ad_price: 5,
-        room_creator_clerk_user_id: "user_29RqPdIoafnCM7Cjpgia8nW8Ul3",
-        room_creator_full_name: "Sascha Majewsky",
-        created_at_timestamp: "1654214580",
-      },
-      {
-        ad_conversation_room_id: "ad7884e7-e256-4671-8018-260feaef37ce+secondchat",
-        ad_id: "ad7884e7-e256-4671-8018-260feaef37ce",
-        ad_title: "Stoff Eule",
-        ad_price_type: "VB",
-        ad_price: 5,
-        room_creator_clerk_user_id: "user_29RqPdIoafnCM7Cjpgia8nW8Ul3",
-        room_creator_full_name: "Hanne Oellrich",
-        created_at_timestamp: "1654214582",
-      },
-      {
-        ad_conversation_room_id: "61cf3ae2-1779-4037-bb29-8194fab6fa66+test",
-        ad_id: "61cf3ae2-1779-4037-bb29-8194fab6fa66",
-        ad_title: "Hue Go 2",
-        ad_price_type: "VB",
-        ad_price: 40,
-        room_creator_clerk_user_id: "user_29yCWbPeGmJNDNxUmGVDYhtQ0A3",
-        room_creator_full_name: "Hanne Oellrich",
-        created_at_timestamp: "1654214584",
-      },
-    ]; */

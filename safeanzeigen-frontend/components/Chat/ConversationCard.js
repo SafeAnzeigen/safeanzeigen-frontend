@@ -1,3 +1,9 @@
+import { useState } from "react";
+import { useRouter } from "next/router";
+import { useAuth } from "@clerk/clerk-react";
+
+import AlertConfirmationModal from "../GeneralComponents/Modals/AlertConfirmationModal";
+
 export default function ConversationCard({
   adConversationRoomId,
   adId,
@@ -9,9 +15,44 @@ export default function ConversationCard({
   createdAtTimestamp,
   callbackSetActiveConversationRoomObject,
 }) {
-  const handleDeleteChat = (event) => {
-    event.stopPropagation(); // USED HERE!
-    console.log("adConversationRoomId", adConversationRoomId);
+  const router = useRouter();
+  const clerkAuth = useAuth();
+  const [showDeleteConfirmationModal, setShowDeleteConfirmationModal] =
+    useState(false);
+
+  const handleDeleteChat = async () => {
+    if (adConversationRoomId) {
+      fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+          `/chats/${adConversationRoomId}`,
+        {
+          method: "delete",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `${await clerkAuth.getToken()}`,
+          },
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA DELETE CHAT", data);
+          if (
+            data?.message ===
+            "Dieser Chat und alle Nachrichten wurden gelöscht."
+          ) {
+            router.reload(window.location.pathname);
+          }
+        })
+        .catch((error) => {
+          console.log("ERROR DELETE FAVORITES", error);
+        });
+      handleCloseModal();
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowDeleteConfirmationModal(false);
   };
 
   return (
@@ -30,10 +71,20 @@ export default function ConversationCard({
             createdAtTimestamp,
           });
         }}
-        className="flex items-center w-full bg-blue-500"
+        className="flex items-center w-full"
       >
+        {showDeleteConfirmationModal && (
+          <AlertConfirmationModal
+            title="Möchtest du diesen Chat wirklich löschen?"
+            subtitle="Der Chat und alle Nachrichten werden verschwinden."
+            alertButtonConfirmationText="Löschen"
+            showDislikeConfirmationModal={showDeleteConfirmationModal}
+            callbackCloseModal={handleCloseModal}
+            callbackConfirmAction={handleDeleteChat}
+          />
+        )}
         <div className="flex-2">
-          <div className="relative w-12 h-12">
+          <div className="relative w-12 h-12 select-none">
             <img
               className="w-12 h-12 mx-auto rounded-full"
               src={`https://source.boringavatars.com/beam/300/${roomCreatorClerkUserId}${roomCreatorClerkUserId}${roomCreatorClerkUserId}?colors=2f70e9,e76f51,ffc638,f4a261,e97c2f`}
@@ -43,7 +94,7 @@ export default function ConversationCard({
         </div>
         <div className="flex-1 px-2">
           <div className="flex justify-between">
-            <span className="text-sm font-bold text-orange-400 break-words md:w-full md:text-lg">
+            <span className="text-sm font-bold text-orange-400 break-words select-none md:w-full md:text-lg md:text-[13px] md:text-center lg:text-sm">
               {adTitle}
             </span>
             {/* <div
@@ -68,7 +119,10 @@ export default function ConversationCard({
           </div>
         </div>
       </div>
-      <div className="flex items-center justify-center w-20 bg-red-500/75">
+      <div
+        onClick={() => setShowDeleteConfirmationModal(true)}
+        className="flex items-center justify-center w-20 text-gray-600 hover:text-red-500"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="w-6 h-6"

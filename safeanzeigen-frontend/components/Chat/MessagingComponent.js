@@ -108,7 +108,7 @@ export default function MessagingComponent({
                   );
                 }
               })}
-            <div ref={messagesEndRef}></div>;
+            <div ref={messagesEndRef}></div>
           </div>
         )}
         {Object.keys(isTypingObject)?.length > 0 &&
@@ -153,7 +153,7 @@ export default function MessagingComponent({
                 }
               }}
               name="message"
-              className="block w-full px-4 py-4 bg-transparent border-0 outline-none resize-none focus:outline-none focus:ring-0 focus:ring-offset-0 focus:ring-transparent"
+              className="block w-full px-4 py-4 bg-transparent border-0 outline-none resize-none select-none focus:outline-none focus:ring-0 focus:ring-offset-0 focus:ring-transparent"
               placeholder="Schreibe eine Nachricht"
               autoFocus=""
               maxLength="1500"
