@@ -249,12 +249,6 @@ export default function Navigation() {
       ) {
         router.push("/onboarding");
       }
-      if (pathname !== "/chat") {
-        checkUserHasChatNotifications(user);
-      }
-      if (pathname === "/chat") {
-        setChatHasNotifications(false);
-      }
     }
     retrieveCategories();
   }, []);
@@ -272,6 +266,13 @@ export default function Navigation() {
       localStorage.getItem("suche") !== null
     ) {
       localStorage.removeItem("suche");
+    }
+
+    if (pathname !== "/chat") {
+      checkUserHasChatNotifications(user);
+    }
+    if (pathname === "/chat") {
+      setChatHasNotifications(false);
     }
   });
 
