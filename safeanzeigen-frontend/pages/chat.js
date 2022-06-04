@@ -124,47 +124,54 @@ export default function Chat() {
           console.log("DATA RETRIEVING USERS AD BUYER CHATS", data);
           if (data?.chats?.length) {
             console.log("TRIGGERED I AM OWNER OF AT LEAST ONE BUYER CHAT");
-            setConversationsRoomsArray(data?.chats);
-            setActiveAdConversationRoomObject(data?.chats[0]);
-            /* FETCHING CHATS AS AD OWNER */
-            console.log(
-              "AFTER SETTING CONVERSATIONS ROOMS ARRAY",
-              conversationsRoomsArray
-            );
-            fetch(
-              `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
-                `/chats/ownerofad/${userData?.id}`,
-              {
-                method: "get",
-                headers: {
-                  Accept: "application/json",
-                  "Content-Type": "application/json",
-                  Authorization: `${await clerkAuth.getToken()}`,
-                },
-              }
-            )
-              .then((response) => response.json())
-              .then((data) => {
-                console.log("DATA RETRIEVING USERS AD OWNER CHATS", data);
-                if (data?.chats?.length) {
-                  console.log(
-                    "TRIGGERED I AM OWNER OF AT LEAST ONE OWNER CHAT"
-                  );
-                  let newConversationsRoomsArray =
-                    conversationsRoomsArray.concat(data?.chats);
-                  console.log(
-                    "DATA RETRIEVING USERS AD OWNER CHATS newConversationsRoomsArray",
-                    newConversationsRoomsArray
-                  );
-                  setConversationsRoomsArray(newConversationsRoomsArray, () => {
-                    setActiveAdConversationRoomObject(data?.chats[0], () => {
-                      /* startSocket(data?.chats[0]); */
-                    });
-                  });
-                } else {
-                  /* startSocket(activeAdConversationRoomObject); */
+            setConversationsRoomsArray(data?.chats, async () => {
+              setActiveAdConversationRoomObject(data?.chats[0]);
+              /* FETCHING CHATS AS AD OWNER */
+              console.log(
+                "AFTER SETTING CONVERSATIONS ROOMS ARRAY",
+                conversationsRoomsArray
+              );
+              fetch(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+                  `/chats/ownerofad/${userData?.id}`,
+                {
+                  method: "get",
+                  headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                    Authorization: `${await clerkAuth.getToken()}`,
+                  },
                 }
-              });
+              )
+                .then((response) => response.json())
+                .then((data) => {
+                  console.log("DATA RETRIEVING USERS AD OWNER CHATS", data);
+                  if (data?.chats?.length) {
+                    console.log(
+                      "TRIGGERED I AM OWNER OF AT LEAST ONE OWNER CHAT"
+                    );
+                    let newConversationsRoomsArray =
+                      conversationsRoomsArray.concat(data?.chats);
+                    console.log(
+                      "DATA RETRIEVING USERS AD OWNER CHATS newConversationsRoomsArray",
+                      newConversationsRoomsArray
+                    );
+                    setConversationsRoomsArray(
+                      newConversationsRoomsArray,
+                      () => {
+                        setActiveAdConversationRoomObject(
+                          data?.chats[0],
+                          () => {
+                            /* startSocket(data?.chats[0]); */
+                          }
+                        );
+                      }
+                    );
+                  } else {
+                    /* startSocket(activeAdConversationRoomObject); */
+                  }
+                });
+            });
           } else {
             async () => {
               fetch(
