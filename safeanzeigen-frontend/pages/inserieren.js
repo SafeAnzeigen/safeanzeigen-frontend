@@ -62,6 +62,20 @@ export default function Inserieren() {
     content: () => componentRef.current,
   });
 
+  function umlautConverter(word) {
+    word = word.toLowerCase();
+    word = word.replace(/ä/g, "ae");
+    word = word.replace(/ö/g, "oe");
+    word = word.replace(/ü/g, "ue");
+    word = word.replace(/ß/g, "ss");
+    word = word.replace(/ /g, "-");
+    word = word.replace(/\./g, "");
+    word = word.replace(/,/g, "");
+    word = word.replace(/\(/g, "");
+    word = word.replace(/\)/g, "");
+    return word;
+  }
+
   const addAdvertisement = async (
     userData,
     titleInputData,
@@ -256,7 +270,7 @@ export default function Inserieren() {
   };
 
   const success = (position) => {
-    console.log("POSITION SUCCESS", position);
+    /* console.log("POSITION SUCCESS", position); */
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
     const geoAPIURL = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`;
@@ -264,7 +278,7 @@ export default function Inserieren() {
     fetch(geoAPIURL)
       .then((res) => res.json())
       .then((data) => {
-        console.log("GEO DATA", data);
+        /* console.log("GEO DATA", data); */
         const locality = data?.locality;
         const postcode = data?.postcode;
         setLocationInput(data?.locality);
@@ -808,7 +822,10 @@ export default function Inserieren() {
                       <div className="mt-1 text-lg font-medium text-gray-900 sm:mt-0 sm:col-span-2">
                         <Listbox
                           value={selectedCategory}
-                          onChange={setSelectedCategory}
+                          onChange={(category) => {
+                            setSelectedCategory(category);
+                            setSelectedSubcategory();
+                          }}
                         >
                           <div className="relative mt-1">
                             <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left rounded-lg shadow-md cursor-default focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm !text-lg font-bold text-white !bg-[#2f70e9] min-h-12">
@@ -1027,7 +1044,9 @@ export default function Inserieren() {
                               placeholder="Stadt"
                               value={locationInput}
                               onChange={(event) =>
-                                setLocationInput(event.target.value)
+                                setLocationInput(
+                                  umlautConverter(event.target.value)
+                                )
                               }
                             />
                             {!addressPublic && (
@@ -1140,6 +1159,7 @@ export default function Inserieren() {
                           className="block w-full mt-1 font-semibold text-gray-700 rounded-md cursor-default resize-none sm:text-sm focus:border-gray-700 focus:ring-0 h-96"
                           placeholder="Erkläre den deinem zukünftigen Käufer genau, was deinen Artikel ausmacht."
                           value={descriptionInput}
+                          maxLength="1500"
                           onChange={(event) =>
                             setDescriptionInput(event.target.value)
                           }

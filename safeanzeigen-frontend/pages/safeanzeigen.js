@@ -138,7 +138,7 @@ export default function Safeanzeigen() {
                 </div>
                 <div className="flex justify-center">
                   <div className="inline-flex rounded-md shadow">
-                    <Link href="/sign-in">
+                    <Link href="/login">
                       <button className="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-white bg-[#2f70e9] border border-transparent rounded-md hover:bg-[#2962cd] cursor-pointer">
                         Mitglied werden
                       </button>

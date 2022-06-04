@@ -13,6 +13,7 @@ import {
 import { Menu, Popover, Transition, Listbox } from "@headlessui/react";
 import { SearchIcon, SelectorIcon } from "@heroicons/react/solid";
 import { MenuIcon, XIcon } from "@heroicons/react/outline";
+import CookieBanner from "../GeneralComponents/Cookies/CookieBanner";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -58,9 +59,25 @@ const createSearchPath = (
   return searchPath;
 };
 
+function umlautConverter(word) {
+  word = word.toLowerCase();
+  word = word.replace(/ä/g, "ae");
+  word = word.replace(/ö/g, "oe");
+  word = word.replace(/ü/g, "ue");
+  word = word.replace(/ß/g, "ss");
+  word = word.replace(/ /g, "-");
+  word = word.replace(/\./g, "");
+  word = word.replace(/,/g, "");
+  word = word.replace(/\(/g, "");
+  word = word.replace(/\)/g, "");
+  return word;
+}
+
 export default function Navigation() {
   const router = useRouter();
   const { pathname } = useRouter();
+  const ISSERVER = typeof window === "undefined";
+
   const { user } = useUser();
   const { userId } = useAuth();
   const clerkAuth = useAuth();
@@ -77,8 +94,6 @@ export default function Navigation() {
   const [selectedSubcategory, setSelectedSubcategory] = useState();
 
   const [showSearchBar, setShowSearchBar] = useState(false);
-  const handleFocus = () => setShowSearchBar(true);
-  const handleBlur = () => setShowSearchBar(false);
 
   const resetSearchInputs = () => {
     setSelectedCategory("");
@@ -86,6 +101,10 @@ export default function Navigation() {
     setLocationRadiusInput(0);
     setLocationOrZipInput("");
     setSearchInput("");
+    if (!ISSERVER && localStorage.getItem("suche") !== null) {
+      /*  console.log("DELETED LOCALSTORAGE"); */
+      localStorage.removeItem("suche");
+    }
   };
 
   const checkUserHasProvidedMinimumProfileData = (userData) =>
@@ -93,11 +112,10 @@ export default function Navigation() {
     userData?.lastName &&
     userData?.phoneNumbers[0]?.phoneNumber &&
     userData?.phoneNumbers[0]?.verification?.status === "verified" &&
-    userData?.emailAddresses[0]?.emailAddress &&
-    userData?.emailAddresses[0]?.verification?.status === "verified";
+    userData?.emailAddresses[0]?.emailAddress;
 
   const success = (position) => {
-    console.log("POSITION", position);
+    /* console.log("POSITION", position); */
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
     const geoAPIURL = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`;
@@ -105,7 +123,7 @@ export default function Navigation() {
     fetch(geoAPIURL)
       .then((res) => res.json())
       .then((data) => {
-        console.log("GEO DATA", data);
+        /* console.log("GEO DATA", data); */
         const locality = data?.locality;
         const postcode = data?.postcode;
         setLocationOrZipInput(data?.locality);
@@ -171,7 +189,7 @@ export default function Navigation() {
   };
 
   const error = (position) => {
-    console.log(position);
+    /* console.log(position); */
     alert("Bitte gebe das Recht frei deinen Standort zu nutzen");
   };
 
@@ -213,23 +231,33 @@ export default function Navigation() {
     }
   }, [selectedCategory]);
 
+  useEffect(() => {
+    if (
+      !pathname.includes("/suche") &&
+      !ISSERVER &&
+      localStorage.getItem("suche") !== null
+    ) {
+      localStorage.removeItem("suche");
+    }
+  });
+
   return (
     <header
       className={`sticky top-0 z-20 grid grid-rows-2 bg-white ${
         searchInput || showSearchBar ? "shadow-sm" : "shadow-none"
-      } md:p-6 md:grid-rows-none md:grid-cols-3 md:px-10 md:py-8 lg:pl-20`}
+      } md:p-6 md:grid-rows-none md:grid-cols-1 lg:grid-cols-3 md:px-10 md:py-0 lg:pl-20 md:mt-8`}
     >
       {/* Left Navbar */}
-      <div className="relative items-center hidden h-16 my-auto select-none md:flex md:h-12">
+      <div className="relative items-center hidden h-16 my-auto select-none md:flex md:h-12 md:mb-4">
         <Link href="/">
-          <a className="flex items-center">
+          <a className="flex items-center ">
             <Image
               src="/safeanzeigen-logo-text.png"
               alt="Safeanzeigen Logo Image"
               layout="fill"
               objectFit="contain"
               objectPosition="left"
-              className="relative transform cursor-pointer left-1/2 translate-x-[5rem]"
+              className="relative transform cursor-pointer left-1/2 md:translate-x-[18rem] z-50 translate-x-[5rem] lg:translate-x-[5rem]"
             />
           </a>
         </Link>
@@ -240,7 +268,30 @@ export default function Navigation() {
           searchInput ? "rounded-tl-lg rounded-tr-lg" : "rounded-lg"
         }`}
       >
+        {searchInput && (
+          <div onClick={() => setSearchInput("")}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-6 h-6 ml-4 cursor-pointer hover:text-red-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+        )}
         <input
+          onClick={() => {
+            if (pathname.includes("/suche/")) {
+              router.push("/");
+            }
+          }}
           className="w-full text-lg text-gray-700 placeholder-gray-400 bg-transparent border-transparent outline-none mt-4flex-grow pl- xs:pl-4 focus:outline-none focus:border-transparent focus:ring-0"
           type="text"
           value={searchInput}
@@ -278,7 +329,7 @@ export default function Navigation() {
         )}
       </div>
       {/* Right Navbar */}
-      <div className="order-first md:order-none">
+      <div className="order-first lg:order-none">
         <Popover
           as="header"
           className={({ open }) =>
@@ -459,7 +510,7 @@ export default function Navigation() {
                   aria-label="Global"
                 >
                   <div className="max-w-3xl px-2 pt-2 pb-3 mx-auto space-y-1 sm:px-4">
-                    <Link href="/sign-in">
+                    <Link href="/login">
                       <p className="block px-3 py-2 text-base font-medium rounded-md cursor-pointer bg-[#2f70e9] text-white hover:bg-[#2962cd]">
                         Jetzt Loslegen!
                       </p>
@@ -580,7 +631,10 @@ export default function Navigation() {
                   <div>
                     <Listbox
                       value={selectedCategory}
-                      onChange={setSelectedCategory}
+                      onChange={(category) => {
+                        setSelectedCategory(category);
+                        setSelectedSubcategory();
+                      }}
                     >
                       <div className="relative mb-2">
                         <Listbox.Label>
@@ -589,7 +643,7 @@ export default function Navigation() {
                           </div>
                         </Listbox.Label>
                         <Listbox.Button
-                          className="w-56 lg:w-24 relative py-2 pl-3 pr-10 text-left rounded-lg shadow-md cursor-default focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm !text-sm font-medium text-gray-600 bg-white xl:w-56"
+                          className="w-56 md:w-24 lg:w-24 relative py-2 pl-3 pr-10 text-left rounded-lg shadow-md cursor-default focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm !text-sm font-medium text-gray-600 bg-white xl:w-56"
                           style={{ height: "2.5rem" }}
                         >
                           <span className="block truncate">
@@ -608,14 +662,14 @@ export default function Navigation() {
                           leaveFrom="opacity-100"
                           leaveTo="opacity-0"
                         >
-                          <Listbox.Options className="absolute w-56 py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm !z-40">
+                          <Listbox.Options className="absolute md:w-24 w-56 py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm !z-40">
                             {categories
                               ?.sort((a, b) => a?.name.localeCompare(b?.name))
                               ?.map((category, index) => (
                                 <Listbox.Option
                                   key={index}
                                   className={({ active }) =>
-                                    `relative select-none py-2 cursor-pointer pl-10 pr-4 font-bold ${
+                                    `relative select-none py-2 cursor-pointer md:pl-3 pl-10 pr-4 font-bold ${
                                       active
                                         ? "bg-[#2f70e9] text-white"
                                         : "text-gray-900"
@@ -713,7 +767,7 @@ export default function Navigation() {
                   type="text"
                   value={locationOrZipInput}
                   onChange={(event) =>
-                    setLocationOrZipInput(event.target.value)
+                    setLocationOrZipInput(umlautConverter(event.target.value))
                   }
                   placeholder="Stadt"
                 />
@@ -817,7 +871,7 @@ export default function Navigation() {
             >
               <button
                 onClick={() => resetSearchInputs()}
-                className="w-7/12 h-10 mx-8 mb-4 font-semibold text-white bg-orange-400 rounded-md md:w-full md:mr-24 md:mx-20"
+                className="w-7/12 h-10 mx-8 mb-4 font-semibold text-white bg-orange-400 rounded-md md:w-full md:mx-0 lg:mx-20 lg:mr-24"
               >
                 Jetzt Entdecken
               </button>
@@ -825,6 +879,7 @@ export default function Navigation() {
           </div>
         </div>
       )}
+      <CookieBanner />
     </header>
   );
 }

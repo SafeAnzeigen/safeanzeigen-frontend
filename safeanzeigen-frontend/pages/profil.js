@@ -148,6 +148,12 @@ export default function Profil() {
     }
   }, []);
 
+  useEffect(() => {
+    if (user && checkUserHasProvidedMinimumProfileData(user)) {
+      checkIfClerkUserExistsInCustomBackend(user);
+    }
+  });
+
   return (
     <div>
       <Head>
@@ -167,8 +173,7 @@ export default function Profil() {
       {user &&
       (!user?.firstName ||
         !user?.lastName ||
-        !user?.emailAddresses[0]?.emailAddress ||
-        !user?.emailAddresses[0]?.verification?.status === "verified") ? (
+        !user?.emailAddresses[0]?.emailAddress) ? (
         <div className="bg-white">
           <div className="pt-4">
             <div className="w-3/4 p-4 pt-2 mx-auto rounded-md bg-red-50 md:w-1/6">

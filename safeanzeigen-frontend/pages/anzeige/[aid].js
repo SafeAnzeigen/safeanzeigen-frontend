@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import Link from "next/link";
 import { useUser, useAuth } from "@clerk/clerk-react";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, getUnixTime } from "date-fns";
 import { HomeIcon } from "@heroicons/react/solid";
 
 import Navigation from "../../components/Navigation/Navigation";
@@ -22,6 +22,7 @@ export default function Anzeige() {
   const [adImages, setAdImages] = useState([]);
   const [advertisementInfoObject, setAdvertisementInfoObject] = useState({});
   const [isLiked, setIsLiked] = useState(false);
+  const [isAlreadyInConversation, setIsAlreadyInConversation] = useState(false);
 
   const checkIfAdvertisementIsLiked = async (userData, aid) => {
     if (userData?.id && aid) {
@@ -54,6 +55,33 @@ export default function Anzeige() {
     }
   };
 
+  const checkIfAdvertisementIsInConversation = async (userData, aid) => {
+    if (userData?.id && aid) {
+      fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/chats/${userData?.id}`,
+        {
+          method: "get",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `${await clerkAuth.getToken()}`,
+          },
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA IS ALREADY IN CHAT", data);
+          if (data?.chats?.filter((chat) => chat?.ad_id === aid).length) {
+            console.log("TRIGGERED SET ALREADY IN CONVO");
+            setIsAlreadyInConversation(true);
+          }
+        })
+        .catch((error) => {
+          console.log("ERROR DATA IS ALREADY IN CHAT", error);
+        });
+    }
+  };
+
   const retrieveSpecificAdvertisement = (aid) => {
     if (aid) {
       fetch(
@@ -71,6 +99,9 @@ export default function Anzeige() {
         .then((data) => {
           console.log("DATA GET SPECIFIC ADVERTISEMENT", data);
           if (data?.advertisement) {
+            if (!data?.advertisement?.is_active) {
+              router.push("/");
+            }
             setAdvertisementInfoObject(data?.advertisement);
             let tempAdImagesArray = [];
             if (data?.advertisement?.article_image_1) {
@@ -93,6 +124,41 @@ export default function Anzeige() {
         })
         .catch((error) => {
           console.log("ERROR DATA GET SPECIFIC ADVERTISEMENT", error);
+        });
+    }
+  };
+
+  const createConversationRoom = async (adObject, userData) => {
+    if (Object.keys(adObject)?.length) {
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/chats`, {
+        method: "post",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `${await clerkAuth.getToken()}`,
+        },
+        body: JSON.stringify({
+          ad_conversation_room_id:
+            adObject?.advertisement_id +
+            "+" +
+            (Math.random() + 1).toString(36).substring(7),
+          ad_id: adObject?.advertisement_id,
+          ad_title: adObject?.title,
+          ad_price: adObject?.price,
+          ad_price_type: adObject?.price_type,
+          room_creator_clerk_user_id: userData?.id,
+          created_at_timestamp: getUnixTime(new Date()),
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA ADD CHAT", data);
+          if (data?.chat_id) {
+            router.push("/chat");
+          }
+        })
+        .catch((error) => {
+          console.log("ERROR ADD CHAT", error);
         });
     }
   };
@@ -204,6 +270,7 @@ export default function Anzeige() {
   useEffect(() => {
     if (user?.id && aid) {
       checkIfAdvertisementIsLiked(user, aid);
+      checkIfAdvertisementIsInConversation(user, aid);
     }
   }, [user]);
 
@@ -466,7 +533,8 @@ export default function Anzeige() {
                       user?.id &&
                       aid &&
                       user?.id === advertisementInfoObject?.clerk_user_id ? (
-                        <Link href={`/editieren/${aid}`}>
+                        <div>
+                          {/* <Link href={`/editieren/${aid}`}>
                           <div className="rounded-md shadow">
                             <div
                               href="#"
@@ -475,16 +543,24 @@ export default function Anzeige() {
                               Anzeige Editieren
                             </div>
                           </div>
-                        </Link>
-                      ) : (
-                        <div className="rounded-md shadow">
-                          <button
-                            onClick={() => router.push("/sign-in")}
-                            className="w-full flex items-center justify-center px-5 py-3 text-base font-medium text-white bg-[#2f70e9] border border-transparent rounded-md hover:bg-[#2962cd]"
-                          >
-                            Kontakt aufnehmen
-                          </button>
+                        </Link> */}
                         </div>
+                      ) : (
+                        !isAlreadyInConversation && (
+                          <div className="rounded-md shadow">
+                            <button
+                              onClick={() =>
+                                createConversationRoom(
+                                  advertisementInfoObject,
+                                  user
+                                )
+                              }
+                              className="w-full flex items-center justify-center px-5 py-3 text-base font-medium text-white bg-[#2f70e9] border border-transparent rounded-md hover:bg-[#2962cd]"
+                            >
+                              Kontakt aufnehmen
+                            </button>
+                          </div>
+                        )
                       )}
                       {user &&
                       user?.id &&
@@ -515,7 +591,7 @@ export default function Anzeige() {
                               onClick={
                                 user
                                   ? () => addFavoriteForUser(aid, user)
-                                  : () => router.push("/sign-in")
+                                  : () => router.push("/login")
                               }
                               className="flex items-center justify-center w-full px-5 py-3 text-base font-medium text-white bg-red-500 border-gray-300 rounded-md hover:bg-red-600"
                             >
@@ -642,7 +718,7 @@ export default function Anzeige() {
                     </div>
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                       <dt className="text-sm font-medium text-gray-500">
-                        Adresse
+                        Stadt
                       </dt>
                       <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                         {advertisementInfoObject?.location_street}
