@@ -1,11 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import {
-  getUnixTime,
-  differenceInMinutes,
-  differenceInSeconds,
-  fromUnixTime,
-} from "date-fns";
+import { getUnixTime, differenceInSeconds, fromUnixTime } from "date-fns";
 
 import YourMessageComponent from "./YourMessageComponent";
 import OtherContactMessageComponent from "./OtherContactMessageComponent";
@@ -20,6 +15,11 @@ export default function MessagingComponent({
   callbackStoppedTyping,
 }) {
   const [messageTextInput, setMessageTextInput] = useState("");
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
     console.log(
@@ -27,6 +27,7 @@ export default function MessagingComponent({
       activeAdConversationRoomObject
     );
     console.log("MESSAGECOMPONENT RECEIVED messages", messages);
+    scrollToBottom();
   }, [messages]);
 
   /* TODO: RECEIVE ALL MESSAGEOBJECTS(FROM_USER_ID, TEXT, TIMESTAMP) IN ONE MESSAGE ARRAY THEN CONDITIONALLY RENDER THEM FLEX JUSTIFY_START OR END AND IN DIFFERENT COLOR AND IN ORDER BY TIMESTAMP THUS IT WILL APPEAR LEFT RIGHT AND FROM/TO LIKE IN A CHAT APP */
@@ -61,7 +62,7 @@ export default function MessagingComponent({
             <b className="mr-1 text-gray-400 select-none">
               {activeAdConversationRoomObject?.ad_price_type}
             </b>
-            <b className="text-gray-400">
+            <b className="text-gray-400 select-none">
               {activeAdConversationRoomObject?.ad_price},00
             </b>
           </div>
@@ -74,46 +75,42 @@ export default function MessagingComponent({
         </div>
       </div>
       <div className="flex-1 pl-2 overflow-auto">
-        {messages?.length > 0 &&
-          messages
-            /* ?.filter(
+        {messages?.length > 0 && (
+          <div>
+            {messages
+              /* ?.filter(
               (filteredMessage) =>
                 filteredMessage?.ad_conversation_room_id ===
                 activeAdConversationRoomObject?.ad_conversation_room_id
             ) */
-            ?.sort(
-              (a, b) => a?.message_sent_timestamp - b?.message_sent_timestamp
-            )
-            ?.map((message, index) => {
-              return (
-                <div key={index}>
-                  <YourMessageComponent
-                    text={message?.text}
-                    timestamp={message?.message_sent_timestamp}
-                  />
-                </div>
-              );
-              /*    if (message?.from_clerk_user_id === user?.id) {
-                return (
-                  <div key={index}>
-                    <YourMessageComponent
-                      text={message?.text}
-                      timestamp={message?.message_sent_timestamp}
-                    />
-                  </div>
-                );
-              } else {
-                return (
-                  <div key={index}>
-                    <OtherContactMessageComponent
-                      clerk_user_id={message?.from_clerk_user_id}
-                      text={message?.text}
-                      timestamp={message?.message_sent_timestamp}
-                    />
-                  </div>
-                );
-              } */
-            })}
+              ?.sort(
+                (a, b) => a?.message_sent_timestamp - b?.message_sent_timestamp
+              )
+              ?.map((message, index) => {
+                if (message?.from_clerk_user_id === user?.id) {
+                  return (
+                    <div key={index}>
+                      <YourMessageComponent
+                        text={message?.text}
+                        timestamp={message?.message_sent_timestamp}
+                      />
+                    </div>
+                  );
+                } else {
+                  return (
+                    <div key={index}>
+                      <OtherContactMessageComponent
+                        clerk_user_id={message?.from_clerk_user_id}
+                        text={message?.text}
+                        timestamp={message?.message_sent_timestamp}
+                      />
+                    </div>
+                  );
+                }
+              })}
+            <div ref={messagesEndRef}></div>;
+          </div>
+        )}
         {Object.keys(isTypingObject)?.length > 0 &&
           differenceInSeconds(
             new Date(),

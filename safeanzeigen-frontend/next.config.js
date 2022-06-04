@@ -10,4 +10,13 @@ module.exports = withPWA({
   pwa: {
     dest: "public",
   },
+  async redirects() {
+    return [
+      {
+        source: "/login",
+        destination: "https://accounts.safeanzeigen.de/sign-in",
+        permanent: true,
+      },
+    ];
+  },
 });
