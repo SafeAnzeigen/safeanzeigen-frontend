@@ -548,7 +548,8 @@ export default function Anzeige() {
                       ) : (
                         !isAlreadyInConversation && (
                           <div className="rounded-md shadow">
-                            <button
+                            <a
+                              href="/chat"
                               onClick={() =>
                                 createConversationRoom(
                                   advertisementInfoObject,
@@ -558,7 +559,7 @@ export default function Anzeige() {
                               className="w-full flex items-center justify-center px-5 py-3 text-base font-medium text-white bg-[#2f70e9] border border-transparent rounded-md hover:bg-[#2962cd]"
                             >
                               Kontakt aufnehmen
-                            </button>
+                            </a>
                           </div>
                         )
                       )}

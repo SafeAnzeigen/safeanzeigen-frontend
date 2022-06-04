@@ -245,10 +245,10 @@ export default function Navigation() {
     <header
       className={`sticky top-0 z-20 grid grid-rows-2 bg-white ${
         searchInput || showSearchBar ? "shadow-sm" : "shadow-none"
-      } md:p-6 md:grid-rows-none md:grid-cols-1 lg:grid-cols-3 md:px-10 md:py-0 lg:pl-20 md:mt-8`}
+      } md:p-6 md:grid-rows-none md:grid-cols-1 lg:grid-cols-3 md:px-10 md:py-0 lg:pl-20`}
     >
       {/* Left Navbar */}
-      <div className="relative items-center hidden h-16 my-auto select-none md:flex md:h-12 md:mb-4">
+      <div className="relative items-center hidden h-16 my-auto select-none md:flex md:h-12 md:mb-4 lg:!mt-8 md:!mt-4">
         <Link href="/">
           <a className="flex items-center ">
             <Image
@@ -264,7 +264,7 @@ export default function Navigation() {
       </div>
       {/* Middle Navbar */}
       <div
-        className={`mt-4 md:mt-0 flex justify-between items-center border-2 select-none md:shadow-sm xs:ml-2 ${
+        className={`lg:!mt-8 mt-4 md:mt-0 flex justify-between items-center border-2 select-none md:shadow-sm xs:ml-2 ${
           searchInput ? "rounded-tl-lg rounded-tr-lg" : "rounded-lg"
         }`}
       >
@@ -329,7 +329,7 @@ export default function Navigation() {
         )}
       </div>
       {/* Right Navbar */}
-      <div className="order-first lg:order-none">
+      <div className="order-first lg:order-none lg:!mt-8">
         <Popover
           as="header"
           className={({ open }) =>
@@ -359,7 +359,7 @@ export default function Navigation() {
                   </div>
                   <div className="flex items-center md:absolute md:right-0 md:inset-y-0 lg:hidden">
                     {/* Mobile Button & Screen Reader Accessibility */}
-                    <Popover.Button className="inline-flex items-center justify-center p-2 -mx-2 focus:outline-none focus:ring-transparent text-[#9ca3af] cursor-pointer hover:bg-gray-200 border-gray-200 border-2 rounded-lg z-50">
+                    <Popover.Button className="inline-flex items-center justify-center p-2 -mx-2 focus:outline-none focus:ring-transparent text-[#9ca3af] cursor-pointer hover:bg-gray-200 border-gray-200 border-2 rounded-lg z-50 md:mt-14">
                       <span className="sr-only">Navigation öffnen</span>
                       {open ? (
                         <XIcon className="block w-6 h-6" aria-hidden="true" />
@@ -524,7 +524,7 @@ export default function Navigation() {
                   className="lg:hidden !z-50"
                   aria-label="Global"
                 >
-                  <div className="max-w-3xl px-2 pt-2 pb-3 mx-auto space-y-1 sm:px-4 !z-50">
+                  <div className="md:mt-16 max-w-3xl px-2 pt-2 pb-3 mx-auto space-y-1 sm:px-4 !z-50">
                     <Link href="/inserieren">
                       <p className="flex px-3 py-2 text-base font-medium text-white rounded-md cursor-pointer hover:bg-[#2962cd] bg-[#2f70e9] !z-50">
                         <svg

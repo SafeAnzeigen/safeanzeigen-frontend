@@ -283,7 +283,7 @@ export default function Chat() {
       activeAdConversationRoomObject?.ad_conversation_room_id
     );
     if (socket) {
-      console.log("CASE SOCKET EXISTS");
+      console.log("CASE SOCKET EXISTS", socket);
       if (
         socketRoomID !==
           activeAdConversationRoomObject?.ad_conversation_room_id &&
@@ -296,6 +296,10 @@ export default function Chat() {
         tryRetrieveConversationRooMessages(activeAdConversationRoomObject);
         socket.emit("exit");
         startSocket(activeAdConversationRoomObject);
+      } else {
+        if (!activeAdConversationRoomObject?.ad_conversation_room_id) {
+          retrieveConversationsAndCreateSocket(user);
+        }
       }
     } else {
       if (Object.keys(activeAdConversationRoomObject)?.length) {
