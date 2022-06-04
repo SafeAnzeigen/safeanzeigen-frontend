@@ -232,6 +232,8 @@ export default function Navigation() {
           console.log("DATA GET CHAT NOTIFICATIONS", data);
           if (data?.message === "Es gibt neue Chatnachrichten.") {
             setChatHasNotifications(true);
+          } else {
+            setChatHasNotifications(false);
           }
         })
         .catch((error) => {
@@ -248,12 +250,6 @@ export default function Navigation() {
         pathname !== "/profil"
       ) {
         router.push("/onboarding");
-      }
-      if (pathname !== "/chat") {
-        checkUserHasChatNotifications(user);
-      }
-      if (pathname === "/chat") {
-        setChatHasNotifications(false);
       }
     }
     retrieveCategories();
@@ -272,6 +268,13 @@ export default function Navigation() {
       localStorage.getItem("suche") !== null
     ) {
       localStorage.removeItem("suche");
+    }
+
+    if (pathname !== "/chat") {
+      checkUserHasChatNotifications(user);
+    }
+    if (pathname === "/chat") {
+      setChatHasNotifications(false);
     }
   });
 
