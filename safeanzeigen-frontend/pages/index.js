@@ -345,7 +345,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-gray-50">
+    <div className="min-h-screen overflow-x-hidden bg-white">
       <Head>
         <title>
           Safeanzeigen - Wir bringen Ihre Kleinanzeigen mit Sicherheit groß
