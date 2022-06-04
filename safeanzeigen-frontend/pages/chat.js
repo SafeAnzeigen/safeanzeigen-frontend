@@ -236,6 +236,8 @@ export default function Chat() {
           console.log("DATA RETRIEVE MESSAGES", data);
           if (data?.messages) {
             setMessagesObjectArray(data?.messages);
+          } else {
+            setMessagesObjectArray([]);
           }
         })
         .catch((error) => {
