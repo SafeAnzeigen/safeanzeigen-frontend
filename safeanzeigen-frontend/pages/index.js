@@ -322,9 +322,9 @@ export default function Home() {
       retrieveNewestPublicAdvertisements();
     }
 
-    if (navigator.geolocation) {
+    if (navigator?.geolocation) {
       navigator?.permissions
-        .query({ name: "geolocation" })
+        ?.query({ name: "geolocation" })
         .then((permission) => {
           /* console.log("GEO LOCATION PERMISSION", permission); */
           if (permission?.state === "granted") {
