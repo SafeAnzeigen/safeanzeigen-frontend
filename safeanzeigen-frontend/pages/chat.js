@@ -434,7 +434,8 @@ export default function Chat() {
                       )}
                     </div>
                   </div>
-                  {activeAdConversationRoomObject && user ? (
+                  {Object.keys(activeAdConversationRoomObject)?.length &&
+                  user ? (
                     <MessagingComponent
                       user={user}
                       activeAdConversationRoomObject={
