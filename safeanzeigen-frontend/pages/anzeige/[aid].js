@@ -556,7 +556,7 @@ export default function Anzeige() {
                                   user
                                 )
                               }
-                              className="w-full flex items-center justify-center px-5 py-3 text-base font-medium text-white bg-[#2f70e9] border border-transparent rounded-md hover:bg-[#2962cd]"
+                              className="w-full flex items-center justify-center px-5 py-3 text-base font-medium text-white bg-[#2f70e9] border border-transparent rounded-md hover:bg-[#2962cd] cursor-pointer"
                             >
                               Kontakt aufnehmen
                             </div>
