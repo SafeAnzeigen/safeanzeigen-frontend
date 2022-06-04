@@ -7,14 +7,14 @@ export default function ConversationCard({
   roomCreatorClerkUserId,
   roomCreatorFullName,
   createdAtTimestamp,
-  callbackJoinAdConversationRoom,
+  callbackSetActiveConversationRoomObject,
   /* conversationLastDate,
   unreadMessage, */
 }) {
   return (
     <div
-      onClick={() =>
-        callbackJoinAdConversationRoom(
+      onClick={() => {
+        callbackSetActiveConversationRoomObject({
           adConversationRoomId,
           adId,
           adTitle,
@@ -22,9 +22,9 @@ export default function ConversationCard({
           adPrice,
           roomCreatorClerkUserId,
           roomCreatorFullName,
-          createdAtTimestamp
-        )
-      }
+          createdAtTimestamp,
+        });
+      }}
       className="flex p-4 mb-4 transition-transform duration-300 transform bg-white cursor-pointer rounded-xl entry hover:scale-105"
     >
       <div className="flex-2">

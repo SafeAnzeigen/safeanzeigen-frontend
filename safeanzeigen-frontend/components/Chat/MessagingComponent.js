@@ -85,15 +85,15 @@ export default function MessagingComponent({
               (a, b) => a?.message_sent_timestamp - b?.message_sent_timestamp
             )
             ?.map((message, index) => {
-              return (
+              /* return (
                 <div key={index}>
                   <YourMessageComponent
                     text={message?.text}
                     timestamp={message?.message_sent_timestamp}
                   />
                 </div>
-              );
-              /*    if (message?.from_clerk_user_id === user?.id) {
+              ); */
+              if (message?.from_clerk_user_id === user?.id) {
                 return (
                   <div key={index}>
                     <YourMessageComponent
@@ -112,7 +112,7 @@ export default function MessagingComponent({
                     />
                   </div>
                 );
-              } */
+              }
             })}
         {Object.keys(isTypingObject)?.length > 0 &&
           differenceInSeconds(

@@ -201,13 +201,13 @@ export default function Angebote() {
                         disableFavorite={true}
                         callbackSetLikeStatus={() => {}}
                       />
-                      <Link
+                      {/* <Link
                         href={`/editieren/${advertisement.advertisement_id}`}
                       >
                         <button className="w-full mt-3 items-center px-4 py-2 text-sm font-medium text-white bg-[#2f70e9] border border-transparent rounded-md shadow-sm hover:bg-[#2962cd] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent">
                           <span>Editieren</span>
                         </button>
-                      </Link>
+                      </Link> */}
                       <div className="flex w-full">
                         <button
                           onClick={() => {

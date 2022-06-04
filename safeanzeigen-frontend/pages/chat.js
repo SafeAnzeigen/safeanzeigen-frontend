@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Head from "next/head";
-import { useUser } from "@clerk/clerk-react";
+import { useUser, useAuth } from "@clerk/clerk-react";
 import { io } from "socket.io-client";
 import { getUnixTime } from "date-fns";
 
@@ -11,39 +11,6 @@ import EmptyMessagingComponent from "../components/Chat/EmptyMessagingComponent"
 import Footer from "../components/Footer/Footer";
 
 /* TODO: FETCH ALL CONVERSATIONS FROM DB WHERE ROOM_CREATOR_IS_YOUR CLERK ID */
-
-const mockedAdConversationRoomArray = [
-  {
-    ad_conversation_room_id: "ad7884e7-e256-4671-8018-260feaef37ce+firstchat",
-    ad_id: "ad7884e7-e256-4671-8018-260feaef37ce",
-    ad_title: "Stoff Eule",
-    ad_price_type: "VB",
-    ad_price: 5,
-    room_creator_clerk_user_id: "user_29RqPdIoafnCM7Cjpgia8nW8Ul3",
-    room_creator_full_name: "Sascha Majewsky",
-    created_at_timestamp: "1654214580",
-  },
-  {
-    ad_conversation_room_id: "ad7884e7-e256-4671-8018-260feaef37ce+secondchat",
-    ad_id: "ad7884e7-e256-4671-8018-260feaef37ce",
-    ad_title: "Stoff Eule",
-    ad_price_type: "VB",
-    ad_price: 5,
-    room_creator_clerk_user_id: "user_29RqPdIoafnCM7Cjpgia8nW8Ul3",
-    room_creator_full_name: "Hanne Oellrich",
-    created_at_timestamp: "1654214582",
-  },
-  {
-    ad_conversation_room_id: "61cf3ae2-1779-4037-bb29-8194fab6fa66+test",
-    ad_id: "61cf3ae2-1779-4037-bb29-8194fab6fa66",
-    ad_title: "Hue Go 2",
-    ad_price_type: "VB",
-    ad_price: 40,
-    room_creator_clerk_user_id: "user_29yCWbPeGmJNDNxUmGVDYhtQ0A3",
-    room_creator_full_name: "Hanne Oellrich",
-    created_at_timestamp: "1654214584",
-  },
-];
 
 const mockedMessages = [
   {
@@ -80,24 +47,35 @@ const mockedMessages = [
 
 /* TODO: WHAT ABOUT THE ONES WHERE ANOTHER USER CONTACTS YOU FOR YOUR AD? */
 
-let socket = null;
-
 export default function Chat() {
   const { user } = useUser();
+  const clerkAuth = useAuth();
   const [activeAdConversationRoomObject, setActiveAdConversationRoomObject] =
-    useState({
-      ad_conversation_room_id: "ad7884e7-e256-4671-8018-260feaef37ce+firstchat",
-      ad_id: "ad7884e7-e256-4671-8018-260feaef37ce",
-      ad_title: "Stoff Eule",
-      ad_price_type: "VB",
-      ad_price: 5,
-      room_creator_clerk_user_id: "user_29RqPdIoafnCM7Cjpgia8nW8Ul3",
-      room_creator_full_name: "Sascha Majewsky",
-      created_at_timestamp: "1654214580",
-    });
+    useState({});
   const [messagesObjectArray, setMessagesObjectArray] =
     useState(mockedMessages);
   const [isTypingObject, setIsTypingObject] = useState({});
+  const [conversationsRoomsArray, setConversationsRoomsArray] = useState([]);
+  const [socketRoomID, setSocketRoomID] = useState("");
+  const [socket, setSocket] = useState(null);
+
+  /*   let socket = null; */
+
+  const handleSetActiveAdConversationRoomObject = (
+    receivedConversationObject
+  ) => {
+    console.log("receivedConversationObject", receivedConversationObject);
+    setActiveAdConversationRoomObject({
+      ad_conversation_room_id: receivedConversationObject.adConversationRoomId,
+      ad_id: receivedConversationObject.adId,
+      ad_title: receivedConversationObject.adTitle,
+      ad_price_type: receivedConversationObject.adPriceType,
+      ad_price: receivedConversationObject.adPrice,
+      room_creator_clerk_user_id:
+        receivedConversationObject.roomCreatorClerkUserId,
+      created_at_timestamp: receivedConversationObject.createdAtTimestamp,
+    });
+  };
 
   const addIncomingMessage = (messageObject) => {
     setMessagesObjectArray((prevArray) => [...prevArray, messageObject]);
@@ -140,31 +118,156 @@ export default function Chat() {
     });
   };
 
+  const startSocket = (providedActiveAdConversationRoomObject) => {
+    setSocketRoomID(
+      providedActiveAdConversationRoomObject?.ad_conversation_room_id
+    );
+
+    setSocket(
+      io(process.env.NEXT_PUBLIC_BACKEND_SOCKET_URL, {
+        query: {
+          id: providedActiveAdConversationRoomObject?.ad_conversation_room_id,
+        },
+      }),
+      () => {
+        socket.on("receive-message", (messageObject) => {
+          addIncomingMessage(messageObject);
+        });
+        socket.on("receive-is-typing", (isTypingObject) => {
+          addIncomingIsTyping(isTypingObject);
+        });
+
+        socket.on("receive-stopped-typing", (stoppedTypingObject) => {
+          addIncomingStoppedTyping(stoppedTypingObject);
+        });
+      }
+    );
+  };
+
+  const retrieveConversationsAndCreateSocket = async (userData) => {
+    if (userData?.id) {
+      /* FETCHING CHATS AS AD BUYER */
+      fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/chats/${userData?.id}`,
+        {
+          method: "get",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `${await clerkAuth.getToken()}`,
+          },
+        }
+      )
+        .then((response) => response.json())
+        .then(async (data) => {
+          console.log("DATA RETRIEVING USERS AD BUYER CHATS", data);
+          if (data?.chats?.length) {
+            console.log("TRIGGERED I AM OWNER OF AT LEAST ONE BUYER CHAT");
+            setConversationsRoomsArray(data?.chats);
+            setActiveAdConversationRoomObject(data?.chats[0]);
+            /* FETCHING CHATS AS AD OWNER */
+            console.log(
+              "AFTER SETTING CONVERSATIONS ROOMS ARRAY",
+              conversationsRoomsArray
+            );
+            fetch(
+              `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+                `/chats/ownerofad/${userData?.id}`,
+              {
+                method: "get",
+                headers: {
+                  Accept: "application/json",
+                  "Content-Type": "application/json",
+                  Authorization: `${await clerkAuth.getToken()}`,
+                },
+              }
+            )
+              .then((response) => response.json())
+              .then((data) => {
+                console.log("DATA RETRIEVING USERS AD OWNER CHATS", data);
+                if (data?.chats?.length) {
+                  console.log(
+                    "TRIGGERED I AM OWNER OF AT LEAST ONE OWNER CHAT"
+                  );
+                  let newConversationsRoomsArray =
+                    conversationsRoomsArray.concat(data?.chats);
+                  console.log(
+                    "DATA RETRIEVING USERS AD OWNER CHATS newConversationsRoomsArray",
+                    newConversationsRoomsArray
+                  );
+                  setConversationsRoomsArray(newConversationsRoomsArray, () => {
+                    setActiveAdConversationRoomObject(data?.chats[0], () => {
+                      /* startSocket(data?.chats[0]); */
+                    });
+                  });
+                } else {
+                  /* startSocket(activeAdConversationRoomObject); */
+                }
+              });
+          } else {
+            async () => {
+              fetch(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+                  `/chats/ownerofad/${userData?.id}`,
+                {
+                  method: "get",
+                  headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                    Authorization: `${await clerkAuth.getToken()}`,
+                  },
+                }
+              )
+                .then((response) => response.json())
+                .then((data) => {
+                  console.log("DATA RETRIEVING USERS AD OWNER CHATS", data);
+                  if (data?.chats?.length) {
+                    setConversationsRoomsArray(data?.chats, () => {
+                      setActiveAdConversationRoomObject(data?.chats[0], () => {
+                        /*  startSocket(data?.chats[0]); */
+                      });
+                    });
+                  }
+                });
+            };
+          }
+        })
+        .catch((error) => {
+          console.log("ERROR RETRIEVING USERS AD BUYER CHATS", error);
+        });
+    }
+  };
+
   useEffect(() => {
     if (socket == null) {
       console.log(
         "SOCKET START ON ROOM activeAdConversationRoomObject?.ad_conversation_room_id ",
         activeAdConversationRoomObject?.ad_conversation_room_id
       );
-      socket = io(process.env.NEXT_PUBLIC_BACKEND_SOCKET_URL, {
-        query: { id: activeAdConversationRoomObject?.ad_conversation_room_id },
-      });
-      /*  */
-      socket.on("receive-message", (messageObject) => {
-        addIncomingMessage(messageObject);
-      });
-      socket.on("receive-is-typing", (isTypingObject) => {
-        addIncomingIsTyping(isTypingObject);
-      });
 
-      socket.on("receive-stopped-typing", (stoppedTypingObject) => {
-        addIncomingStoppedTyping(stoppedTypingObject);
-      });
+      retrieveConversationsAndCreateSocket(user);
     } /* Close socket to prevent duplicate messages  test2*/
 
     /* return () =>
       newSocket.close(); */
   }, []);
+
+  useEffect(() => {
+    console.log("USEEFFECT CONVO CHANGE socketRoomID", socketRoomID);
+    console.log(
+      "USEEFFECT CONVO CHANGE activeAdConversationRoomObject?.ad_conversation_room_id",
+      activeAdConversationRoomObject?.ad_conversation_room_id
+    );
+    if (
+      socket &&
+      socketRoomID !== activeAdConversationRoomObject?.ad_conversation_room_id
+    ) {
+      () => socket.leave(socketRoomID);
+      startSocket(activeAdConversationRoomObject);
+    } else {
+      startSocket(activeAdConversationRoomObject);
+    }
+  }, [activeAdConversationRoomObject]);
 
   return (
     <div className="min-h-screen overflow-y-hidden">
@@ -210,37 +313,35 @@ export default function Chat() {
                 </div>
                 <div className="flex flex-1 h-full">
                   <div className="flex-col hidden w-1/3 pr-6 lg:flex flex-2">
+                    {console.log(
+                      "conversationsRoomsArray",
+                      conversationsRoomsArray
+                    )}
                     <div
                       className="flex-1 h-full p-4 overflow-auto overflow-x-hidden"
                       style={{ maxHeight: "75vh" }}
                     >
-                      {mockedAdConversationRoomArray.map(
-                        (mockedConversationRoom, index) => (
+                      {conversationsRoomsArray.map(
+                        (conversationRoom, index) => (
                           <div key={index}>
-                            {/*  <ConversationCard
+                            <ConversationCard
                               adConversationRoomId={
-                                mockedConversationRoom.ad_conversation_room_id
+                                conversationRoom.ad_conversation_room_id
                               }
-                              adId={mockedConversationRoom.ad_id}
-                              adTitle={mockedConversationRoom.ad_title}
-                              adPriceType={mockedConversationRoom.ad_price_type}
-                              adPrice={mockedConversationRoom.ad_price}
+                              adId={conversationRoom.ad_id}
+                              adTitle={conversationRoom.ad_title}
+                              adPriceType={conversationRoom.ad_price_type}
+                              adPrice={conversationRoom.ad_price}
                               roomCreatorClerkUserId={
-                                mockedConversationRoom.room_creator_clerk_user_id
-                              }
-                              roomCreatorFullName={
-                                mockedConversationRoom.room_creator_full_name
+                                conversationRoom.room_creator_clerk_user_id
                               }
                               createdAtTimestamp={
-                                mockedConversationRoom.created_at_timestamp
+                                conversationRoom.created_at_timestamp
                               }
-                              callbackJoinAdConversationRoom={(returnValue) => {
-                                console.log(
-                                  "mocked joinAdConversationRoom",
-                                  returnValue
-                                );
-                              }}
-                            /> */}
+                              callbackSetActiveConversationRoomObject={
+                                handleSetActiveAdConversationRoomObject
+                              }
+                            />
                           </div>
                         )
                       )}
@@ -294,3 +395,47 @@ export default function Chat() {
   };
 
    */
+
+/* {
+      ad_conversation_room_id: "ad7884e7-e256-4671-8018-260feaef37ce+firstchat",
+      ad_id: "ad7884e7-e256-4671-8018-260feaef37ce",
+      ad_title: "Stoff Eule",
+      ad_price_type: "VB",
+      ad_price: 5,
+      room_creator_clerk_user_id: "user_29RqPdIoafnCM7Cjpgia8nW8Ul3",
+      room_creator_full_name: "Sascha Majewsky",
+      created_at_timestamp: "1654214580",
+    } */
+
+/*   const mockedAdConversationRoomArray = [
+      {
+        ad_conversation_room_id: "ad7884e7-e256-4671-8018-260feaef37ce+firstchat",
+        ad_id: "ad7884e7-e256-4671-8018-260feaef37ce",
+        ad_title: "Stoff Eule",
+        ad_price_type: "VB",
+        ad_price: 5,
+        room_creator_clerk_user_id: "user_29RqPdIoafnCM7Cjpgia8nW8Ul3",
+        room_creator_full_name: "Sascha Majewsky",
+        created_at_timestamp: "1654214580",
+      },
+      {
+        ad_conversation_room_id: "ad7884e7-e256-4671-8018-260feaef37ce+secondchat",
+        ad_id: "ad7884e7-e256-4671-8018-260feaef37ce",
+        ad_title: "Stoff Eule",
+        ad_price_type: "VB",
+        ad_price: 5,
+        room_creator_clerk_user_id: "user_29RqPdIoafnCM7Cjpgia8nW8Ul3",
+        room_creator_full_name: "Hanne Oellrich",
+        created_at_timestamp: "1654214582",
+      },
+      {
+        ad_conversation_room_id: "61cf3ae2-1779-4037-bb29-8194fab6fa66+test",
+        ad_id: "61cf3ae2-1779-4037-bb29-8194fab6fa66",
+        ad_title: "Hue Go 2",
+        ad_price_type: "VB",
+        ad_price: 40,
+        room_creator_clerk_user_id: "user_29yCWbPeGmJNDNxUmGVDYhtQ0A3",
+        room_creator_full_name: "Hanne Oellrich",
+        created_at_timestamp: "1654214584",
+      },
+    ]; */

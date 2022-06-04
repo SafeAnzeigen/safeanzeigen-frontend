@@ -429,7 +429,7 @@ export default function Home() {
                         user
                           ? handleChangeOfLikeStatus
                           : () => {
-                              router.push("/sign-in");
+                              router.push("/login");
                             }
                       }
                     />
@@ -502,7 +502,7 @@ export default function Home() {
                           user
                             ? handleChangeOfLikeStatus
                             : () => {
-                                router.push("/sign-in");
+                                router.push("/login");
                               }
                         }
                       />
