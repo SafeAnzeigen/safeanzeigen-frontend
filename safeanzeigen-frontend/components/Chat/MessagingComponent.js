@@ -13,6 +13,7 @@ export default function MessagingComponent({
   callbackSendMessage,
   callbackSendIsTyping,
   callbackStoppedTyping,
+  callbackSetChatVisited,
 }) {
   const [messageTextInput, setMessageTextInput] = useState("");
   const messagesEndRef = useRef(null);
@@ -149,6 +150,7 @@ export default function MessagingComponent({
                     );
                     setMessageTextInput("");
                     callbackStoppedTyping(user?.id, getUnixTime(new Date()));
+                    callbackSetChatVisited(user);
                   }
                 }
               }}
@@ -214,6 +216,7 @@ export default function MessagingComponent({
                     );
                     setMessageTextInput("");
                     callbackStoppedTyping(user?.id, getUnixTime(new Date()));
+                    callbackSetChatVisited(user);
                   }
                 }}
                 className="inline-block w-10 h-10 text-white bg-orange-400 rounded-full hover:bg-orange-500"
