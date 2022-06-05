@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { useAuth, useUser } from "@clerk/clerk-react";
@@ -14,6 +14,9 @@ import Footer from "../components/Footer/Footer";
 
 export default function Home() {
   const router = useRouter();
+  const lazyRootCategory = useRef(null);
+  const lazyRootNewestAd = useRef(null);
+  const lazyRootNearestAd = useRef(null);
   const { user } = useUser();
   const clerkAuth = useAuth();
   const [verticalScrollIsActive, setVerticalScrollIsActive] = useState(true);
@@ -376,7 +379,8 @@ export default function Home() {
             Kategorien
           </h2>
           <div
-            className="flex p-4 -mt-2 -ml-4 space-x-1 overflow-scroll scrollbar-hide"
+            ref={lazyRootCategory}
+            className="flex p-4 -mt-2 -ml-4 space-x-1 overflow-scroll scrollbar-hide "
             onWheel={(event) => transformScroll(event, "sideScroll")}
             onMouseOver={() => preventVerticalScroll()}
             onMouseLeave={() => enableVerticalScroll()}
@@ -387,6 +391,7 @@ export default function Home() {
                   <TinyCategoryCard
                     categoryName={element?.name}
                     imageUrl={element?.category_image}
+                    lazyRoot={lazyRootCategory}
                   />
                 </div>
               ))}
@@ -397,6 +402,7 @@ export default function Home() {
             Neueste Angebote
           </h2>
           <div
+            ref={lazyRootNewestAd}
             className="flex p-4 -mt-2 -ml-4 space-x-5 overflow-scroll scrollbar-hide"
             onWheel={(event) => transformScroll(event, "sideScroll")}
             onMouseOver={() => preventVerticalScroll()}
@@ -412,28 +418,28 @@ export default function Home() {
                     : 0;
                 })
                 ?.map((element, index) => (
-                  <div key={index}>
-                    <RegularAdCard
-                      adId={element?.advertisement_id}
-                      title={element?.title}
-                      price={element?.price}
-                      priceType={element?.price_type}
-                      articleIsVerified={element?.is_verified}
-                      sellerHasManySales={false}
-                      imageUrl={element?.article_image_1}
-                      isLiked={favoriteAdvertisements.includes(
-                        element?.advertisement_id
-                      )}
-                      isReserved={!element?.is_published}
-                      callbackSetLikeStatus={
-                        user
-                          ? handleChangeOfLikeStatus
-                          : () => {
-                              router.push("/login");
-                            }
-                      }
-                    />
-                  </div>
+                  <RegularAdCard
+                    key={index}
+                    adId={element?.advertisement_id}
+                    title={element?.title}
+                    price={element?.price}
+                    priceType={element?.price_type}
+                    articleIsVerified={element?.is_verified}
+                    sellerHasManySales={false}
+                    imageUrl={element?.article_image_1}
+                    isLiked={favoriteAdvertisements.includes(
+                      element?.advertisement_id
+                    )}
+                    isReserved={!element?.is_published}
+                    callbackSetLikeStatus={
+                      user
+                        ? handleChangeOfLikeStatus
+                        : () => {
+                            router.push("/login");
+                          }
+                    }
+                    lazyRoot={lazyRootNewestAd}
+                  />
                 ))}
           </div>
         </div>
@@ -453,6 +459,7 @@ export default function Home() {
           currentUserLatitude &&
           currentUserLongitude ? (
             <div
+              ref={lazyRootNearestAd}
               className="flex p-4 -mt-2 -ml-4 space-x-5 overflow-scroll scrollbar-hide"
               onWheel={(event) => transformScroll(event, "sideScroll")}
               onMouseOver={() => preventVerticalScroll()}
@@ -485,28 +492,28 @@ export default function Home() {
                     );
                   })
                   ?.map((element, index) => (
-                    <div key={index}>
-                      <RegularAdCard
-                        adId={element?.advertisement_id}
-                        title={element?.title}
-                        price={element?.price}
-                        priceType={element?.price_type}
-                        articleIsVerified={element?.is_verified}
-                        sellerHasManySales={false}
-                        imageUrl={element?.article_image_1}
-                        isLiked={favoriteAdvertisements.includes(
-                          element?.advertisement_id
-                        )}
-                        isReserved={!element?.is_published}
-                        callbackSetLikeStatus={
-                          user
-                            ? handleChangeOfLikeStatus
-                            : () => {
-                                router.push("/login");
-                              }
-                        }
-                      />
-                    </div>
+                    <RegularAdCard
+                      key={index}
+                      adId={element?.advertisement_id}
+                      title={element?.title}
+                      price={element?.price}
+                      priceType={element?.price_type}
+                      articleIsVerified={element?.is_verified}
+                      sellerHasManySales={false}
+                      imageUrl={element?.article_image_1}
+                      isLiked={favoriteAdvertisements.includes(
+                        element?.advertisement_id
+                      )}
+                      isReserved={!element?.is_published}
+                      callbackSetLikeStatus={
+                        user
+                          ? handleChangeOfLikeStatus
+                          : () => {
+                              router.push("/login");
+                            }
+                      }
+                      lazyRoot={lazyRootNearestAd}
+                    />
                   ))}
             </div>
           ) : (
@@ -520,13 +527,13 @@ export default function Home() {
       <section className="mx-4 mb-20 md:mx-16">
         <CategoryCard
           category="Elektronik"
-          imageURL="https://images.unsplash.com/photo-1604754742629-3e5728249d73?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2670"
+          imageURL="https://images.unsplash.com/photo-1604754742629-3e5728249d73?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&h=800"
           subText="Finde die besten Angebote"
           ctaText="Jetzt Entdecken"
         />
         <CategoryCard
           category="Schmuck"
-          imageURL="https://images.unsplash.com/photo-1536502829567-baf877a670b5?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2670"
+          imageURL="https://images.unsplash.com/photo-1536502829567-baf877a670b5?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&h=800"
           subText="Durchsuche versteckte Schätze"
           ctaText="Jetzt fündig werden"
         />
