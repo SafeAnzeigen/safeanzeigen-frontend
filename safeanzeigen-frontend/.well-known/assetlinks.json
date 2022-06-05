@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "de.safeanzeigen.twa",
+      "sha256_cert_fingerprints": [
+        "67:48:60:54:FB:B1:5D:09:A0:50:31:7B:31:9C:67:6B:0B:5C:37:61:CB:4C:0D:D6:56:FB:C8:7B:D1:8E:6A:C2"
+      ]
+    }
+  }
+]
