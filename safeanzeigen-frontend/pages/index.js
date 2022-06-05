@@ -387,9 +387,8 @@ export default function Home() {
           >
             {categories?.length > 0 &&
               categories?.map((element, index) => (
-                <div>
+                <div key={index}>
                   <TinyCategoryCard
-                    key={index}
                     categoryName={element?.name}
                     imageUrl={element?.category_image}
                     lazyRoot={lazyRootCategory}
