@@ -2,6 +2,7 @@
   "theme_color": "#2f70e9",
   "background_color": "#e97c2f",
   "display": "standalone",
+  "orientation": "portrait",
   "scope": "/",
   "start_url": "/",
   "name": "Safeanzeigen",

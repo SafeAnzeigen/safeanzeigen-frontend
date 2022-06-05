@@ -9,8 +9,9 @@ module.exports = withPWA({
   },
   pwa: {
     dest: "public",
-    register: true,
-    skipWaiting: true,
+    fallbacks: {
+      image: "/static/images/offline-image.png",
+    },
   },
   async redirects() {
     return [
