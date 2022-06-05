@@ -18,6 +18,17 @@ export default function RegularAdCard({
       ? string?.substring(0, maxCharacterLength) + "..."
       : string;
 
+  const createTinyPath = (imageUrl) => {
+    if (imageUrl) {
+      return (
+        imageUrl.split("/upload")[0] +
+        "/upload" +
+        "/h_256,c_scale" +
+        imageUrl.split("/upload")[1]
+      );
+    }
+  };
+
   return (
     <Link href={`/anzeige/${adId}`}>
       <div
@@ -110,7 +121,7 @@ export default function RegularAdCard({
           )}
           <img
             className={`${isReserved ? "blur-sm relative" : ""} rounded-xl`}
-            src={imageUrl}
+            src={createTinyPath(imageUrl)}
             layout="fill"
             style={{ objectFit: "cover", height: "256px", width: "256px" }}
             alt="Vorabansicht der Kleinanzeige"
