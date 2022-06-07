@@ -1,19 +1,5 @@
 import Head from "next/head";
 
-/* export default function Offline() {
-  return (
-    <div>
-      <Head>
-        <title>Safeanzeigen</title>
-      </Head>
-      <div className="text-red-500">
-        Es sieht so aus, als wärst du nicht mit dem Internet verbunden. Sobald
-        du die Verbindung wiederherstellst geht es weiter!
-      </div>
-    </div>
-  );
-} */
-
 export default function Offline() {
   return (
     <div className="min-h-screen bg-gray-50">

@@ -14,8 +14,7 @@ export default function YourMessageComponent({ text, timestamp }) {
             {timestamp &&
               format(fromUnixTime(timestamp), "dd MMMM", {
                 locale: deLocale,
-              })}{" "}
-            {/* TODO: WHEN OLD THEN CHANGE TO dd.MM.YYYY */}
+              })}
           </small>
         </div>
       </div>

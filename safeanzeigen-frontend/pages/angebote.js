@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
-import Link from "next/link";
 import { useAuth, useUser } from "@clerk/clerk-react";
 
 import Navigation from "../components/Navigation/Navigation";
@@ -141,8 +140,8 @@ export default function Angebote() {
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </Head>
-
       <Navigation />
+
       <div className="min-h-screen bg-gray-50">
         {showDeleteConfirmationModal && (
           <AlertConfirmationModal
@@ -204,13 +203,6 @@ export default function Angebote() {
                         disableFavorite={true}
                         callbackSetLikeStatus={() => {}}
                       />
-                      {/* <Link
-                        href={`/editieren/${advertisement.advertisement_id}`}
-                      >
-                        <button className="w-full mt-3 items-center px-4 py-2 text-sm font-medium text-white bg-[#2f70e9] border border-transparent rounded-md shadow-sm hover:bg-[#2962cd] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-transparent">
-                          <span>Editieren</span>
-                        </button>
-                      </Link> */}
                       <div className="flex w-full">
                         <button
                           onClick={() => {

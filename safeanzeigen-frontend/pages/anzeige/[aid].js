@@ -72,7 +72,6 @@ export default function Anzeige() {
         .then((data) => {
           console.log("DATA IS ALREADY IN CHAT", data);
           if (data?.chats?.filter((chat) => chat?.ad_id === aid).length) {
-            console.log("TRIGGERED SET ALREADY IN CONVO");
             setIsAlreadyInConversation(true);
           }
         })
@@ -385,7 +384,6 @@ export default function Anzeige() {
             <div className="grid gap-12 lg:grid-cols-2 lg:gap-0">
               <div>
                 <div ref={carouselRef} className="relative select-none">
-                  {/* <div className="aspect-w-16 aspect-h-9"> */}
                   <img
                     src={adImages[carouselIndex]}
                     alt="Bild der Kleinanzeige"
@@ -536,18 +534,7 @@ export default function Anzeige() {
                       user?.id &&
                       aid &&
                       user?.id === advertisementInfoObject?.clerk_user_id ? (
-                        <div>
-                          {/* <Link href={`/editieren/${aid}`}>
-                          <div className="rounded-md shadow">
-                            <div
-                              href="#"
-                              className="cursor-pointer flex items-center justify-center px-5 py-3 text-base font-medium text-white bg-[#2f70e9] border border-transparent rounded-md hover:bg-[#2962cd] select-none"
-                            >
-                              Anzeige Editieren
-                            </div>
-                          </div>
-                        </Link> */}
-                        </div>
+                        <div></div>
                       ) : (
                         !isAlreadyInConversation &&
                         user && (

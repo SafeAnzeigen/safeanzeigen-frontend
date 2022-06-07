@@ -9,9 +9,6 @@ import ConversationCard from "../components/Chat/ConversationCard";
 import MessagingComponent from "../components/Chat/MessagingComponent";
 import EmptyMessagingComponent from "../components/Chat/EmptyMessagingComponent";
 
-/* TODO: FETCH ALL CONVERSATIONS FROM DB WHERE ROOM_CREATOR_IS_YOUR CLERK ID */
-
-/* TODO: WHAT ABOUT THE ONES WHERE ANOTHER USER CONTACTS YOU FOR YOUR AD? */
 let socket = null;
 export default function Chat() {
   const { user } = useUser();
@@ -28,7 +25,6 @@ export default function Chat() {
   const handleSetActiveAdConversationRoomObject = (
     receivedConversationObject
   ) => {
-    console.log("receivedConversationObject", receivedConversationObject);
     setActiveAdConversationRoomObject({
       ad_conversation_room_id: receivedConversationObject.adConversationRoomId,
       ad_id: receivedConversationObject.adId,
@@ -46,21 +42,18 @@ export default function Chat() {
   };
 
   const addIncomingIsTyping = (isTypingObject) => {
-    console.log("isTypingObject ADD", isTypingObject);
     if (isTypingObject.clerk_user_id !== user?.id) {
       setIsTypingObject(isTypingObject);
     }
   };
 
   const addIncomingStoppedTyping = (stoppedTypingObject) => {
-    console.log("stoppedTypingObject ADD", stoppedTypingObject);
     if (isTypingObject.clerk_user_id !== user?.id) {
       setIsTypingObject({});
     }
   };
 
   const sendMessage = (adConversationRoomId, text) => {
-    console.log("TRIGGERED SEND MESSAGE");
     socket.emit("message", {
       ad_conversation_room_id: adConversationRoomId,
       from_clerk_user_id: user?.id,
@@ -182,16 +175,11 @@ export default function Chat() {
                 tempRetrievedConversationsArray =
                   tempRetrievedConversationsArray.concat(retrievedChatsAsOwner);
               }
-              console.log(
-                "BEFORE EVALUTION tempRetrievedConversationsArray",
-                tempRetrievedConversationsArray
-              );
               if (tempRetrievedConversationsArray.length) {
                 console.log(
                   "I HAVE FOUND CONVERSATIONS",
                   tempRetrievedConversationsArray
                 );
-                /*  */
 
                 setConversationsRoomsArray(tempRetrievedConversationsArray);
                 setActiveAdConversationRoomObject(
@@ -270,35 +258,17 @@ export default function Chat() {
     }
 
     if (socket == null) {
-      console.log(
-        "SOCKET START ON ROOM activeAdConversationRoomObject?.ad_conversation_room_id ",
-        activeAdConversationRoomObject?.ad_conversation_room_id
-      );
-
       retrieveConversationsAndCreateSocket(user);
-    } /* Close socket to prevent duplicate messages  test2*/
-
-    /* return () =>
-      newSocket.close(); */
+    }
   }, []);
 
   useEffect(() => {
-    console.log("USEEFFECT CONVO CHANGE socketRoomID", socketRoomID);
-    console.log(
-      "USEEFFECT CONVO CHANGE activeAdConversationRoomObject?.ad_conversation_room_id",
-      activeAdConversationRoomObject?.ad_conversation_room_id
-    );
     if (socket) {
-      console.log("CASE SOCKET EXISTS", socket);
       if (
         socketRoomID !==
           activeAdConversationRoomObject?.ad_conversation_room_id &&
         activeAdConversationRoomObject?.ad_conversation_room_id
       ) {
-        console.log(
-          "CASE SOCKET ROOM DIFFERENT activeAdConversationRoomObject?.ad_conversation_room_id",
-          activeAdConversationRoomObject?.ad_conversation_room_id
-        );
         tryRetrieveConversationRooMessages(activeAdConversationRoomObject);
         socket.emit("exit");
         startSocket(activeAdConversationRoomObject);
@@ -309,7 +279,6 @@ export default function Chat() {
       }
     } else {
       if (Object.keys(activeAdConversationRoomObject)?.length) {
-        console.log("CASE SOCKET DIDNT EXIST", conversationsRoomsArray);
         tryRetrieveConversationRooMessages(activeAdConversationRoomObject);
         startSocket(activeAdConversationRoomObject);
       }
