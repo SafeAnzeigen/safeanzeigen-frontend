@@ -194,30 +194,11 @@ export default function Navigation() {
     alert("Bitte gebe das Recht frei deinen Standort zu nutzen");
   };
 
-  /* if (!isLoaded || !userId || !isSignedIn) {
-    return null;
-  } */
-
-  /*   if (isSignedIn && user) {
-    console.log("CHECKING FOR MINIMUM PROFILE DATA", user);
-  } */
-
-  /*   const checkUserIsKnownToCustomBackend = () => {};
-
-  const checkUserHasProvidedMinimumProfileData = (clerkUserObject) => {}; */
-  /*  checkUserIsKnownToCustomBackend();
-      checkUserHasProvidedMinimumProfileData(user); */
-  /*  useEffect(() => {
-    if (isSignedIn && user) {
-      console.log("CHECKING FOR MINIMUM PROFILE DATA", user);
-    }
-  }, []); */
-
   const checkUserHasChatNotifications = async (userData) => {
     if (userData?.id) {
       fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
-          `/users/checknotifcations/${userData?.id}`,
+          `/users/checknotifications/${userData?.id}`,
         {
           method: "get",
           headers: {
