@@ -60,6 +60,7 @@ Safeanzeigen ist eine moderne Kleinanzeigenplattform für den Austausch von Ware
   ![Color Palette](https://res.cloudinary.com/dbldlm9vw/image/upload/v1654586952/safeanzeigen-farben_wefrdv.png)
 - **Genutzte Bilder**
   - Alle genutzten Bilder sind entweder CC0 frei [Unsplash](https://unsplash.com) oder ihre Nutzungslizenz liegt durch [Flaticon](https://www.flaticon.com) vor
+  - Es wurden frei verfügbare SVG Icons auf [Heroicons](https://heroicons.com) und Komponenten aus [TailwindUI](https://tailwindui.com) und [HeadlessUI](https://headlessui.dev), sowie eine Komponente aus [DaisyUI](https://daisyui.com) genutzt
 - Mockup
   ![Color Palette](https://res.cloudinary.com/dbldlm9vw/image/upload/v1654590114/safeanzeigen-mockup3_qxin67.png)
 
@@ -108,7 +109,7 @@ Für den Versand von E-Mails für den Kontakt wird der Dienst [Mailjet](https://
 - Ein erneutes Suchen, wenn man sich bereits auf der Suchseite befindet, ist erst möglich wenn man die Suchseite verlässt. Dies wurde für den Nutzer bereits durch eine Weiterleitung erzwingend eingebaut, stellt aber nicht den Idealzustand dar
 - Bei einer Bildschirmgröße von 768 x 1024 Pixeln kann es innerhalb der ausgeklappten Suchleiste zu Fehlern im responsive Design kommen
 
-## 🚀 Performance Analysis
+## 🚀 Performance Analyse
 
 Lighthouse wurde verwendet, um Informationen über die Leistung und die Verwendung von Best Practices für die Web-App zu sammeln.
 
@@ -132,7 +133,7 @@ Lighthouse wurde verwendet, um Informationen über die Leistung und die Verwendu
   - SEO 100 % 🥇
   - PWA Ready
 
-## 🏠 Getting Started
+## 🏠 Selber Starten
 
 ### ⏹️ Voraussetzungen
 
@@ -195,7 +196,7 @@ Der einfachste Weg, eine Next.js-Applikation bereitzustellen, ist die Verwendung
 
 In der [Next.js deployment documentation](https://nextjs.org/docs/deployment) finden Sie weitere Details.
 
-🌊 Git flow
+### 🌊 Git Flow
 
 ![Startseite Lighthouse Result](https://res.cloudinary.com/dbldlm9vw/image/upload/v1654590112/safeanzeigen-git-flow_npx565.png)
 
@@ -206,4 +207,4 @@ Es wurde Git Flow mit dem Main Branch, dem Develop Branch und verschiedenen Feat
 
 ## 🔑 License
 
-License MIT License. [LICENSE](https://github.com/SafeAnzeigen/safeanzeigen-frontend/blob/main/LICENSE)
+[License MIT License](https://github.com/SafeAnzeigen/safeanzeigen-frontend/blob/main/LICENSE)
