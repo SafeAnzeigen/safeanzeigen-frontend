@@ -9,7 +9,7 @@ const faqs = [
   {
     frage: "Was ist Safeanzeigen?",
     antwort:
-      "Safeanzeigen bietet als moderne Plattform für Kleinanzeigen zum Austausch von Waren, Dienstleistungen und digitalen Gütern mit besonderem Fokus auf Benutzerfreundlichkeit und Sicherheit.",
+      "Safeanzeigen bietet eine moderne Plattform für Kleinanzeigen zum Austausch von Waren, Dienstleistungen und digitalen Gütern mit besonderem Fokus auf Benutzerfreundlichkeit und Sicherheit.",
   },
   {
     frage: "Welche Sicherheitsfeatures bietet Safeanzeigen?",
