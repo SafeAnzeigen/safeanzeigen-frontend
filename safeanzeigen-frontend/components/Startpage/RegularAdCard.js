@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function RegularAdCard({
   adId,
@@ -12,11 +13,23 @@ export default function RegularAdCard({
   isReserved,
   disableFavorite,
   callbackSetLikeStatus,
+  lazyRoot,
 }) {
   const truncateStringAfterCharacterLength = (string, maxCharacterLength) =>
     string?.length > maxCharacterLength
       ? string?.substring(0, maxCharacterLength) + "..."
       : string;
+
+  const createTinyPath = (imageUrl) => {
+    if (imageUrl) {
+      return (
+        imageUrl.split("/upload")[0] +
+        "/upload" +
+        "/w_400,c_scale" +
+        imageUrl.split("/upload")[1]
+      );
+    }
+  };
 
   return (
     <Link href={`/anzeige/${adId}`}>
@@ -108,11 +121,15 @@ export default function RegularAdCard({
               </svg>
             </div>
           )}
-          <img
+          <Image
             className={`${isReserved ? "blur-sm relative" : ""} rounded-xl`}
-            src={imageUrl}
+            src={createTinyPath(imageUrl)}
             layout="fill"
-            style={{ objectFit: "cover", height: "256px", width: "256px" }}
+            objectFit="cover"
+            width={256}
+            height={256}
+            lazyRoot={lazyRoot}
+            /* style={{ objectFit: "cover", height: "256px", width: "256px" }} */
             alt="Vorabansicht der Kleinanzeige"
           />
           {isReserved && (

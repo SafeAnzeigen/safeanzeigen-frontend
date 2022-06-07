@@ -94,6 +94,7 @@ export default function Navigation() {
   const [selectedSubcategory, setSelectedSubcategory] = useState();
 
   const [showSearchBar, setShowSearchBar] = useState(false);
+  const [chatHasNotifications, setChatHasNotifications] = useState(false);
 
   const resetSearchInputs = () => {
     setSelectedCategory("");
@@ -212,6 +213,35 @@ export default function Navigation() {
     }
   }, []); */
 
+  const checkUserHasChatNotifications = async (userData) => {
+    if (userData?.id) {
+      fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+          `/users/checknotifcations/${userData?.id}`,
+        {
+          method: "get",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `${await clerkAuth.getToken()}`,
+          },
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA GET CHAT NOTIFICATIONS", data);
+          if (data?.message === "Es gibt neue Chatnachrichten.") {
+            setChatHasNotifications(true);
+          } else {
+            setChatHasNotifications(false);
+          }
+        })
+        .catch((error) => {
+          console.log("ERROR GET CHAT NOTIFICATIONS", error);
+        });
+    }
+  };
+
   useEffect(() => {
     if (user && user?.id) {
       if (
@@ -223,6 +253,16 @@ export default function Navigation() {
       }
     }
     retrieveCategories();
+
+    const interval = setInterval(() => {
+      if (pathname !== "/chat") {
+        checkUserHasChatNotifications(user);
+      }
+      if (pathname === "/chat") {
+        setChatHasNotifications(false);
+      }
+    }, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -245,10 +285,10 @@ export default function Navigation() {
     <header
       className={`sticky top-0 z-20 grid grid-rows-2 bg-white ${
         searchInput || showSearchBar ? "shadow-sm" : "shadow-none"
-      } md:p-6 md:grid-rows-none md:grid-cols-1 lg:grid-cols-3 md:px-10 md:py-0 lg:pl-20 md:mt-8`}
+      } md:p-6 md:grid-rows-none md:grid-cols-1 lg:grid-cols-3 md:px-10 md:py-0 lg:pl-20`}
     >
       {/* Left Navbar */}
-      <div className="relative items-center hidden h-16 my-auto select-none md:flex md:h-12 md:mb-4">
+      <div className="relative items-center hidden h-16 my-auto select-none md:flex md:h-12 md:mb-4 lg:!mt-8 md:!mt-4">
         <Link href="/">
           <a className="flex items-center ">
             <Image
@@ -264,7 +304,7 @@ export default function Navigation() {
       </div>
       {/* Middle Navbar */}
       <div
-        className={`mt-4 md:mt-0 flex justify-between items-center border-2 select-none md:shadow-sm xs:ml-2 ${
+        className={`lg:!mt-8 mt-4 md:mt-0 flex justify-between items-center border-2 select-none md:shadow-sm xs:ml-2 ${
           searchInput ? "rounded-tl-lg rounded-tr-lg" : "rounded-lg"
         }`}
       >
@@ -329,7 +369,7 @@ export default function Navigation() {
         )}
       </div>
       {/* Right Navbar */}
-      <div className="order-first lg:order-none">
+      <div className="order-first lg:order-none lg:!mt-8">
         <Popover
           as="header"
           className={({ open }) =>
@@ -359,16 +399,24 @@ export default function Navigation() {
                   </div>
                   <div className="flex items-center md:absolute md:right-0 md:inset-y-0 lg:hidden">
                     {/* Mobile Button & Screen Reader Accessibility */}
-                    <Popover.Button className="inline-flex items-center justify-center p-2 -mx-2 focus:outline-none focus:ring-transparent text-[#9ca3af] cursor-pointer hover:bg-gray-200 border-gray-200 border-2 rounded-lg z-50">
+                    <Popover.Button className="inline-flex items-center justify-center p-2 -mx-2 focus:outline-none focus:ring-transparent text-[#9ca3af] cursor-pointer hover:bg-gray-200 border-gray-200 border-2 rounded-lg z-50 md:mt-14">
                       <span className="sr-only">Navigation öffnen</span>
                       {open ? (
                         <XIcon className="block w-6 h-6" aria-hidden="true" />
                       ) : (
-                        <MenuIcon
-                          onClick={() => resetSearchInputs()}
-                          className="block w-6 h-6"
-                          aria-hidden="true"
-                        />
+                        <div className="relative">
+                          {chatHasNotifications && (
+                            <div>
+                              <span className="absolute inline-flex w-3 h-3 bg-orange-500 rounded-full opacity-75 animate-ping -bottom-3 -right-3"></span>
+                              <span className="absolute inline-flex w-3 h-3 bg-orange-500 rounded-full -bottom-3 -right-3"></span>
+                            </div>
+                          )}
+                          <MenuIcon
+                            onClick={() => resetSearchInputs()}
+                            className="block w-6 h-6"
+                            aria-hidden="true"
+                          />{" "}
+                        </div>
                       )}
                     </Popover.Button>
                   </div>
@@ -378,24 +426,32 @@ export default function Navigation() {
                     <div className="hidden lg:flex lg:items-center lg:justify-end xl:col-span-12">
                       {/* CHAT ICON */}
                       <Link href="/chat">
-                        <div
-                          href="#"
-                          className="flex-shrink-0 p-1 ml-5 rounded-full hover:text-gray-500 focus:outline-none focus:ring-transparent text-[#9ca3af]"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="cursor-pointer w-9 h-9"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={2}
+                        <div className="relative hidden lg:flex lg:items-center lg:justify-end xl:col-span-12 ">
+                          {chatHasNotifications && (
+                            <div>
+                              <span className="absolute inline-flex w-3 h-3 bg-orange-500 rounded-full opacity-75 animate-ping bottom-2 right-1"></span>
+                              <span className="absolute inline-flex w-3 h-3 bg-orange-500 rounded-full bottom-2 right-1"></span>
+                            </div>
+                          )}
+                          <div
+                            href="#"
+                            className="flex-shrink-0 p-1 ml-5 rounded-full hover:text-gray-500 focus:outline-none focus:ring-transparent text-[#9ca3af]"
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                            />
-                          </svg>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="cursor-pointer w-9 h-9"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              strokeWidth={2}
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                              />
+                            </svg>
+                          </div>
                         </div>
                       </Link>
 
@@ -524,7 +580,7 @@ export default function Navigation() {
                   className="lg:hidden !z-50"
                   aria-label="Global"
                 >
-                  <div className="max-w-3xl px-2 pt-2 pb-3 mx-auto space-y-1 sm:px-4 !z-50">
+                  <div className="md:mt-16 max-w-3xl px-2 pt-2 pb-3 mx-auto space-y-1 sm:px-4 !z-50">
                     <Link href="/inserieren">
                       <p className="flex px-3 py-2 text-base font-medium text-white rounded-md cursor-pointer hover:bg-[#2962cd] bg-[#2f70e9] !z-50">
                         <svg
@@ -592,20 +648,28 @@ export default function Navigation() {
                       >
                         {/* CHAT ICON */}
                         <Link href="/chat">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="cursor-pointer w-9 h-9"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                            />
-                          </svg>
+                          <div className="relative">
+                            {chatHasNotifications && (
+                              <div>
+                                <span className="absolute right-0 inline-flex w-3 h-3 bg-orange-500 rounded-full opacity-75 bottom-1 animate-ping"></span>
+                                <span className="absolute right-0 inline-flex w-3 h-3 bg-orange-500 rounded-full bottom-1"></span>
+                              </div>
+                            )}
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="cursor-pointer w-9 h-9"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              strokeWidth={2}
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                              />
+                            </svg>
+                          </div>
                         </Link>
                       </button>
                     </div>
@@ -805,7 +869,7 @@ export default function Navigation() {
                     }
                     className="bg-orange-400 shadow-md range"
                   />
-                  <div className="flex justify-between w-full px-2 text-xs">
+                  <div className="flex justify-between w-full px-2 text-xs lg:invisible xl:visible">
                     <div className="flex flex-col">
                       <span>|</span>
                     </div>
@@ -822,7 +886,7 @@ export default function Navigation() {
                       <span>|</span>
                     </div>
                   </div>
-                  <div className="flex justify-between w-full px-2 text-xs">
+                  <div className="flex justify-between w-full px-2 text-xs lg:invisible xl:visible">
                     <div className="flex flex-col">
                       <span className="text-orange-600">0km</span>
                     </div>
@@ -871,7 +935,7 @@ export default function Navigation() {
             >
               <button
                 onClick={() => resetSearchInputs()}
-                className="w-7/12 h-10 mx-8 mb-4 font-semibold text-white bg-orange-400 rounded-md md:w-full md:mx-0 lg:mx-20 lg:mr-24"
+                className="w-7/12 h-10 mx-8 mb-4 font-semibold text-white bg-orange-400 rounded-md lg:w-full lg:mx-10 md:w-full md:mx-0 xl:mx-20 xl:mr-24"
               >
                 Jetzt Entdecken
               </button>

@@ -8,44 +8,7 @@ import Navigation from "../components/Navigation/Navigation";
 import ConversationCard from "../components/Chat/ConversationCard";
 import MessagingComponent from "../components/Chat/MessagingComponent";
 import EmptyMessagingComponent from "../components/Chat/EmptyMessagingComponent";
-import Footer from "../components/Footer/Footer";
 
-/* TODO: FETCH ALL CONVERSATIONS FROM DB WHERE ROOM_CREATOR_IS_YOUR CLERK ID */
-
-const mockedMessages = [
-  {
-    ad_conversation_room_id: "ad7884e7-e256-4671-8018-260feaef37ce+firstchat",
-    from_clerk_user_id: "user_29ttE7esltvcikdx85jn1uBth96",
-    text: "Moin",
-    message_sent_timestamp: "1654214582",
-  },
-  {
-    ad_conversation_room_id: "ad7884e7-e256-4671-8018-260feaef37ce+firstchat",
-    from_clerk_user_id: "user_29ttE7esltvcikdx85jn1uBth96",
-    text: "Ich habe eine Frage bzgl. deiner Anzeige",
-    message_sent_timestamp: "1654214583",
-  },
-  {
-    ad_conversation_room_id: "ad7884e7-e256-4671-8018-260feaef37ce+firstchat",
-    from_clerk_user_id: "user_29RqPdIoafnCM7Cjpgia8nW8Ul3",
-    text: "Moin",
-    message_sent_timestamp: "1654214584",
-  },
-  {
-    ad_conversation_room_id: "ad7884e7-e256-4671-8018-260feaef37ce+firstchat",
-    from_clerk_user_id: "user_29RqPdIoafnCM7Cjpgia8nW8Ul3",
-    text: "Klar, was interessiert dich denn?",
-    message_sent_timestamp: "1654214585",
-  },
-  {
-    ad_conversation_room_id: "ad7884e7-e256-4671-8018-260feaef37ce+firstchat",
-    from_clerk_user_id: "user_29ttE7esltvcikdx85jn1uBth96",
-    text: "Ich wollte fragen wie lange du die Stoff Eule schon besitzt.",
-    message_sent_timestamp: "1654214586",
-  },
-];
-
-/* TODO: WHAT ABOUT THE ONES WHERE ANOTHER USER CONTACTS YOU FOR YOUR AD? */
 let socket = null;
 export default function Chat() {
   const { user } = useUser();
@@ -62,7 +25,6 @@ export default function Chat() {
   const handleSetActiveAdConversationRoomObject = (
     receivedConversationObject
   ) => {
-    console.log("receivedConversationObject", receivedConversationObject);
     setActiveAdConversationRoomObject({
       ad_conversation_room_id: receivedConversationObject.adConversationRoomId,
       ad_id: receivedConversationObject.adId,
@@ -80,21 +42,18 @@ export default function Chat() {
   };
 
   const addIncomingIsTyping = (isTypingObject) => {
-    console.log("isTypingObject ADD", isTypingObject);
     if (isTypingObject.clerk_user_id !== user?.id) {
       setIsTypingObject(isTypingObject);
     }
   };
 
   const addIncomingStoppedTyping = (stoppedTypingObject) => {
-    console.log("stoppedTypingObject ADD", stoppedTypingObject);
     if (isTypingObject.clerk_user_id !== user?.id) {
       setIsTypingObject({});
     }
   };
 
   const sendMessage = (adConversationRoomId, text) => {
-    console.log("TRIGGERED SEND MESSAGE");
     socket.emit("message", {
       ad_conversation_room_id: adConversationRoomId,
       from_clerk_user_id: user?.id,
@@ -139,9 +98,8 @@ export default function Chat() {
     });
   };
 
-  const retrieveConversationsAndCreateSocket = async (userData) => {
-    if (userData?.id) {
-      /* FETCHING CHATS AS AD BUYER */
+  const retrieveChatsAsBuyer = (userData) =>
+    new Promise(async (resolve, reject) => {
       fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}` + `/chats/${userData?.id}`,
         {
@@ -154,81 +112,87 @@ export default function Chat() {
         }
       )
         .then((response) => response.json())
-        .then(async (data) => {
+        .then((data) => {
           console.log("DATA RETRIEVING USERS AD BUYER CHATS", data);
           if (data?.chats?.length) {
             console.log("TRIGGERED I AM OWNER OF AT LEAST ONE BUYER CHAT");
-            setConversationsRoomsArray(data?.chats);
-            setActiveAdConversationRoomObject(data?.chats[0]);
-            /* FETCHING CHATS AS AD OWNER */
-            console.log(
-              "AFTER SETTING CONVERSATIONS ROOMS ARRAY",
-              conversationsRoomsArray
-            );
-            fetch(
-              `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
-                `/chats/ownerofad/${userData?.id}`,
-              {
-                method: "get",
-                headers: {
-                  Accept: "application/json",
-                  "Content-Type": "application/json",
-                  Authorization: `${await clerkAuth.getToken()}`,
-                },
-              }
-            )
-              .then((response) => response.json())
-              .then((data) => {
-                console.log("DATA RETRIEVING USERS AD OWNER CHATS", data);
-                if (data?.chats?.length) {
-                  console.log(
-                    "TRIGGERED I AM OWNER OF AT LEAST ONE OWNER CHAT"
-                  );
-                  let newConversationsRoomsArray =
-                    conversationsRoomsArray.concat(data?.chats);
-                  console.log(
-                    "DATA RETRIEVING USERS AD OWNER CHATS newConversationsRoomsArray",
-                    newConversationsRoomsArray
-                  );
-                  setConversationsRoomsArray(newConversationsRoomsArray, () => {
-                    setActiveAdConversationRoomObject(data?.chats[0], () => {
-                      /* startSocket(data?.chats[0]); */
-                    });
-                  });
-                } else {
-                  /* startSocket(activeAdConversationRoomObject); */
-                }
-              });
+            resolve(data?.chats);
           } else {
-            async () => {
-              fetch(
-                `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
-                  `/chats/ownerofad/${userData?.id}`,
-                {
-                  method: "get",
-                  headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                    Authorization: `${await clerkAuth.getToken()}`,
-                  },
-                }
-              )
-                .then((response) => response.json())
-                .then((data) => {
-                  console.log("DATA RETRIEVING USERS AD OWNER CHATS", data);
-                  if (data?.chats?.length) {
-                    setConversationsRoomsArray(data?.chats, () => {
-                      setActiveAdConversationRoomObject(data?.chats[0], () => {
-                        /*  startSocket(data?.chats[0]); */
-                      });
-                    });
-                  }
-                });
-            };
+            console.log("TRIGGERED I DO NOT OWN BUYER CHATS");
+            resolve([]);
           }
         })
         .catch((error) => {
-          console.log("ERROR RETRIEVING USERS AD BUYER CHATS", error);
+          console.log("ERROR DURING RETRIEVING USERS AD BUYER CHATS", error);
+          reject(error);
+        });
+    });
+
+  const retrieveChatsAsOwner = (userData) =>
+    new Promise(async (resolve, reject) => {
+      fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+          `/chats/ownerofad/${userData?.id}`,
+        {
+          method: "get",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `${await clerkAuth.getToken()}`,
+          },
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA RETRIEVING USERS AD OWNER CHATS", data);
+          if (data?.chats?.length) {
+            console.log("TRIGGERED I AM OWNER OF AT LEAST ONE OWNER CHAT");
+            resolve(data?.chats);
+          } else {
+            console.log("TRIGGERED I DO NOT OWN OWNER CHATS");
+            resolve([]);
+          }
+        })
+        .catch((error) => {
+          console.log("ERROR DURING RETRIEVING USERS AD OWNER CHATS", error);
+          reject(error);
+        });
+    });
+
+  const retrieveConversationsAndCreateSocket = (userData) => {
+    if (userData?.id) {
+      let tempRetrievedConversationsArray = [];
+      retrieveChatsAsBuyer(userData)
+        .then((retrievedChatsAsBuyer) => {
+          if (retrievedChatsAsBuyer?.length) {
+            tempRetrievedConversationsArray =
+              tempRetrievedConversationsArray.concat(retrievedChatsAsBuyer);
+          }
+
+          retrieveChatsAsOwner(userData)
+            .then((retrievedChatsAsOwner) => {
+              if (retrievedChatsAsOwner?.length) {
+                tempRetrievedConversationsArray =
+                  tempRetrievedConversationsArray.concat(retrievedChatsAsOwner);
+              }
+              if (tempRetrievedConversationsArray.length) {
+                console.log(
+                  "I HAVE FOUND CONVERSATIONS",
+                  tempRetrievedConversationsArray
+                );
+
+                setConversationsRoomsArray(tempRetrievedConversationsArray);
+                setActiveAdConversationRoomObject(
+                  tempRetrievedConversationsArray[0]
+                );
+              }
+            })
+            .catch((error) => {
+              console.log("ERROR FETCH ADS AS OWNER", error);
+            });
+        })
+        .catch((error) => {
+          console.log("ERROR FETCH ADS AS BUYER", error);
         });
     }
   };
@@ -236,7 +200,7 @@ export default function Chat() {
   const tryRetrieveConversationRooMessages = async (
     activeAdConversationRoomObject
   ) => {
-    if (activeAdConversationRoomObject) {
+    if (activeAdConversationRoomObject?.ad_conversation_room_id) {
       fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
           `/messages/${activeAdConversationRoomObject?.ad_conversation_room_id}`,
@@ -254,6 +218,8 @@ export default function Chat() {
           console.log("DATA RETRIEVE MESSAGES", data);
           if (data?.messages) {
             setMessagesObjectArray(data?.messages);
+          } else {
+            setMessagesObjectArray([]);
           }
         })
         .catch((error) => {
@@ -262,42 +228,57 @@ export default function Chat() {
     }
   };
 
+  const setUserVisitedChatPage = async (userData) => {
+    if (userData?.id) {
+      fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}` +
+          `/users/visitedchat/${userData?.id}`,
+        {
+          method: "get",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `${await clerkAuth.getToken()}`,
+          },
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA SET VISIT CHAT TIMESTAMP", data);
+        })
+        .catch((error) => {
+          console.log("ERROR DATA SET VISIT CHAT TIMESTAMP", error);
+        });
+    }
+  };
+
   useEffect(() => {
+    if (user?.id) {
+      setUserVisitedChatPage(user);
+    }
+
     if (socket == null) {
-      console.log(
-        "SOCKET START ON ROOM activeAdConversationRoomObject?.ad_conversation_room_id ",
-        activeAdConversationRoomObject?.ad_conversation_room_id
-      );
-
       retrieveConversationsAndCreateSocket(user);
-    } /* Close socket to prevent duplicate messages  test2*/
-
-    /* return () =>
-      newSocket.close(); */
+    }
   }, []);
 
   useEffect(() => {
-    console.log("USEEFFECT CONVO CHANGE socketRoomID", socketRoomID);
-    console.log(
-      "USEEFFECT CONVO CHANGE activeAdConversationRoomObject?.ad_conversation_room_id",
-      activeAdConversationRoomObject?.ad_conversation_room_id
-    );
     if (socket) {
-      console.log("CASE SOCKET EXISTS");
       if (
-        socketRoomID !== activeAdConversationRoomObject?.ad_conversation_room_id
+        socketRoomID !==
+          activeAdConversationRoomObject?.ad_conversation_room_id &&
+        activeAdConversationRoomObject?.ad_conversation_room_id
       ) {
-        console.log(
-          "CASE SOCKET ROOM DIFFERENT activeAdConversationRoomObject?.ad_conversation_room_id",
-          activeAdConversationRoomObject?.ad_conversation_room_id
-        );
         tryRetrieveConversationRooMessages(activeAdConversationRoomObject);
         socket.emit("exit");
         startSocket(activeAdConversationRoomObject);
+      } else {
+        if (!activeAdConversationRoomObject?.ad_conversation_room_id) {
+          retrieveConversationsAndCreateSocket(user);
+        }
       }
     } else {
       if (Object.keys(activeAdConversationRoomObject)?.length) {
-        console.log("CASE SOCKET DIDNT EXIST", conversationsRoomsArray);
         tryRetrieveConversationRooMessages(activeAdConversationRoomObject);
         startSocket(activeAdConversationRoomObject);
       }
@@ -311,10 +292,13 @@ export default function Chat() {
           Safeanzeigen - Wir bringen Ihre Kleinanzeigen mit Sicherheit groß
           raus!s
         </title>
-        <meta name="description" content="Generated by create next app" />
+        <meta
+          name="description"
+          content="Wir bringen deine Kleinanzeigen mit Sicherheit groß raus"
+        />
         <meta name="theme-color" content="#2f70e9" />
         <link rel="icon" href="/favicon.ico" />
-        <link rel="manifest" href="/manifest.webmanifest" />
+        <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </Head>
 
@@ -327,12 +311,12 @@ export default function Chat() {
                 onClick={() =>
                   setShowMobileConversationCards(!showMobileConversationCards)
                 }
-                className="flex items-center justify-around w-3/4 h-8 mx-auto mt-2 mb-2 bg-orange-100 rounded-lg md:hidden"
+                className="flex items-center justify-around w-3/4 h-8 mx-auto mt-2 mb-2 bg-gray-100 rounded-lg md:hidden"
               >
-                <div className="flex text-orange-400 hover:text-orange-500">
+                <div className="flex text-blue-400 hover:text-blue-500">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className={`w-5 h-5 mt-1 ${
+                    className={`transition transform ease-in-out w-5 h-5 mt-1 ${
                       showMobileConversationCards ? "rotate-0" : "-rotate-90"
                     }`}
                     fill="none"
@@ -375,26 +359,9 @@ export default function Chat() {
                     </div>
                   ))}
               </div>
-              {/* <div className="flex flex-row py-2 flex-2 lg:invisible">
-                <span className="inline-block text-gray-700 align-bottom xl:hidden hover:text-gray-900">
-                  <span className="flex items-center justify-center w-6 h-6 p-1 border-2 border-gray-400 rounded-md hover:bg-gray-400">
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                  </span>
-                </span>
-              </div> */}
               <div className="flex flex-col flex-1 ">
                 <div className="hidden lg:block heading flex-2">
-                  <h1 className="mb-4 text-3xl text-gray-700">
+                  <h1 className="mb-4 text-3xl text-gray-700 select-none">
                     Konversationen
                   </h1>
                 </div>
@@ -428,13 +395,19 @@ export default function Chat() {
                               callbackSetActiveConversationRoomObject={
                                 handleSetActiveAdConversationRoomObject
                               }
+                              isActive={
+                                activeAdConversationRoomObject &&
+                                activeAdConversationRoomObject?.ad_conversation_room_id ===
+                                  conversationRoom.ad_conversation_room_id
+                              }
                             />
                           </div>
                         )
                       )}
                     </div>
                   </div>
-                  {activeAdConversationRoomObject && user ? (
+                  {Object.keys(activeAdConversationRoomObject)?.length &&
+                  user ? (
                     <MessagingComponent
                       user={user}
                       activeAdConversationRoomObject={
@@ -445,6 +418,7 @@ export default function Chat() {
                       callbackSendMessage={sendMessage}
                       callbackSendIsTyping={sendIsTyping}
                       callbackStoppedTyping={sendStoppedTyping}
+                      callbackSetChatVisited={setUserVisitedChatPage}
                     />
                   ) : (
                     <EmptyMessagingComponent />
@@ -458,70 +432,3 @@ export default function Chat() {
     </div>
   );
 }
-
-/*  const createAdConversationRoom = (
-    advertisementId,
-    advertisementTitle,
-    priceType,
-    price,
-    user,
-    fullName
-  ) => {
-    socket.emit("create-ad-conversation-room", {
-      ad_conversation_room_id:
-        advertisementId + "+" + (Math.random() + 1).toString(36).substring(7),
-      ad_id: advertisementId,
-      ad_title: advertisementTitle,
-      price_type: priceType,
-      price: price,
-      room_creator_clerk_user_id: user?.id,
-      room_creator_full_name: fullName,
-      created_at_timestamp: getUnixTime(new Date()),
-    });
-  };
-
-   */
-
-/* {
-      ad_conversation_room_id: "ad7884e7-e256-4671-8018-260feaef37ce+firstchat",
-      ad_id: "ad7884e7-e256-4671-8018-260feaef37ce",
-      ad_title: "Stoff Eule",
-      ad_price_type: "VB",
-      ad_price: 5,
-      room_creator_clerk_user_id: "user_29RqPdIoafnCM7Cjpgia8nW8Ul3",
-      room_creator_full_name: "Sascha Majewsky",
-      created_at_timestamp: "1654214580",
-    } */
-
-/*   const mockedAdConversationRoomArray = [
-      {
-        ad_conversation_room_id: "ad7884e7-e256-4671-8018-260feaef37ce+firstchat",
-        ad_id: "ad7884e7-e256-4671-8018-260feaef37ce",
-        ad_title: "Stoff Eule",
-        ad_price_type: "VB",
-        ad_price: 5,
-        room_creator_clerk_user_id: "user_29RqPdIoafnCM7Cjpgia8nW8Ul3",
-        room_creator_full_name: "Sascha Majewsky",
-        created_at_timestamp: "1654214580",
-      },
-      {
-        ad_conversation_room_id: "ad7884e7-e256-4671-8018-260feaef37ce+secondchat",
-        ad_id: "ad7884e7-e256-4671-8018-260feaef37ce",
-        ad_title: "Stoff Eule",
-        ad_price_type: "VB",
-        ad_price: 5,
-        room_creator_clerk_user_id: "user_29RqPdIoafnCM7Cjpgia8nW8Ul3",
-        room_creator_full_name: "Hanne Oellrich",
-        created_at_timestamp: "1654214582",
-      },
-      {
-        ad_conversation_room_id: "61cf3ae2-1779-4037-bb29-8194fab6fa66+test",
-        ad_id: "61cf3ae2-1779-4037-bb29-8194fab6fa66",
-        ad_title: "Hue Go 2",
-        ad_price_type: "VB",
-        ad_price: 40,
-        room_creator_clerk_user_id: "user_29yCWbPeGmJNDNxUmGVDYhtQ0A3",
-        room_creator_full_name: "Hanne Oellrich",
-        created_at_timestamp: "1654214584",
-      },
-    ]; */

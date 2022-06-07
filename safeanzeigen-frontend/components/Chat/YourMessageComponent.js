@@ -10,12 +10,11 @@ export default function YourMessageComponent({ text, timestamp }) {
           <span>{text}</span>
         </div>
         <div className="pr-4">
-          <small className="text-gray-500">
+          <small className="text-gray-500 select-none">
             {timestamp &&
               format(fromUnixTime(timestamp), "dd MMMM", {
                 locale: deLocale,
-              })}{" "}
-            {/* TODO: WHEN OLD THEN CHANGE TO dd.MM.YYYY */}
+              })}
           </small>
         </div>
       </div>
