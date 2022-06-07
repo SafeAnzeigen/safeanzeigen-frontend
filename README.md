@@ -206,4 +206,4 @@ Es wurde Git Flow mit dem Main Branch, dem Develop Branch und verschiedenen Feat
 
 ## 🔑 License
 
-License under MIT License. See [LICENSE](https://github.com/WebMo21/webmo21-frontend/blob/main/LICENSE) for further information.
+License MIT License. [LICENSE](https://github.com/SafeAnzeigen/safeanzeigen-frontend/blob/main/LICENSE)
