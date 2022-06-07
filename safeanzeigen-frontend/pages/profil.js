@@ -170,7 +170,6 @@ export default function Profil() {
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </Head>
-
       <Navigation />
 
       {user &&

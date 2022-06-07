@@ -412,7 +412,6 @@ export default function Inserieren() {
             <div className="grid gap-12 lg:grid-cols-2 lg:gap-0">
               <div>
                 <div ref={carouselRef} className="relative select-none">
-                  {/* <div className="aspect-w-16 aspect-h-9"> */}
                   <img
                     src={adImages[carouselIndex]}
                     alt="Hochgeladenes Bild der Kleinanzeige"

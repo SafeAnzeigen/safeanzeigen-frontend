@@ -155,14 +155,11 @@ export default function Home() {
             (element) => {
               if (element.locality) {
                 let tempCopyElement = element;
-                /*  console.log("tempCopyElement BEFORE", tempCopyElement); */
                 getGeoLongAndLatFromLocality(element.locality).then(
                   (latLongArray) => {
-                    /* console.log("LATLONGARRAY", latLongArray); */
                     if (latLongArray.length > 0) {
                       tempCopyElement.latitude = latLongArray[0];
                       tempCopyElement.longitude = latLongArray[1];
-                      /* console.log("tempCopyElement AFTER", tempCopyElement); */
                       return tempCopyElement;
                     }
                     return element;
@@ -172,10 +169,6 @@ export default function Home() {
               return element;
             }
           );
-          /* console.log(
-            "geoAddedPublicAdvertisements",
-            geoAddedPublicAdvertisements
-          ); */
           setPublicAdvertisements(geoAddedPublicAdvertisements);
         }
       })
@@ -299,7 +292,6 @@ export default function Home() {
     Geocode.fromAddress(locality).then(
       (response) => {
         const { lat, lng } = response.results[0].geometry.location;
-        /* console.log(`I HAVE THE LAT AND LONG ${locality}`, lat, lng); */
         return [lat, lng];
       },
       (error) => {
@@ -329,7 +321,6 @@ export default function Home() {
       navigator?.permissions
         ?.query({ name: "geolocation" })
         .then((permission) => {
-          /* console.log("GEO LOCATION PERMISSION", permission); */
           if (permission?.state === "granted") {
             setGeoPermission(permission?.state === "granted");
           } else if (permission?.state === "prompt") {
@@ -364,7 +355,6 @@ export default function Home() {
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </Head>
       <Navigation />
-      {/* TODO: CHECK IF VERTICAL SCROLL SHOULD BE TRANSFORMED TO HORIZONTAL SCROLL https://stackoverflow.com/questions/24639103/changing-vertical-scroll-to-horizontal*/}
 
       <section className="mx-4 md:mx-20">
         {showDislikeConfirmationModal && (
@@ -450,13 +440,7 @@ export default function Home() {
           <h2 className="pt-8 pb-4 text-3xl font-semibold text-gray-600 select-none">
             Angebote in deiner Nähe
           </h2>
-          {/* {geoPermission &&
-            } */}
-          {/* {console.log("CURRENT USER LOCALITY", currentUserLocality)}
-          {console.log("CURRENT USER LATITUDE", currentUserLatitude)}
-          {console.log("CURRENT USER LONGITUDE", currentUserLongitude)} */}
 
-          {/*  {console.log("publicAdvertisements FOR GEO", publicAdvertisements)} */}
           {geoPermission &&
           currentUserLocality &&
           currentUserLatitude &&

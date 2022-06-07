@@ -59,15 +59,7 @@ export default function Suche() {
       }
     );
 
-  function distance(
-    lat1,
-    lon1,
-    lat2,
-    lon2,
-    unit,
-    locality,
-    advertisementLocality
-  ) {
+  function distance(lat1, lon1, lat2, lon2, unit) {
     var radlat1 = (Math.PI * lat1) / 180;
     var radlat2 = (Math.PI * lat2) / 180;
     var theta = lon1 - lon2;
@@ -87,9 +79,6 @@ export default function Suche() {
     if (unit == "N") {
       dist = dist * 0.8684;
     }
-    console.log("DISTANCE: ", dist);
-    console.log("DISTANCE FOR LOCALITY", locality);
-    console.log("DISTANCE FOR advertisementLocality ", advertisementLocality);
     return dist;
   }
 
@@ -184,17 +173,13 @@ export default function Suche() {
               (element) => {
                 if (element.locality) {
                   let tempCopyElement = element;
-                  /*  console.log("tempCopyElement BEFORE", tempCopyElement); */
-                  console.log("I HAVE CONTROL ABOUT RADIUS", radius);
 
                   if (parseInt(radius) > 0) {
                     getGeoLongAndLatFromLocality(element.locality).then(
                       (latLongArray) => {
-                        /* console.log("LATLONGARRAY", latLongArray); */
                         if (latLongArray?.length > 0) {
                           tempCopyElement.latitude = latLongArray[0];
                           tempCopyElement.longitude = latLongArray[1];
-                          /* console.log("tempCopyElement AFTER", tempCopyElement); */
                           return tempCopyElement;
                         }
                         return element;
@@ -207,30 +192,18 @@ export default function Suche() {
                 return element;
               }
             );
-            /* console.log(
-              "geoAddedPublicAdvertisements",
-              geoAddedPublicAdvertisements
-            ); */
 
             if (localityData) {
-              console.log("I HAD LOCALITY DURING RETRIEVAL", localityData);
               getGeoLongAndLatFromLocality(localityData).then(
                 (latLongArray) => {
-                  console.log(
-                    "LATLONGARRAY OF LOCALITY DURING RETRIEVING",
-                    latLongArray
-                  );
                   if (latLongArray?.length > 0) {
                     setLocalityCalculatedLat(latLongArray[0]);
                     setLocalityCalculatedLong(latLongArray[1]);
                     setSearchedAdvertisements(geoAddedPublicAdvertisements);
-                    /* console.log("tempCopyElement AFTER", tempCopyElement); */
                   }
                 }
               );
             } else {
-              console.log("I DO NOT HAVE LOCALITY DURING RETRIEVAL");
-
               setSearchedAdvertisements(geoAddedPublicAdvertisements);
             }
           }
@@ -294,7 +267,6 @@ export default function Suche() {
       if (latLongArray?.length > 0) {
         setLocalityCalculatedLat(latLongArray[0]);
         setLocalityCalculatedLong(latLongArray[1]);
-        /* console.log("tempCopyElement AFTER", tempCopyElement); */
       }
     });
   };
@@ -303,9 +275,7 @@ export default function Suche() {
     if (router.isReady) {
       foundRadiusAdvertisementsArray = [];
 
-      // Code using query const { search, category, subcategory, locality, radius } = router.query;
       if (!ISSERVER && localStorage.getItem("suche") === null) {
-        console.log("LOCALSTORAGE NOT THERE WRITING NOW", router.query);
         setRouterSID(router.query.sid);
         setSearch(router.query.search);
         setCategory(router.query.category);
@@ -338,15 +308,6 @@ export default function Suche() {
         !router.query.locality &&
         !router.query.radius
       ) {
-        console.log(
-          "LOCALSTORAGE THERE I AM READING FROM IT TO SET THE QUERY",
-          router.query
-        );
-        console.log(
-          "xx localStorage.getItem null",
-          localStorage.getItem("suche") !== null
-        );
-
         if (JSON.parse(localStorage.getItem("suche"))?.sid) {
           setRouterSID(JSON.parse(localStorage.getItem("suche"))?.sid);
         }
@@ -381,10 +342,6 @@ export default function Suche() {
           retrievePublicOffers();
         }
       } else {
-        console.log(
-          "LOCALSTORAGE WAS THERE BUT DID NOT MATCH SEARCH SO I AM OVERWRITING",
-          router.query
-        );
         setRouterSID(router.query.sid);
         setSearch(router.query.search);
         setCategory(router.query.category);
@@ -410,31 +367,8 @@ export default function Suche() {
           })
         );
       }
-
-      console.log("OTHER STATE?");
-
-      /* setSearch(router.query.search);
-      setCategory(router.query.category);
-      setSubcategory(router.query.subcategory);
-      setLocality(router.query.locality);
-      setRadius(router.query.radius);
-      if (router.query.locality) {
-        retrievePublicOffers(router.query.locality);
-      } else {
-        retrievePublicOffers();
-      } */
-
-      /* console.log("QUERY TRIGGERED", router.query);
-      console.log("LOCALSTORAGE"); */
     }
   }, [router.isReady]);
-  /* 
-  useEffect(() => {
-    if (!ISSERVER) {
-      console.log("LOCALSTORAGE");
-      
-    }
-  }, [ISSERVER]); */
 
   useEffect(() => {
     if (user) {
@@ -445,43 +379,17 @@ export default function Suche() {
   useEffect(() => {
     window.onscroll = function () {};
     retrievePublicOffers();
-    console.log("REFRESH TRIGGERED");
   }, []);
 
   useEffect(() => {
-    /* if(router?.query.sid) */
     console.log("USEFFECT router.query", router.query);
     console.log("USEFFECT search", search);
     console.log("USEFFECT category", category);
     console.log("USEFFECT subcategory", subcategory);
     console.log("USEFFECT locality", locality);
-    /*  if (search) {
-      if (router.query.search !== search) {
-        router.reload(window.location.pathname);
-      }
-    }
-    if (category) {
-      if (router.query.category !== category) {
-        router.reload(window.location.pathname);
-      }
-    }
-    if (subcategory) {
-      if (router.query.subcategory !== subcategory) {
-        router.reload(window.location.pathname);
-      }
-    }
-    if (locality) {
-      if (router.query.locality !== locality) {
-        router.reload(window.location.pathname);
-      }
-    } */
   }, []);
 
   useEffect(() => {
-    /* if (routerSID !== router.query.sid) {
-      router.reload(window.location.pathname);
-    } */
-    /* router.reload(window.location.pathname); */
     console.log("USEFFECT routerSID", routerSID);
     console.log("USEFFECT router.query", router.query);
     console.log("USEFFECT search", search);
@@ -489,12 +397,6 @@ export default function Suche() {
     console.log("USEFFECT subcategory", subcategory);
     console.log("USEFFECT locality", locality);
   }, [router.query.sid]);
-
-  /*  useEffect(() => {
-    if (locality) {
-      retrievePublicOffers(locality);
-    }
-  }, [locality]); */
 
   const categoryFilter = (
     advertisement,
@@ -547,35 +449,20 @@ export default function Suche() {
       }
     }
 
-    console.log("I AM BEFORE RADIUS CHECK", advertisement?.locality);
-
     if (parseInt(radius) > 0) {
       filterLength++;
       if (locality) {
         let distanceArray = [];
-        console.log(
-          "I AM GOING IN advertisement?.locality",
-          advertisement?.locality
-        );
 
         if (localityCalculatedLat && localityCalculatedLong) {
-          console.log("GEO ONE", localityCalculatedLat, localityCalculatedLong);
           distanceArray.push(localityCalculatedLat);
           distanceArray.push(localityCalculatedLong);
-          console.log("GEO ONE SUCCESS", distanceArray);
 
           if (advertisement?.latitude && advertisement?.longitude) {
-            console.log(
-              "GEO TWO",
-              advertisement?.latitude,
-              advertisement?.longitude
-            );
             distanceArray.push(advertisement?.latitude);
             distanceArray.push(advertisement?.longitude);
-            console.log("GEO TWO SUCCESS", distanceArray);
 
             if (distanceArray?.length === 4) {
-              console.log("CALCULATE NOW IF DISTANCE IS WITHIN RANGE");
               let distanceResult = distance(
                 distanceArray[0],
                 distanceArray[1],
@@ -585,23 +472,9 @@ export default function Suche() {
                 locality,
                 advertisement?.locality
               );
-              console.log("GEO TWO CALCULATED DISTANCE", distanceResult);
 
               if (distanceResult <= radius) {
                 passedFiltersCount++;
-                console.log(
-                  "DISTANCE WAS WITHIN RANGE",
-                  locality,
-                  advertisement?.locality
-                );
-                console.log(
-                  "DISTANCE WAS WITHIN RANGE passedFiltersCount",
-                  passedFiltersCount
-                );
-                console.log(
-                  "DISTANCE WAS WITHIN RANGE filterLength",
-                  filterLength
-                );
               }
             }
           }
@@ -610,30 +483,8 @@ export default function Suche() {
     }
 
     if (filterLength === passedFiltersCount) {
-      /*  console.log(
-        "THIS ADVERTISEMENT HAS PASSED filterLength passedFiltersCount",
-        filterLength,
-        passedFiltersCount
-      );
-      console.log("THIS ADVERTISEMENT HAS PASSED search", search);
-      console.log("THIS ADVERTISEMENT HAS PASSED category", category);
-      console.log("THIS ADVERTISEMENT HAS PASSED subcategory", subcategory);
-      console.log("THIS ADVERTISEMENT HAS PASSED locality", locality);
-      console.log("THIS ADVERTISEMENT HAS PASSED radius", radius);
-      console.log("THIS ADVERTISEMENT IS PASSED radius", advertisement); */
       return true;
     } else {
-      /*  console.log(
-        "THIS ADVERTISEMENT HAS FAILED filterLength passedFiltersCount",
-        filterLength,
-        passedFiltersCount
-      );
-      console.log("THIS ADVERTISEMENT HAS FAILED search", search);
-      console.log("THIS ADVERTISEMENT HAS FAILED category", category);
-      console.log("THIS ADVERTISEMENT HAS FAILED subcategory", subcategory);
-      console.log("THIS ADVERTISEMENT HAS FAILED locality", locality);
-      console.log("THIS ADVERTISEMENT HAS FAILED radius", radius);
-      console.log("THIS ADVERTISEMENT IS FAILED radius", advertisement); */
       return false;
     }
   };
@@ -765,9 +616,6 @@ export default function Suche() {
                                   : 0;
                               })
                               ?.map((advertisement, index) => {
-                                /*  setFoundRadiusAdvertisementsArray(
-                                  advertisement?.advertisement_id
-                                ); */
                                 foundRadiusAdvertisementsArray.push({
                                   advertisement_id:
                                     advertisement?.advertisement_id,
@@ -778,10 +626,6 @@ export default function Suche() {
                                     advertisement?.article_image_1,
                                   is_verified: advertisement?.is_verified,
                                 });
-                                console.log(
-                                  "STATE 6 RETRIEVED advertisement?.advertisement_id",
-                                  advertisement?.advertisement_id
-                                );
                                 return (
                                   <div
                                     key={index}
@@ -812,83 +656,11 @@ export default function Suche() {
                                   </div>
                                 );
                               })}
-                            {console.log(
-                              "STATE 6: WITH RADIUS & LOCALITY FOUND AD -  DATA IS ISSERVER",
-                              ISSERVER
-                            )}
-                            {console.log(
-                              "STATE 6: WITH RADIUS & LOCALITY FOUND AD -  DATA IS search",
-                              search
-                            )}
-                            {console.log(
-                              "STATE 6: WITH RADIUS & LOCALITY FOUND AD -  DATA IS category",
-                              category
-                            )}
-                            {console.log(
-                              "STATE 6: WITH RADIUS & LOCALITY FOUND AD -  DATA IS subcategory",
-                              subcategory
-                            )}
-                            {console.log(
-                              "STATE 6: WITH RADIUS & LOCALITY FOUND AD -  DATA IS locality",
-                              locality
-                            )}
-                            {console.log(
-                              "STATE 6: WITH RADIUS & LOCALITY FOUND AD -  DATA IS radius",
-                              radius
-                            )}
-                            {console.log(
-                              "STATE 6: WITH RADIUS & LOCALITY FOUND AD -  DATA IS localityCalculatedLat ",
-                              localityCalculatedLat
-                            )}
-                            {console.log(
-                              "STATE 6: WITH RADIUS & LOCALITY FOUND AD -  DATA IS localityCalculatedLong",
-                              localityCalculatedLong
-                            )}
-                            {console.log(
-                              "STATE 6: WITH RADIUS & LOCALITY FOUND AD -  DATA IS searchedAdvertisements",
-                              searchedAdvertisements
-                            )}
                             {setFoundRadiusAdvertisements(true)}
                           </div>
                         ) : (
                           <div>
                             <div className="flex justify-center opacity-50">
-                              {console.log(
-                                "STATE 5: WITH RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS ISSERVER",
-                                ISSERVER
-                              )}
-                              {console.log(
-                                "STATE 5: WITH RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS search",
-                                search
-                              )}
-                              {console.log(
-                                "STATE 5: WITH RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS category",
-                                category
-                              )}
-                              {console.log(
-                                "STATE 5: WITH RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS subcategory",
-                                subcategory
-                              )}
-                              {console.log(
-                                "STATE 5: WITH RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS locality",
-                                locality
-                              )}
-                              {console.log(
-                                "STATE 5: WITH RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS radius",
-                                radius
-                              )}
-                              {console.log(
-                                "STATE 5: WITH RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS localityCalculatedLat ",
-                                localityCalculatedLat
-                              )}
-                              {console.log(
-                                "STATE 5: WITH RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS localityCalculatedLong",
-                                localityCalculatedLong
-                              )}
-                              {console.log(
-                                "STATE 5: WITH RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS searchedAdvertisements",
-                                searchedAdvertisements
-                              )}
                               <img
                                 src="/no-result.png"
                                 className="mb-2 not-draggable"
@@ -898,87 +670,10 @@ export default function Suche() {
                           </div>
                         )
                       ) : (
-                        <div>
-                          {console.log(
-                            "STATE 1: MISSING CALCULATED LONGLAT -  DATA IS ISSERVER",
-                            ISSERVER
-                          )}
-                          {console.log(
-                            "STATE 1: MISSING CALCULATED LONGLAT -  DATA IS search",
-                            search
-                          )}
-                          {console.log(
-                            "STATE 1: MISSING CALCULATED LONGLAT -  DATA IS category",
-                            category
-                          )}
-                          {console.log(
-                            "STATE 1: MISSING CALCULATED LONGLAT -  DATA IS subcategory",
-                            subcategory
-                          )}
-                          {console.log(
-                            "STATE 1: MISSING CALCULATED LONGLAT -  DATA IS locality",
-                            locality
-                          )}
-                          {console.log(
-                            "STATE 1: MISSING CALCULATED LONGLAT -  DATA IS radius",
-                            radius
-                          )}
-                          {console.log(
-                            "STATE 1: MISSING CALCULATED LONGLAT -  DATA IS localityCalculatedLat ",
-                            localityCalculatedLat
-                          )}
-                          {console.log(
-                            "STATE 1: MISSING CALCULATED LONGLAT -  DATA IS localityCalculatedLong",
-                            localityCalculatedLong
-                          )}
-                          {console.log(
-                            "STATE 1: MISSING CALCULATED LONGLAT -  DATA IS searchedAdvertisements",
-                            searchedAdvertisements
-                          )}
-                          {calculateLocalityGeo(locality)}
-                        </div>
+                        <div>{calculateLocalityGeo(locality)}</div>
                       )
                     ) : (
-                      <div>
-                        {console.log(
-                          "STATE 2: MISSING ADVERTISEMENTS -  DATA IS ISSERVER",
-                          ISSERVER
-                        )}
-                        {console.log(
-                          "STATE 2: MISSING ADVERTISEMENTS -  DATA IS search",
-                          search
-                        )}
-                        {console.log(
-                          "STATE 2: MISSING ADVERTISEMENTS -  DATA IS category",
-                          category
-                        )}
-                        {console.log(
-                          "STATE 2: MISSING ADVERTISEMENTS -  DATA IS subcategory",
-                          subcategory
-                        )}
-                        {console.log(
-                          "STATE 2: MISSING ADVERTISEMENTS -  DATA IS locality",
-                          locality
-                        )}
-                        {console.log(
-                          "STATE 2: MISSING ADVERTISEMENTS -  DATA IS radius",
-                          radius
-                        )}
-                        {console.log(
-                          "STATE 2: MISSING ADVERTISEMENTS -  DATA IS localityCalculatedLat ",
-                          localityCalculatedLat
-                        )}
-                        {console.log(
-                          "STATE 2: MISSING ADVERTISEMENTS -  DATA IS localityCalculatedLong",
-                          localityCalculatedLong
-                        )}
-                        {console.log(
-                          "STATE 2: MISSING ADVERTISEMENTS -  DATA IS searchedAdvertisements",
-                          searchedAdvertisements
-                        )}
-
-                        {retrievePublicOffers(locality)}
-                      </div>
+                      <div>{retrievePublicOffers(locality)}</div>
                     )
                   ) : searchedAdvertisements?.filter((advertisement) =>
                       categoryFilter(
@@ -1032,84 +727,12 @@ export default function Suche() {
                                     }
                               }
                             />
-                            {console.log(
-                              "STATE 3: SEARCH WITHOUT RADIUS & LOCALITY -  DATA IS ISSERVER",
-                              ISSERVER
-                            )}
-                            {console.log(
-                              "STATE 3: SEARCH WITHOUT RADIUS & LOCALITY -  DATA IS search",
-                              search
-                            )}
-                            {console.log(
-                              "STATE 3: SEARCH WITHOUT RADIUS & LOCALITY -  DATA IS category",
-                              category
-                            )}
-                            {console.log(
-                              "STATE 3: SEARCH WITHOUT RADIUS & LOCALITY -  DATA IS subcategory",
-                              subcategory
-                            )}
-                            {console.log(
-                              "STATE 3: SEARCH WITHOUT RADIUS & LOCALITY -  DATA IS locality",
-                              locality
-                            )}
-                            {console.log(
-                              "STATE 3: SEARCH WITHOUT RADIUS & LOCALITY -  DATA IS radius",
-                              radius
-                            )}
-                            {console.log(
-                              "STATE 3: SEARCH WITHOUT RADIUS & LOCALITY -  DATA IS localityCalculatedLat ",
-                              localityCalculatedLat
-                            )}
-                            {console.log(
-                              "STATE 3: SEARCH WITHOUT RADIUS & LOCALITY -  DATA IS localityCalculatedLong",
-                              localityCalculatedLong
-                            )}
-                            {console.log(
-                              "STATE 3: SEARCH WITHOUT RADIUS & LOCALITY -  DATA IS searchedAdvertisements",
-                              searchedAdvertisements
-                            )}
                           </div>
                         ))}
                     </div>
                   ) : (
                     <div>
                       <div className="flex justify-center opacity-50">
-                        {console.log(
-                          "STATE 4: NO RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS ISSERVER",
-                          ISSERVER
-                        )}
-                        {console.log(
-                          "STATE 4: NO RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS search",
-                          search
-                        )}
-                        {console.log(
-                          "STATE 4: NO RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS category",
-                          category
-                        )}
-                        {console.log(
-                          "STATE 4: NO RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS subcategory",
-                          subcategory
-                        )}
-                        {console.log(
-                          "STATE 4: NO RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS locality",
-                          locality
-                        )}
-                        {console.log(
-                          "STATE 4: NO RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS radius",
-                          radius
-                        )}
-                        {console.log(
-                          "STATE 4: NO RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS localityCalculatedLat ",
-                          localityCalculatedLat
-                        )}
-                        {console.log(
-                          "STATE 4: NO RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS localityCalculatedLong",
-                          localityCalculatedLong
-                        )}
-                        {console.log(
-                          "STATE 4: NO RADIUS & LOCALITY THERE WAS NO SEARCH RESULT -  DATA IS searchedAdvertisements",
-                          searchedAdvertisements
-                        )}
                         <img
                           src="/no-result.png"
                           className="mb-2 not-draggable"
@@ -1120,7 +743,6 @@ export default function Suche() {
                   )
                 ) : (
                   <div>
-                    {/*  STOP RERENDERING {foundRadiusAdvertisementsArray.length} */}
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                       {foundRadiusAdvertisementsArray
                         .filter(

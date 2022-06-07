@@ -23,22 +23,8 @@ export default function MessagingComponent({
   };
 
   useEffect(() => {
-    console.log(
-      "MESSAGECOMPONENT RECEIVED activeAdConversationRoomObject",
-      activeAdConversationRoomObject
-    );
-    console.log("MESSAGECOMPONENT RECEIVED messages", messages);
     scrollToBottom();
   }, [messages]);
-
-  /* TODO: RECEIVE ALL MESSAGEOBJECTS(FROM_USER_ID, TEXT, TIMESTAMP) IN ONE MESSAGE ARRAY THEN CONDITIONALLY RENDER THEM FLEX JUSTIFY_START OR END AND IN DIFFERENT COLOR AND IN ORDER BY TIMESTAMP THUS IT WILL APPEAR LEFT RIGHT AND FROM/TO LIKE IN A CHAT APP */
-
-  /* TODO: window.scrollTo(0, document.body.scrollHeight);  WHEN? */
-
-  {
-    /* /* unreadMessage={true} */
-    /* conversationLastDate="25. Mai" */
-  }
 
   return (
     <div
@@ -79,11 +65,6 @@ export default function MessagingComponent({
         {messages?.length > 0 && (
           <div>
             {messages
-              /* ?.filter(
-              (filteredMessage) =>
-                filteredMessage?.ad_conversation_room_id ===
-                activeAdConversationRoomObject?.ad_conversation_room_id
-            ) */
               ?.sort(
                 (a, b) => a?.message_sent_timestamp - b?.message_sent_timestamp
               )
@@ -166,46 +147,9 @@ export default function MessagingComponent({
           <div className="flex items-center content-center w-32 p-2 flex-2">
             <div className="flex-1 text-center">
               <span className="text-gray-400 hover:text-gray-800">
-                <span className="inline-block align-text-bottom cursor-pointer">
-                  {/*  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-6 h-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg> */}
-                </span>
+                <span className="inline-block align-text-bottom cursor-pointer"></span>
               </span>
             </div>
-            {/* <div className="flex-1 text-center">
-              <span className="text-gray-400 cursor-pointer hover:text-gray-800">
-                <span className="inline-block align-text-bottom">
-                  <svg
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    className="w-6 h-6"
-                  >
-                    <path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                  </svg>
-                </span>
-              </span>
-            </div> */}
             <div className="flex-1">
               <button
                 onClick={() => {

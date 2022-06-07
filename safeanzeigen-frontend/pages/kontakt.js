@@ -349,17 +349,6 @@ export default function Kontakt() {
                             aria-describedby="message-max"
                           />
                         </div>
-                        <div className="flex mt-4">
-                          <div className="ml-2">
-                            <Link href="https://frontenddata.blob.core.windows.net/womo-frontend/datenschutzerklaerung.pdf">
-                              <a
-                                className="text-blue-400"
-                                target="_blank"
-                                rel="noreferrer"
-                              ></a>
-                            </Link>
-                          </div>
-                        </div>
                       </div>
                       <div className="flex-col sm:col-span-2 sm:flex sm:justify-end">
                         <button
