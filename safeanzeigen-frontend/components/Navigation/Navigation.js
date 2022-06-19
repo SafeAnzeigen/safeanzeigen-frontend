@@ -707,7 +707,7 @@ export default function Navigation() {
                           leaveFrom="opacity-100"
                           leaveTo="opacity-0"
                         >
-                          <Listbox.Options className="absolute md:w-24 w-56 py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm !z-40">
+                          <Listbox.Options className="absolute w-56 py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm !z-40">
                             {categories
                               ?.sort((a, b) => a?.name.localeCompare(b?.name))
                               ?.map((category, index) => (
